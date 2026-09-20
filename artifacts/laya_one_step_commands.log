@@ -1,0 +1,37 @@
+Command ledger (all working directories: /home/davidhatley/Projects/research/system_a)
+2026-09-20: .venv/bin/python scripts/run_laya_one_step.py --help
+2026-09-20: .venv/bin/python scripts/run_laya_one_step.py --dry-run
+2026-09-20: git clone https://github.com/NandhaKishorM/laya.git data/laya && git -C data/laya checkout d113dca2512fb3eaca313534bc54c7162d87c1d4
+2026-09-20: mkdir -p data/cache/pip data/cache/tmp && TMPDIR=$ROOT/data/cache/tmp PIP_CACHE_DIR=$ROOT/data/cache/pip .venv/bin/python -m pip install --index-url https://download.pytorch.org/whl/cu128 torch
+2026-09-20: TMPDIR=$ROOT/data/cache/tmp PIP_CACHE_DIR=$ROOT/data/cache/pip .venv/bin/python -m pip install transformers safetensors huggingface_hub numpy
+2026-09-20: measured commands and outputs follow; $ROOT denotes /home/davidhatley/Projects/research/system_a.
+
+Script started on 2026-09-20 12:23:48-06:00 [COMMAND="env TMPDIR=/home/davidhatley/Projects/research/system_a/data/cache/tmp PIP_CACHE_DIR=/home/davidhatley/Projects/research/system_a/data/cache/pip HF_HOME=/home/davidhatley/Projects/research/system_a/data/cache/huggingface HF_HUB_CACHE=/home/davidhatley/Projects/research/system_a/data/cache/huggingface/hub HF_DATASETS_CACHE=/home/davidhatley/Projects/research/system_a/data/cache/huggingface/datasets TRANSFORMERS_CACHE=/home/davidhatley/Projects/research/system_a/data/cache/huggingface/transformers TORCH_HOME=/home/davidhatley/Projects/research/system_a/data/cache/torch XDG_CACHE_HOME=/home/davidhatley/Projects/research/system_a/data/cache/xdg .venv/bin/python scripts/run_laya_one_step.py" <not executed on terminal>]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+Traceback (most recent call last):
+  File [35m"/home/davidhatley/Projects/research/system_a/scripts/run_laya_one_step.py"[0m, line [35m277[0m, in [35m<module>[0m
+    [31mmain[0m[1;31m()[0m
+    [31m~~~~[0m[1;31m^^[0m
+  File [35m"/home/davidhatley/Projects/research/system_a/scripts/run_laya_one_step.py"[0m, line [35m180[0m, in [35mmain[0m
+    raise RuntimeError(f"Unexpected parameter counts: {counts}")
+[1;35mRuntimeError[0m: [35mUnexpected parameter counts: {'total': 421293827, 'encoder': 394781696, 'non_encoder': 26512131, 'optimized_head': 26248193, 'excluded_action': 263938}[0m
+
+
+
+Script done on 2026-09-20 12:25:54-06:00 [COMMAND_EXIT_CODE="1"]
+Script started on 2026-09-20 12:26:20-06:00 [COMMAND="env TMPDIR=/home/davidhatley/Projects/research/system_a/data/cache/tmp PIP_CACHE_DIR=/home/davidhatley/Projects/research/system_a/data/cache/pip HF_HOME=/home/davidhatley/Projects/research/system_a/data/cache/huggingface HF_HUB_CACHE=/home/davidhatley/Projects/research/system_a/data/cache/huggingface/hub HF_DATASETS_CACHE=/home/davidhatley/Projects/research/system_a/data/cache/huggingface/datasets TRANSFORMERS_CACHE=/home/davidhatley/Projects/research/system_a/data/cache/huggingface/transformers TORCH_HOME=/home/davidhatley/Projects/research/system_a/data/cache/torch XDG_CACHE_HOME=/home/davidhatley/Projects/research/system_a/data/cache/xdg .venv/bin/python scripts/run_laya_one_step.py" <not executed on terminal>]
+
+
+
+/home/davidhatley/Projects/research/system_a/.venv/lib/python3.14/site-packages/torch/autograd/graph.py:869: UserWarning: Memory Efficient attention defaults to a non-deterministic algorithm. To explicitly enable determinism call torch.use_deterministic_algorithms(True, warn_only=False). (Triggered internally at /pytorch/aten/src/ATen/native/transformers/cuda/attention_backward.cu:900.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+Traceback (most recent call last):
+  File [35m"/home/davidhatley/Projects/research/system_a/scripts/run_laya_one_step.py"[0m, line [35m280[0m, in [35m<module>[0m
+    [31mmain[0m[1;31m()[0m
+    [31m~~~~[0m[1;31m^^[0m
+  File [35m"/home/davidhatley/Projects/research/system_a/scripts/run_laya_one_step.py"[0m, line [35m232[0m, in [35mmain[0m
+    raise RuntimeError("Non-finite gradients; optimizer step refused")
+[1;35mRuntimeError[0m: [35mNon-finite gradients; optimizer step refused[0m
+
+Script done on 2026-09-20 12:26:32-06:00 [COMMAND_EXIT_CODE="1"]

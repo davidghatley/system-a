@@ -1,0 +1,10343 @@
+
+
+From Correction to Mastery: Reinforced Distillation of Large Language Model Agents
+
+  
+
+    
+
+      
+Report GitHub Issue
+
+      
+×
+
+    
+
+    
+
+      
+Title:
+
+      
+
+      
+Content selection saved. Describe the issue below:
+
+      
+Description:
+
+      
+
+    
+
+    
+
+      
+Submit without GitHub
+
+      
+Submit in GitHub
+
+    
+
+  
+
+    
+
+    
+arXiv is now an independent nonprofit!
+
+    
+Learn more
+
+    
+&times;
+
+  
+
+  
+
+    
+
+      
+Back to arXiv
+
+    
+
+  
+
+  
+
+  
+
+    
+Why HTML?
+
+    
+
+      
+
+        
+
+      
+
+      
+Report Issue
+
+    
+
+    
+
+      
+
+        
+
+        
+
+      
+
+      
+Back to Abstract
+
+    
+
+    
+
+    
+
+      
+
+        
+
+      
+
+      
+Download PDF
+
+    
+
+    
+
+      
+
+        
+
+        
+
+      
+
+    
+
+    
+
+    
+
+      
+
+        
+
+      
+
+    
+
+    
+
+    
+
+      
+
+        
+
+          
+
+          
+
+        
+
+      
+
+      
+
+        
+
+          
+
+          
+
+        
+
+      
+
+      
+
+        
+
+          
+
+          
+
+        
+
+      
+
+    
+
+  
+
+Abstract
+
+1 
+Introduction
+
+2 
+Background
+
+3 
+Methodology
+
+3.1 
+Initial Distillation with Code as Action
+
+3.2 
+Mentored Problem-Solving
+
+3.3 
+RL Refinement for Mastery
+
+4 
+Experiments
+
+4.1 
+Experimental setup
+
+4.2 
+Main Results
+
+4.3 
+Further Results and Analysis
+
+5 
+Related Work
+
+6 
+Conclusion
+
+References
+
+A 
+Proofs of Theoretical Results
+
+B 
+Datasets and implementation details
+
+C 
+Additional Experiment Results
+
+  
+
+    License: arXiv.org perpetual non-exclusive license
+  
+
+  
+
+arXiv:2509.14257v1 [cs.CL] 12 Sep 2025
+
+From Correction to Mastery: Reinforced Distillation of Large Language Model Agents
+
+Yuanjie Lyu
+
+Affiliation: 
+University of Science and Technology of China
+
+  
+
+Chengyu Wang
+
+†
+
+†
+
+thanks: 
+Corresponding author.
+
+Affiliation: 
+Independent Researcher
+
+  
+
+Jun Huang
+
+Affiliation: 
+Independent Researcher
+
+  
+
+Tong Xu
+
+1
+
+1
+
+footnotemark: 
+
+          
+1
+
+          
+          
+          
+        
+
+Email: 
+
+S1583050085@gmail.com
+
+ GitHub: 
+https://github.com/modelscope/easydistill/tree/main/projects/SCoRe
+
+Affiliation: 
+University of Science and Technology of China
+
+Abstract
+
+    
+
+Large Language Model agents excel at solving complex tasks through iterative reasoning and tool use, but typically depend on ultra‑large, costly backbones. Existing distillation approaches train smaller students to imitate full teacher trajectories, yet reasoning and knowledge gaps between the teacher and student often lead to compounding errors. We propose 
+SCoRe
+, a student‑centered framework in which the student generates trajectories and the teacher intervenes only at the first critical error, producing training data matched to the student’s ability and exposing specific weaknesses. The student is first fine‑tuned on corrected trajectories.
+Subsequently, short‑horizon reinforcement learning starts from the verified prefix before the first critical error, with target rewards assigned at that step. This design encourages autonomous problem‑solving beyond imitation and improves training stability. Particularly, on 12 challenging benchmarks, a 7B‑parameter student distilled with 
+SCoRe
+ matches the agentic performance of a 72B‑parameter teacher.
+
+  
+
+1 
+Introduction
+
+Recent advances in Large Language Models (LLMs) have led to the rise of “agents” 
+(
+Xi et al., 2025
+)
+. Unlike traditional single-pass generation, LLM agents solve complex problems through an iterative 
+reasoning–action–observation
+ loop, using frameworks such as ReAct 
+(
+Yao et al., 2023
+)
+ and CodeAct 
+(
+Wang et al., 2024
+)
+. Specifically, LLM agents decompose tasks into sub-goals (Reasoning), execute them via external tools such as code interpreters (Action) 
+(
+Schick et al., 2023
+; 
+Gao et al., 2023
+)
+, and then refine their plans based on feedback from tool execution (Observation). By combining LLM planning with the precision of external tools, agents mitigate flaws of LLMs such as hallucinations, outdated knowledge, and weak numerical reasoning, achieving strong performance on real-world interactive tasks 
+(
+Liu et al., 2023
+)
+.
+
+High-performing agents typically use large backbones such as GPT-4 
+(
+Achiam et al., 2023
+)
+, resulting in high latency and cost, as complex tasks may require dozens of model calls. To reduce deployment cost, Agent Distillation 
+(
+Kang et al., 2025
+)
+ decomposes the teacher model’s behavior into structured 
+[Thought, Action, Observation]
+ trajectories and trains a smaller student model to imitate them. This enables the student to acquire part of the teacher’s reasoning ability while reducing cost. However, this imitation faces two main challenges: (1) 
+Reasoning Ability Gap:
+ smaller models often cannot reproduce the teacher’s logical decomposition 
+(
+Magister et al., 2022
+)
+; (2) 
+Knowledge Capability Gap:
+ even if the student follows the teacher’s plan, it may lack the skill to carry out complex actions due to limited knowledge. Both gaps stem from 
+emergent abilities
+ 
+(
+Wei et al., 2022
+)
+ of LLMs, gained through extensive training and not fully transferable to smaller models. Moreover, in behavior cloning, a single failure at any step can push the student into out-of-distribution states, where errors compound and grow as 
+
+O
+
+⁡
+
+(
+
+H
+
+2
+
+)
+
+O(H^{2})
+
+ with horizon length 
+
+H
+
+H
+
+ 
+(
+Ross et al., 2011
+)
+.
+
+Figure 1: 
+
+Comparison between imitation-based distillation and our 
+SCoRe
+ framework. (a) Prior methods clone entire teacher trajectories. (b) Our approach lets the student explore, with the teacher correcting only the first critical error. Correction-based SFT mitigates the compounding errors of pure imitation. RL rollouts then start from this correct prefix, improving stability and efficiency.
+
+To overcome the limitations of the traditional “teacher-acts, student-clones” distillation paradigm, we introduce 
+SCoRe
+ (Student-Centered one-step Reinforcement). As shown in Figure 
+
+1
+
+, the student leads the trajectory generation process, and the teacher minimally intervenes by correcting the first critical error, after which the student resumes reasoning. If another error occurs, the teacher repeats this minimal intervention. This student-centric approach to data generation offers two key advantages: 
+Capability Matching
+—trajectory complexity aligns with the student’s evolving abilities, keeping the data learnable and effective; and 
+Deficiency Localization
+—the structure of a “correct prefix” followed by a “key step” explicitly pinpoints the student’s weaknesses for targeted optimization.
+
+Before exploration, the student must first acquire basic reasoning–action skills. We initialize it with a cold-start 
+Behavior Cloning
+ (BC) phase, performing supervised fine‑tuning (SFT) on a small set of high‑quality teacher trajectories.
+The core phase, 
+Mentored Problem-Solving
+, then allows the student to tackle new tasks independently. When the student makes a mistake, the teacher locates the first wrong step and gives a one‑step correction
+
+1
+
+1
+
+            
+1
+
+            
+            
+            
+          “One-step” means the teacher only corrects the incorrect step of the student, rather than completing the remaining task. If the student makes further mistakes later, the teacher steps in again. Hence, a trajectory may contain multiple teacher corrections.
+
+, after which the student resumes.
+The task’s final success implicitly verifies the correctness of the teacher’s fix.
+We retain these corrected trajectories with minimal teacher intervention and use them for the next round of SFT. By correcting at the first critical error, this approach limits teacher–student distribution shift to a single step, breaks long error chains of BC, and reduces cumulative error growth from 
+
+O
+
+⁡
+
+(
+
+H
+
+2
+
+)
+
+O(H^{2})
+
+ to 
+
+O
+
+⁡
+
+(
+
+H
+
+)
+
+O(H)
+
+.
+
+Although effective, these steps still rely on teacher corrections and keep the student in imitation mode. To promote genuine problem-solving, we introduce a reinforcement learning (RL) phase featuring shorter rollouts and key-step rewards. Our RL method introduces two main innovations.
+First, rather than rolling out from the start of the task, we begin from the correct prefix preceding the student’s error. This shortens the horizon and reduces gradient-estimation variance, making updates more stable.
+Second, to address sparse rewards 
+(
+Andrychowicz et al., 2017
+)
+, we add targeted bonuses at the key step: a larger reward for reproducing the teacher’s correction and a smaller one for avoiding the original error. This guides the student beyond imitation toward true problem-solving.
+
+Experiments on 12 challenging benchmarks show that 
+SCoRe
+ enables small models, such as 
+Qwen2.5-7B
+, to achieve reasoning performance comparable to a 72B teacher, outperforming both BC and GRPO 
+(
+Shao et al., 2024
+)
+ by a large margin. On Deep Search benchmarks, it even surpasses tool‑integrated prompting on 72B models 
+(
+Li et al., 2025b
+)
+. These results demonstrate that ability-matched correction, combined with short-horizon key-step RL, can close the performance gap between small and large models.
+
+2 
+Background
+
+In this section, we formalize the LLM-agent framework and review two core training approaches: Behavior Cloning and Reinforcement Learning, highlighting their limitations in agent distillation.
+
+The ReAct Framework.
+
+To enable effective interaction with an external environment 
+
+ℰ
+
+\mathcal{E}
+
+ (e.g., a code interpreter or a search engine), we adopt the ReAct framework 
+(
+Yao et al., 2023
+)
+. In this framework, the agent’s behavior is represented as a trajectory 
+
+τ
+
+=
+
+(
+
+t
+
+1
+
+,
+
+c
+
+1
+
+,
+
+o
+
+1
+
+,
+
+…
+
+,
+
+t
+
+H
+
+,
+
+c
+
+H
+
+,
+
+o
+
+H
+
+)
+
+\tau=(t_{1},c_{1},o_{1},\dots,t_{H},c_{H},o_{H})
+
+, where 
+
+H
+
+H
+
+ is the total number of steps. At each step 
+
+i
+
+i
+
+, the policy 
+
+π
+
+\pi
+
+ first generates a 
+thought
+ 
+
+t
+
+i
+
+t_{i}
+
+ based on the history 
+
+s
+
+i
+
+s_{i}
+
+, and then, conditioned on this thought and history, produces a ReAct 
+action
+ 
+
+c
+
+i
+
+c_{i}
+
+:
+
+s
+
+i
+
+=
+
+(
+
+t
+
+1
+
+,
+
+c
+
+1
+
+,
+
+o
+
+1
+
+,
+
+…
+
+,
+
+t
+
+i
+
+−
+
+1
+
+,
+
+c
+
+i
+
+−
+
+1
+
+,
+
+o
+
+i
+
+−
+
+1
+
+)
+
+,
+
+(
+
+t
+
+i
+
+,
+
+c
+
+i
+
+)
+
+∼
+
+π
+
+(
+
+⋅
+
+∣
+
+s
+
+i
+
+)
+
+.
+
+s_{i}=(t_{1},c_{1},o_{1},\dots,t_{i-1},c_{i-1},o_{i-1}),\quad(t_{i},c_{i})\sim\pi(\cdot\mid s_{i}).
+
+Executing 
+
+c
+
+i
+
+c_{i}
+
+ in 
+
+ℰ
+
+\mathcal{E}
+
+ returns an 
+observation
+ 
+
+o
+
+i
+
+o_{i}
+
+, 
+
+(
+
+t
+
+i
+
+,
+
+c
+
+i
+
+,
+
+o
+
+i
+
+)
+
+(t_{i},c_{i},o_{i})
+
+ is then added to the history. The loop continues until a terminal action (e.g., producing the final answer) ends the trajectory.
+
+Agent Distillation via Behavior Cloning.
+
+To reduce the inference cost of large LLM agents, agent distillation transfers capabilities from a powerful teacher 
+
+π
+
+E
+
+\pi_{E}
+
+ to a smaller student 
+
+π
+
+^
+
+\hat{\pi}
+
+. The most common method, 
+Behavior Cloning (BC)
+ 
+(
+Torabi et al., 2018
+)
+, trains 
+
+π
+
+^
+
+\hat{\pi}
+
+ on teacher-generated trajectories 
+
+D
+
+T
+
+D_{T}
+
+ to imitate both thoughts(
+
+t
+
+i
+
+t_{i}
+
+) and ReAct actions(
+
+c
+
+i
+
+c_{i}
+
+):
+
+ℒ
+
+BC
+
+​
+
+(
+
+θ
+
+)
+
+=
+
+−
+
+𝔼
+
+τ
+
+∼
+
+D
+
+T
+
+​
+
+[
+
+∑
+
+i
+
+=
+
+1
+
+|
+
+τ
+
+|
+
+log
+
+⁡
+
+π
+
+^
+
+​
+
+(
+
+a
+
+i
+
+∣
+
+s
+
+i
+
+;
+
+θ
+
+)
+
+]
+
+,
+
+\mathcal{L}_{\mathrm{BC}}(\theta)=-\mathbb{E}_{\tau\sim D_{T}}\left[\sum_{i=1}^{|\tau|}\log\hat{\pi}(a_{i}\mid s_{i};\theta)\right],
+
+(1)
+
+where 
+
+a
+
+i
+
+=
+
+(
+
+t
+
+i
+
+,
+
+c
+
+i
+
+)
+
+a_{i}=(t_{i},c_{i})
+
+ and 
+
+s
+
+i
+
+s_{i}
+
+ is the history context. While BC is effective, 
+reasoning
+ and 
+knowledge
+ gaps between 
+
+π
+
+E
+
+\pi_{E}
+
+ and 
+
+π
+
+^
+
+\hat{\pi}
+
+ yield a non-trivial per-step error rate 
+
+ε
+
+\varepsilon
+
+. Under covariate shift, these errors accumulate over horizon 
+
+H
+
+H
+
+, making the expected total cost grow as 
+
+O
+
+⁡
+
+(
+
+H
+
+2
+
+​
+
+ε
+
+)
+
+O(H^{2}\varepsilon)
+
+ 
+(
+Ross et al., 2011
+)
+.
+
+Agent Optimization via Reinforcement Learning.
+
+Reinforcement Learning (RL) extends beyond imitation by enabling agents to explore actively. The problem is modeled as a Markov Decision Process (MDP), where the state 
+
+s
+
+i
+
+s_{i}
+
+ is the history context, the action is 
+
+a
+
+i
+
+a_{i}
+
+, the policy is 
+
+π
+
+^
+
+\hat{\pi}
+
+, and the trajectory is evaluated by a reward 
+
+R
+
+⁡
+
+(
+
+τ
+
+)
+
+R(\tau)
+
+. In practice, rewards are often sparse; for example, 
+
+R
+
+⁡
+
+(
+
+τ
+
+)
+
+=
+
+1
+
+R(\tau)=1
+
+ if the final answer is correct, and 
+
+R
+
+⁡
+
+(
+
+τ
+
+)
+
+=
+
+0
+
+R(\tau)=0
+
+ otherwise 
+(
+Su et al., 2025
+; 
+Mroueh, 2025
+)
+. The training objective is 
+
+J
+
+⁡
+
+(
+
+θ
+
+)
+
+=
+
+𝔼
+
+τ
+
+∼
+
+π
+
+^
+
+θ
+
+​
+
+[
+
+R
+
+⁡
+
+(
+
+τ
+
+)
+
+]
+
+J(\theta)=\mathbb{E}_{\tau\sim\hat{\pi}_{\theta}}[R(\tau)]
+
+, with the policy gradient update:
+
+∇
+
+θ
+
+J
+
+​
+
+(
+
+θ
+
+)
+
+=
+
+𝔼
+
+τ
+
+∼
+
+π
+
+^
+
+θ
+
+​
+
+[
+
+R
+
+⁡
+
+(
+
+τ
+
+)
+
+​
+
+∇
+
+θ
+
+​
+
+log
+
+⁡
+
+P
+
+⁡
+
+(
+
+τ
+
+∣
+
+θ
+
+)
+
+]
+
+,
+
+\nabla_{\theta}J(\theta)=\mathbb{E}_{\tau\sim\hat{\pi}_{\theta}}\left[R(\tau)\nabla_{\theta}\log P(\tau\mid\theta)\right],
+
+(2)
+
+where 
+
+P
+
+⁡
+
+(
+
+τ
+
+∣
+
+θ
+
+)
+
+P(\tau\mid\theta)
+
+ denotes the probability of trajectory 
+
+τ
+
+\tau
+
+ under 
+
+π
+
+^
+
+θ
+
+\hat{\pi}_{\theta}
+
+.
+Standard RL faces challenges for LLM agents due to 
+sparse rewards
+ 
+(
+Andrychowicz et al., 2017
+; 
+Badia et al., 2020
+)
+ and 
+high variance
+ 
+(
+Schulman et al., 2017
+; 
+Shao et al., 2024
+)
+, often leading to unstable and inefficient training.
+
+3 
+Methodology
+
+Figure 2: 
+
+The 
+SCoRe
+ framework for agent distillation.
+(a) A student agent attempts a task, and the teacher provides a single-step correction at the first error, creating student-centric training data.
+(b) The student is initially trained to imitate full solution trajectories via supervised fine-tuning.
+(c) The student is further improved through reinforcement learning, using shortened rollouts that start from teacher correction steps and targeted rewards at those steps to encourage exploration.
+
+In this work, we propose 
+SCoRe
+, a novel agent‑distillation paradigm that addresses key limits of BC and RL (Figure 
+
+2
+
+). Instead of the static “teacher‑acts, student‑clones” scheme, 
+SCoRe
+ introduces 
+Mentored‑Problem Solving
+ (MPS) to place the student at the center of learning. Training on MPS-generated data tailored to the student’s abilities reduces BC’s compounding error growth, and the use of short-horizon, key-step rewards in RL improves stability and efficiency.
+
+3.1 
+Initial Distillation with Code as Action
+
+To enable a “student-explores, teacher-corrects” strategy for agent distillation, the student must first acquire basic 
+reasoning-acting
+ skills. However, current LLMs (e.g., Qwen 
+(
+Yang et al., 2025
+)
+, LLaMA 
+(
+Dubey et al., 2024
+)
+) are not built for multi‑step agentic tasks and typically perform single‑pass generation. Therefore, we first construct structured datasets and distill 
+
+π
+
+^
+
+\hat{\pi}
+
+ to perform multi-step reasoning and acting.
+
+Trajectory Representation.
+
+Training trajectories follow the ReAct 
+(
+Yao et al., 2023
+)
+ format: sequences of
+triplets 
+
+τ
+
+=
+
+(
+
+σ
+
+i
+
+)
+
+i
+
+=
+
+1
+
+H
+
+,
+
+σ
+
+i
+
+=
+
+(
+
+t
+
+i
+
+,
+
+c
+
+i
+
+,
+
+o
+
+i
+
+)
+
+\tau=(\sigma_{i})_{i=1}^{H},\sigma_{i}=(t_{i},c_{i},o_{i})
+
+, where 
+
+t
+
+i
+
+t_{i}
+
+ is textual reasoning, 
+
+c
+
+i
+
+c_{i}
+
+ is an action in ReAct, and 
+
+o
+
+i
+
+o_{i}
+
+ is environment feedback. These structured trajectories capture problem decomposition and stepwise solutions, making them well‑suited for distillation.
+We build on 
+CodeAct
+ 
+(
+Wang et al., 2024
+)
+, where 
+
+c
+
+i
+
+c_{i}
+
+ is executable code, offering: (i) deterministic operations for reproducibility; (ii) both teacher and students are familiar with code from pre-training, reducing capability gaps; and (iii) a Turing‑complete, unified action space for tool use and complex logic.
+
+Initial Trajectory Generation.
+
+To build the initial train data 
+
+D
+
+T
+
+D_{T}
+
+, we use the teacher policy 
+
+π
+
+E
+
+\pi_{E}
+
+. Following 
+
+Kang et al. (2025)
+
+, 
+
+π
+
+E
+
+\pi_{E}
+
+ is first prompted to produce a high‑level plan 
+&lt;first_thought&gt;
+ as a strategic outline. A second prompt enforces the standard 
+Thought–Code–Observation
+ cycle: at step 
+
+i
+
+i
+
+, 
+
+π
+
+E
+
+\pi_{E}
+
+ generates 
+
+(
+
+t
+
+i
+
+,
+
+c
+
+i
+
+)
+
+(t_{i},c_{i})
+
+ conditioned on both the plan and prior steps. Executing 
+
+c
+
+i
+
+c_{i}
+
+ in the environment yields an observation 
+
+o
+
+i
+
+o_{i}
+
+, which is appended to the context for subsequent reasoning. This dual-prompt design combines global planning with adaptive step-level reasoning. To ensure quality, we apply rejection sampling and retain only trajectories with correct final answers.
+
+Behavior Cloning.
+
+In the initial cold-start learning phase, we distill student policy 
+
+π
+
+^
+
+\hat{\pi}
+
+ on 
+
+D
+
+T
+
+D_{T}
+
+ via behavior cloning, minimizing 
+
+ℒ
+
+BC
+
+\mathcal{L}_{\mathrm{BC}}
+
+ as defined in Equation 
+
+1
+
+. The resulting initialized model, 
+
+π
+
+^
+
+init
+
+\hat{\pi}_{\mathrm{init}}
+
+, learns the 
+Thought–Code–Observation
+ loop. This capability enables 
+
+π
+
+^
+
+init
+
+\hat{\pi}_{\mathrm{init}}
+
+ to attempt tasks without immediate failure, thus allowing fine-grained, one-step teacher interventions in subsequent phases.
+
+3.2 
+Mentored Problem-Solving
+
+After initialization via BC, the core phase, 
+Mentored Problem-Solving
+ (MPS),
+employs the BC-initialized student as an explorer, producing ability-matched and deficiency-localized trajectory data.
+
+Student Explores, Teacher Corrects.
+
+As shown in Figure 
+
+2
+
+(a), the initialized student model 
+
+π
+
+^
+
+init
+
+\hat{\pi}_{\mathrm{init}}
+
+ attempts unseen tasks. For each task, it independently generates a full trajectory 
+
+τ
+
+S
+
+=
+
+(
+
+σ
+
+1
+
+,
+
+…
+
+,
+
+σ
+
+H
+
+)
+
+\tau_{S}=(\sigma_{1},\dots,\sigma_{H})
+
+ through the ReAct loop, where each step 
+
+σ
+
+i
+
+\sigma_{i}
+
+ denotes a triplet of 
+Thought–Code–Observation
+. After the final answer, the teacher policy 
+
+π
+
+E
+
+\pi_{E}
+
+ checks correctness. If incorrect, the teacher locates the first deviation step 
+
+σ
+
+k
+
+\sigma_{k}
+
+ where the student diverges from the correct path. Instead of discarding the trajectory, 
+
+π
+
+E
+
+\pi_{E}
+
+ provides a minimal intervention by replacing 
+
+σ
+
+k
+
+\sigma_{k}
+
+ with a corrected step 
+
+σ
+
+k
+
+′
+
+\sigma^{\prime}_{k}
+
+, and the student resumes execution from 
+
+(
+
+σ
+
+1
+
+,
+
+…
+
+,
+
+σ
+
+k
+
+−
+
+1
+
+,
+
+σ
+
+k
+
+′
+
+)
+
+(\sigma_{1},\dots,\sigma_{k-1},\sigma^{\prime}_{k})
+
+.
+If the student ultimately completes the task, it indirectly validates the teacher’s correction, and the corrected trajectory is collected as training data. If the student makes another mistake at step 
+
+m
+
+&gt;
+
+k
+
+m&gt;k
+
+, the teacher will correct it to 
+
+σ
+
+m
+
+′
+
+\sigma^{\prime}_{m}
+
+ and the execution will continue from 
+
+(
+
+σ
+
+1
+
+,
+
+…
+
+,
+
+σ
+
+k
+
+−
+
+1
+
+,
+
+σ
+
+k
+
+′
+
+,
+
+…
+
+,
+
+σ
+
+m
+
+−
+
+1
+
+,
+
+σ
+
+m
+
+′
+
+)
+
+(\sigma_{1},\dots,\sigma_{k-1},\sigma^{\prime}_{k},\dots,\sigma_{m-1},\sigma^{\prime}_{m})
+
+. In this framework, each intervention addresses only the specific erroneous step, and a single trajectory may contain multiple such interventions.
+In rare cases, a task may remain unsolved even after multiple one‑step corrections(5 attempts in this paper). Such cases are 
+Hard-to-Teach tasks
+, as their difficulty exceeds the student’s current capability. While these trajectories offer limited value for capability‑matched SFT, we retain a subset as challenging examples for the RL to improve the model’s performance on difficult tasks.
+
+Two Complementary Forms of Supervision.
+
+The MPS process yields two complementary forms of supervision:
+(1) The final 
+corrected trajectory
+, mostly generated by the student with sparse teacher edits, provides capability-aligned demonstrations for continued SFT.
+(2) Each key-step correction produces a 
+preference pair
+, anchored on the same prefix 
+
+(
+
+σ
+
+1
+
+,
+
+…
+
+,
+
+σ
+
+k
+
+−
+
+1
+
+)
+
+(\sigma_{1},\dots,\sigma_{k-1})
+
+, where the teacher’s corrected step 
+
+σ
+
+k
+
+′
+
+\sigma^{\prime}_{k}
+
+ is preferred over the student’s original 
+
+σ
+
+k
+
+\sigma_{k}
+
+. A single task can generate multiple such pairs from multiple teacher interventions. These pairs are especially useful for RL methods (e.g., GRPO 
+(
+Shao et al., 2024
+)
+), offering near-correct prefixes that stabilize short rollouts and provide precise feedback at prior error points. Once this high-quality, capability-aligned data is collected, it is used to train the student model 
+
+π
+
+^
+
+\hat{\pi}
+
+ via SFT (see Figure 
+
+2
+
+(b)). Trained on such capability‑aligned data helps reduce compounding errors, we next provide a theoretical analysis.
+
+Theoretical Justification.
+
+To analyze 
+SCoRe
+’s advantage in mitigating compounding errors 
+
+Ross et al. (2011)
+
+, we model the agent as a finite-horizon process of length 
+
+H
+
+H
+
+. At each step 
+
+t
+
+t
+
+, in state 
+
+s
+
+t
+
+∈
+
+𝒮
+
+s_{t}\in\mathcal{S}
+
+, the agent selects action 
+
+a
+
+t
+
+∈
+
+𝒜
+
+a_{t}\in\mathcal{A}
+
+ via policy 
+
+π
+
+\pi
+
+. In our framework, 
+
+a
+
+t
+
+a_{t}
+
+ is the composite output of thought and code. The environment transitions according to 
+
+P
+
+⁡
+
+(
+
+s
+
+t
+
++
+
+1
+
+∣
+
+s
+
+t
+
+,
+
+a
+
+t
+
+)
+
+P(s_{t+1}\mid s_{t},a_{t})
+
+.
+Let 
+
+π
+
+E
+
+\pi_{E}
+
+ and 
+
+π
+
+^
+
+\hat{\pi}
+
+ be the teacher and student policies, and let 
+
+d
+
+t
+
+π
+
+d_{t}^{\pi}
+
+ be the state distribution under 
+
+π
+
+\pi
+
+.
+The per-step cost 
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+∈
+
+[
+
+0
+
+,
+
+1
+
+]
+
+c_{t}(s)\in[0,1]
+
+ is 0 if the policy acts correctly and 1 otherwise. The total expected cost is
+
+c
+
+⁡
+
+(
+
+π
+
+)
+
+=
+
+𝔼
+
+s
+
+1
+
+∼
+
+d
+
+1
+
+,
+
+a
+
+t
+
+∼
+
+π
+
+,
+
+s
+
+t
+
++
+
+1
+
+∼
+
+P
+
+​
+
+[
+
+∑
+
+t
+
+=
+
+1
+
+H
+
+c
+
+t
+
+​
+
+(
+
+s
+
+t
+
+)
+
+]
+
+.
+
+c(\pi)=\mathbb{E}_{s_{1}\sim d_{1},\,a_{t}\sim\pi,\,s_{t+1}\sim P}\left[\sum_{t=1}^{H}c_{t}(s_{t})\right].
+
+(3)
+
+Theorem 3.1
+
+ 
+(BC compounding-error bound)
+.
+
+If student 
+
+π
+
+^
+
+\hat{\pi}
+
+ trained on teacher 
+
+π
+
+E
+
+\pi_{E}
+
+ demonstrations via BC satisfies
+
+ℙ
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+[
+
+π
+
+^
+
+(
+
+s
+
+)
+
+≠
+
+π
+
+E
+
+(
+
+s
+
+)
+
+]
+
+≤
+
+ε
+
+,
+
+∀
+
+t
+
+∈
+
+{
+
+1
+
+,
+
+…
+
+,
+
+H
+
+}
+
+,
+
+\mathbb{P}_{s\sim d_{t}^{\pi_{E}}}\left[\hat{\pi}(s)\neq\pi_{E}(s)\right]\leq\varepsilon,\quad\forall\,t\in\{1,\dots,H\},
+
+(4)
+
+then
+
+c
+
+⁡
+
+(
+
+π
+
+^
+
+)
+
+≤
+
+c
+
+⁡
+
+(
+
+π
+
+E
+
+)
+
++
+
+H
+
+⁡
+
+(
+
+H
+
+−
+
+1
+
+)
+
+2
+
+​
+
+ε
+
+=
+
+c
+
+⁡
+
+(
+
+π
+
+E
+
+)
+
++
+
+O
+
+⁡
+
+(
+
+H
+
+2
+
+​
+
+ε
+
+)
+
+.
+
+c(\hat{\pi})\leq c(\pi_{E})+\frac{H(H-1)}{2}\,\varepsilon=c(\pi_{E})+O(H^{2}\varepsilon).
+
+(5)
+
+This classical covariate-shift result 
+(
+Ross et al., 2011
+)
+ shows that a small per-step error 
+
+ε
+
+\varepsilon
+
+ can grow to 
+
+O
+
+⁡
+
+(
+
+H
+
+2
+
+​
+
+ε
+
+)
+
+O(H^{2}\varepsilon)
+
+, severely degrading performance on long-horizon tasks.
+
+Theorem 3.2
+
+ 
+(
+SCoRe
+ first-error-correction bound)
+.
+
+In 
+SCoRe
+, at the first deviation from teacher policy 
+
+π
+
+E
+
+\pi_{E}
+
+, the action is replaced by the teacher’s, and execution continues with student policy 
+
+π
+
+^
+
+\hat{\pi}
+
+.
+If, 
+under 
+
+d
+
+t
+
+π
+
+^
+
+d_{t}^{\hat{\pi}}
+
+, the per-step misalignment satisfies
+
+ℙ
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+[
+
+π
+
+^
+
+(
+
+s
+
+)
+
+≠
+
+π
+
+E
+
+(
+
+s
+
+)
+
+]
+
+≤
+
+ε
+
+,
+
+∀
+
+t
+
+∈
+
+{
+
+1
+
+,
+
+…
+
+,
+
+H
+
+}
+
+.
+
+\mathbb{P}_{s\sim d_{t}^{\hat{\pi}}}\left[\hat{\pi}(s)\neq\pi_{E}(s)\right]\leq\varepsilon,\quad\forall\,t\in\{1,\dots,H\}.
+
+(6)
+
+Since 
+SCoRe
+’s training data originates from the student’s own rollouts, the relevant error rate is evaluated 
+under 
+
+d
+
+t
+
+π
+
+^
+
+d_{t}^{\hat{\pi}}
+
+ rather than 
+
+d
+
+t
+
+π
+
+E
+
+d_{t}^{\pi_{E}}
+
+. Then
+
+c
+
+⁡
+
+(
+
+π
+
+^
+
+)
+
+≤
+
+c
+
+⁡
+
+(
+
+π
+
+E
+
+)
+
++
+
+H
+
+​
+
+ε
+
+=
+
+c
+
+⁡
+
+(
+
+π
+
+E
+
+)
+
++
+
+O
+
+⁡
+
+(
+
+H
+
+​
+
+ε
+
+)
+
+.
+
+c(\hat{\pi})\leq c(\pi_{E})+H\,\varepsilon=c(\pi_{E})+O(H\,\varepsilon).
+
+(7)
+
+Unlike BC in Theorem 
+
+3.1
+
+, 
+SCoRe
+ trains on 
+
+d
+
+t
+
+π
+
+^
+
+d_{t}^{\hat{\pi}}
+
+ and corrects the first error in each episode, truncating error propagation.
+At most one unchecked mistake occurs before resuming an expert-aligned path, reducing worst-case growth from 
+
+O
+
+⁡
+
+(
+
+H
+
+2
+
+)
+
+O(H^{2})
+
+ to 
+
+O
+
+⁡
+
+(
+
+H
+
+)
+
+O(H)
+
+. The proof is in Appendix  
+
+A
+
+.
+
+3.3 
+RL Refinement for Mastery
+
+Although MPS yields capability-aligned supervision, training on this data still constrains the student to replicating the teacher’s key steps. To move from imitation to independent problem-solving, we introduce an RL phase that directly optimizes task success, while leveraging key-step preference pairs derived from MPS to stabilize training. We adopt GRPO 
+(
+Shao et al., 2024
+)
+, a variant of PPO 
+(
+Schulman et al., 2017
+)
+ that omits the value function, thereby reducing computation and value-estimation instability. However, for long-horizon tasks, GRPO remains sensitive to sparse rewards and high gradient variance. As Figure 
+
+2
+
+(c) shows, we address these issues with two techniques:
+
+Short-Horizon Rollout.
+
+Instead of starting rollouts from the initial question, we begin from the correct prefix 
+
+(
+
+σ
+
+1
+
+,
+
+…
+
+,
+
+σ
+
+k
+
+−
+
+1
+
+)
+
+(\sigma_{1},\dots,\sigma_{k-1})
+
+—the sequence preceding the original error step 
+
+σ
+
+k
+
+\sigma_{k}
+
+. This shortens the horizon from 
+
+H
+
+H
+
+ to 
+
+H
+
+′
+
+=
+
+H
+
+−
+
+(
+
+k
+
+−
+
+1
+
+)
+
+H^{\prime}=H-(k-1)
+
+, reducing variance.
+
+Key-Step Reward.
+
+If the final answer is correct, a large reward 
+
+R
+
+final
+
+R_{\mathrm{final}}
+
+ is given. Otherwise,
+
+R
+
+=
+
+{
+
+R
+
+key
+
+,
+
+a
+
+k
+
+=
+
+a
+
+k
+
+π
+
+E
+
+,
+
+R
+
+avoid
+
+,
+
+a
+
+k
+
+≠
+
+a
+
+k
+
+orig
+
+∧
+
+a
+
+k
+
+≠
+
+a
+
+k
+
+π
+
+E
+
+.
+
+0
+
+,
+
+otherwise
+
+,
+
+R=\begin{cases}R_{\mathrm{key}},&a_{k}=a_{k}^{\pi_{E}},\\
+R_{\mathrm{avoid}},&a_{k}\neq a_{k}^{\mathrm{orig}}\land a_{k}\neq a_{k}^{\pi_{E}}.\\
+0,&\text{otherwise},\end{cases}
+
+where 
+
+a
+
+k
+
+orig
+
+a_{k}^{\mathrm{orig}}
+
+ is the student’s original error, 
+
+a
+
+k
+
+π
+
+E
+
+a_{k}^{\pi_{E}}
+
+ is the teacher’s correction. Action equivalence can be reliably checked via code and code execution results. In practice, we compute the reward via a lightweight LLM-based verifier: 
+Qwen2.5-7B-Instruct
+ judges semantic equivalence between the generated and reference answers. This reward scheme provides informative credit assignment at the student’s weakest step, while maintaining prioritization of final task success.
+
+Theoretical Justification.
+
+We analyze variance reduction under policy gradients (ignoring value-function or clipping for clarity), aligning with GRPO’s core update. The conclusion can also extend to the clipped objective of GRPO. Specifically, starting rollouts after the correct prefix reduces the remaining horizon from 
+
+H
+
+H
+
+ to 
+
+H
+
+−
+
+k
+
++
+
+1
+
+H-k+1
+
+, tightening the variance bound of the policy gradient:
+
+g
+
+k
+
+=
+
+∑
+
+t
+
+=
+
+k
+
+H
+
+∇
+
+θ
+
+​
+
+log
+
+​
+
+π
+
+θ
+
+​
+
+(
+
+a
+
+t
+
+∣
+
+s
+
+t
+
+)
+
+⋅
+
+G
+
+t
+
+,
+
+G
+
+t
+
+=
+
+∑
+
+t
+
+′
+
+=
+
+t
+
+H
+
+γ
+
+t
+
+′
+
+−
+
+t
+
+​
+
+r
+
+t
+
+′
+
+,
+
+g_{k}=\sum_{t=k}^{H}\nabla_{\theta}\log\pi_{\theta}(a_{t}\mid s_{t})\cdot G_{t},\quad G_{t}=\sum_{t^{\prime}=t}^{H}\gamma^{t^{\prime}-t}r_{t^{\prime}},
+
+(8)
+
+where 
+
+γ
+
+∈
+
+(
+
+0
+
+,
+
+1
+
+)
+
+\gamma\in(0,1)
+
+ is discount factor. Assume reward 
+
+|
+
+r
+
+t
+
+|
+
+≤
+
+R
+
+max
+
+|r_{t}|\leq R_{\max}
+
+ and 
+
+‖
+
+∇
+
+θ
+
+​
+
+log
+
+​
+
+π
+
+θ
+
+​
+
+(
+
+a
+
+t
+
+∣
+
+s
+
+t
+
+)
+
+‖
+
+≤
+
+G
+
+max
+
+\|\nabla_{\theta}\log\pi_{\theta}(a_{t}\mid s_{t})\|\leq G_{\max}
+
+.
+
+Theorem 3.3
+
+ 
+(Variance Bound for Shortened Rollout)
+.
+
+Under these assumptions, there exists 
+
+C
+
+=
+
+G
+
+max
+
+2
+
+​
+
+R
+
+max
+
+2
+
+C=G_{\max}^{2}R_{\max}^{2}
+
+ such that
+
+Var
+
+⁡
+
+[
+
+g
+
+k
+
+]
+
+≤
+
+C
+
+(
+
+1
+
+−
+
+γ
+
+)
+
+2
+
+​
+
+(
+
+(
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+−
+
+γ
+
+⁡
+
+(
+
+1
+
+−
+
+γ
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+1
+
+−
+
+γ
+
+)
+
+2
+
+,
+
+\mathrm{Var}[g_{k}]\leq\frac{C}{(1-\gamma)^{2}}\left((H-k+1)-\frac{\gamma(1-\gamma^{H-k+1})}{1-\gamma}\right)^{2},
+
+(9)
+
+which decreases monotonically as 
+
+k
+
+k
+
+ increases. The proof is in Appendix  
+
+A
+
+.
+
+In summary, starting rollouts from correct prefixes focuses on students’ weak points and reduces gradient variance by truncating the horizon, leading to more stable and efficient RL optimization.
+
+4 
+Experiments
+
+Table 1: 
+Overall performance on eight challenging reasoning tasks. The best outcomes among models of the same size are 
+bolded
+. “Avg.” denotes the average score across tasks.
+Results for GRPO and ARPO are mostly taken from  
+
+Dong et al. (2025b)
+
+.
+
+Method
+
+Mathematical Reasoning
+
+Factual Reasoning
+
+Avg.
+
+AIME24
+
+AIME25
+
+MATH500
+
+OlymM
+
+HQA
+
+2Wiki
+
+MuSiQ
+
+Bamb
+
+Larger Models (TIR Prompting)
+
+Deepseek-V3 (671B)
+
+43.3
+
+30.0
+
+84.8
+
+21.0
+
+60.1
+
+78.5
+
+37.0
+
+73.2
+
+53.5
+
+Qwen2.5-72B-Instruct
+
+33.3
+
+40.0
+
+77.4
+
+17.0
+
+60.5
+
+75.5
+
+36.8
+
+73.2
+
+51.7
+
+Qwen2.5-32B-Instruct
+
+30.0
+
+23.3
+
+74.0
+
+18.0
+
+54.9
+
+64.9
+
+26.9
+
+67.8
+
+45.0
+
+Student: Qwen2.5-7B-Instruct
+
+Behavior Cloning
+
+23.3
+
+13.3
+
+72.8
+
+15.5
+
+58.1
+
+70.3
+
+26.6
+
+63.6
+
+42.5
+
+GRPO
+
+23.3
+
+26.7
+
+78.0
+
+25.0
+
+59.0
+
+76.1
+
+30.6
+
+68.4
+
+48.4
+
+ARPO
+
+30.0
+
+30.0
+
+78.8
+
+18.0
+
+58.8
+
+76.1
+
+31.1
+
+71.5
+
+49.3
+
+SCoRe-SFT
+
+26.7
+
+16.7
+
+73.4
+
+18.5
+
+59.5
+
+72.8
+
+29.2
+
+69.8
+
+45.8
+
+SCoRe-RL
+
+36.7
+
+26.7
+
+82.0
+
+26.5
+
+61.4
+
+76.8
+
+32.2
+
+72.8
+
+50.8
+
+Student: Qwen2.5-3B-Instruct
+
+Behavior Cloning
+
+13.3
+
+13.3
+
+65.6
+
+9.5
+
+51.7
+
+63.7
+
+26.8
+
+61.2
+
+38.3
+
+GRPO
+
+20.0
+
+13.3
+
+72.0
+
+16.0
+
+56.5
+
+64.5
+
+24.7
+
+65.2
+
+41.5
+
+ARPO
+
+20.0
+
+20.0
+
+71.4
+
+14.5
+
+58.5
+
+67.4
+
+28.7
+
+66.8
+
+43.4
+
+SCoRe-SFT
+
+20.0
+
+13.3
+
+67.0
+
+12.5
+
+55.9
+
+71.6
+
+27.8
+
+67.5
+
+41.9
+
+SCoRe-RL
+
+26.7
+
+20.0
+
+72.4
+
+17.5
+
+59.2
+
+75.6
+
+29.0
+
+73.2
+
+46.7
+
+Student: Llama3.1-8B-Instruct
+
+Behavior Cloning
+
+6.7
+
+6.7
+
+58.0
+
+8.5
+
+55.6
+
+65.5
+
+28.6
+
+69.1
+
+37.3
+
+GRPO
+
+13.3
+
+13.3
+
+62.4
+
+14.5
+
+57.8
+
+71.8
+
+31.0
+
+68.2
+
+41.5
+
+ARPO
+
+23.3
+
+16.7
+
+64.6
+
+11.0
+
+65.4
+
+75.5
+
+34.8
+
+73.8
+
+45.6
+
+SCoRe-SFT
+
+6.7
+
+10.0
+
+60.0
+
+10.0
+
+59.5
+
+71.7
+
+31.1
+
+71.4
+
+40.2
+
+SCoRe-RL
+
+26.7
+
+20.0
+
+65.4
+
+16.0
+
+64.2
+
+76.5
+
+35.3
+
+76.2
+
+47.5
+
+4.1 
+Experimental setup
+
+Datasets.
+
+We evaluate our approach on three categories of datasets, testing distinct reasoning skills and difficulty levels.
+
+Mathematical Reasoning
+: AIME2024, AIME2025, MATH500 
+(
+Lightman et al., 2023
+; 
+Hendrycks et al., 2021
+)
+, and OlymMath 
+(
+Sun et al., 2025
+)
+. These problems often require multi-step symbolic reasoning and frequent code interpreter use.
+
+Factual Reasoning
+: HotpotQA (HQA) 
+(
+Yang et al., 2018
+)
+, 2WikiMultihopQA (2Wiki) 
+(
+Ho et al., 2020
+)
+, Musique (MuSiQ) 
+(
+Trivedi et al., 2022
+)
+ and Bamboogle (Bamb) 
+(
+Press et al., 2022
+)
+. These tasks demand multi-step information retrieval and synthesis via search APIs.
+For 
+Deep Search
+, following WebThinker 
+(
+Li et al., 2025c
+)
+’s text‑only split, we test on GAIA 
+(
+Mialon et al., 2023
+)
+, WebWalker 
+(
+Wu et al., 2025
+)
+, Humanity’s Last Exam (HLE) 
+(
+Phan et al., 2025
+)
+, and xBench 
+(
+Chen et al., 2025
+)
+. These benchmarks involve much longer tool-use horizons,
+making them more challenging than standard reasoning tasks.
+
+Baselines.
+
+We compare 
+SCoRe
+ with three categories of baselines.
+(1) 
+Prompt-Only Large Model Agents
+: strong LLMs prompted in a tool-integrated reasoning (TIR) format 
+(
+Li et al., 2025b
+)
+, without parameter updates. This setting reflects an approximate upper bound for performance under ideal prompting. We include 
+Deepseek-V3 (671B)
+, 
+Qwen2.5-72B-Instruct
+, and 
+Qwen2.5-32B-Instruct
+.
+(2) 
+Behavior Cloning
+ 
+(
+Kang et al., 2025
+)
+
+2
+
+2
+
+              
+2
+
+              
+              
+              
+            Note that our 
+SCoRe
+ framework also includes a BC phase for cold-start initialization, but unlike the BC baseline using the full teacher‑annotated training set, 
+SCoRe
+ uses only 20% of the data to endow the student basic reasoning–action skills.
+
+: the student imitates full teacher trajectories, with no exploration or correction.
+(3) 
+Trajectory-Level RL Agents
+: Training the student with RL over the full horizon with sparse task-completion rewards, using GRPO 
+(
+Shao et al., 2024
+)
+ or ARPO 
+(
+Dong et al., 2025b
+)
+ algorithm.
+Our proposed 
+SCoRe
+ is evaluated in two sequential phases: (
+i
+) 
+SCoRe-SFT
+, a correction-based SFT phase where the model is trained on capability-matched and deficiency-localized data; and (
+ii
+) 
+SCoRe-RL
+, a short-horizon RL phase with rollouts from the correct prefix, and key-step rewards for reproducing the teacher’s fix or avoiding errors.
+
+Evaluation.
+
+Following ARPO 
+(
+Dong et al., 2025b
+)
+, we measure open-domain QA tasks using token-level F1 score against ground truth. For mathematical reasoning and deep search tasks, correctness is judged by 
+Qwen2.5-72B-Instruct
+ under an 
+LLM-as-a-judge
+ protocol 
+(
+Zheng et al., 2023
+)
+, comparing the generated final answer and the provided ground truth.
+
+Training Details.
+
+During training and inference, the model employs two tools: a Python code interpreter for mathematical reasoning and precise computation, and an online search engine for up-to-date information.
+SFT training data follows the 
+[Thought‑Action‑Observation]
+ format with 
+Qwen2.5‑72B‑Instruct
+ as the teacher. To construct the train data, we collect seed question–answer pairs mainly from the Tool‑Star dataset 
+(
+Dong et al., 2025a
+)
+, including NuminaMath 
+(
+Li et al., 2024
+)
+ and Omni
+(
+Gao et al., 2024
+)
+ for math reasoning, and HotpotQA, 2WikiMultiHopQA, and WebWalker for factual QA, totaling 35k pairs. Of these, 20% of trajectories are fully teacher‑annotated to create high‑quality BC initialization data, giving the student a solid foundation in reasoning–acting skills. The remaining 80% are generated via MPS, producing capability‑matched, deficiency‑localized data. These minimally corrected trajectories are split evenly: half for correction‑based SFT to produce the 
+SCoRe‑SFT
+ model, and half for RL.
+During RL training, the maximum number of rollout steps was set to 8, and any reasoning–action cycles exceeding this limit were considered incomplete. The same configuration was used during inference.
+Additional data and training details are in Appendix 
+
+B
+
+.
+
+Table 2: 
+Performance on deep search benchmarks. 
+
+Method
+
+GAIA
+
+HLE
+
+XBench
+
+WebWalker
+
+Avg.
+
+GAIA-1
+
+GAIA-2
+
+GAIA-3
+
+Avg.
+
+Larger Models (TIR Prompting)
+
+Deepseek-V3 (671B)
+
+48.7
+
+40.4
+
+16.7
+
+40.8
+
+10.6
+
+32.0
+
+46.0
+
+32.4
+
+Qwen2.5-72B-Instruct
+
+30.8
+
+36.5
+
+16.7
+
+32.0
+
+7.8
+
+31.0
+
+38.5
+
+27.3
+
+Student: Qwen3-8B-Instruct
+
+Behavior Cloning
+
+33.3
+
+26.9
+
+8.3
+
+27.2
+
+8.4
+
+21.0
+
+34.5
+
+22.8
+
+GRPO
+
+48.7
+
+25.0
+
+8.3
+
+32.0
+
+7.8
+
+20.0
+
+29.0
+
+22.2
+
+ARPO
+
+53.9
+
+32.7
+
+16.7
+
+38.8
+
+8.8
+
+25.0
+
+30.5
+
+25.8
+
+SCoRe-SFT
+
+35.9
+
+26.9
+
+8.3
+
+28.2
+
+10.0
+
+22.0
+
+41.5
+
+25.4
+
+SCoRe-RL
+
+53.9
+
+36.5
+
+16.7
+
+40.8
+
+11.0
+
+27.0
+
+43.0
+
+30.5
+
+Table 3: 
+Ablation study of various components of 
+SCoRe
+. Student: 
+Qwen-2.5-7B
+.
+
+Method
+
+Mathematical Reasoning
+
+Factual Reasoning
+
+Avg.
+
+AIME24
+
+AIME25
+
+MATH500
+
+OlymM.
+
+HQA
+
+2Wiki
+
+MuSiQ
+
+Bamb
+
+Initial Distillation
+
+20.0
+
+23.3
+
+70.8
+
+7.0
+
+54.4
+
+67.6
+
+27.0
+
+63.7
+
+41.7
+
+SCoRe-SFT
+
+26.7
+
+16.7
+
+73.4
+
+18.5
+
+59.5
+
+72.8
+
+28.1
+
+63.5
+
+44.5
+
+RL W/O short-horizon
+
+30.0
+
+20.0
+
+78.0
+
+25.0
+
+58.0
+
+75.3
+
+30.2
+
+70.7
+
+48.4
+
+RL W/O key-step rewards
+
+33.3
+
+20.0
+
+80.6
+
+24.0
+
+61.1
+
+76.7
+
+30.3
+
+71.7
+
+49.7
+
+SCoRe-RL
+
+36.7
+
+26.7
+
+82.0
+
+26.5
+
+61.4
+
+76.8
+
+32.2
+
+72.8
+
+50.8
+
+4.2 
+Main Results
+
+Tables 
+
+1
+
+ and 
+
+2
+
+ show results for mathematical/factual reasoning and deep search.
+
+TIR prompting excels on ultra-large models but relies on massive backbones and incurs high costs.
+
+On reasoning tasks, Tool-Integrated Reasoning (TIR) proves effective for very large models: 
+Deepseek-V3 (671B)
+ scores 53.5 on average, and 
+Qwen2.5‑72B-Instruct
+ scores 51.7, highlighting TIR’s ability to combine strong LLM reasoning with external tool precision.
+However, performance degrades sharply with smaller backbones. For example, 
+Qwen2.5‑32B-Instruct
+ drops by over 6 points.
+In agent settings, ultra-large models also entail high latency and token costs, which grow with both token volume and the number of interaction turns.
+
+SCoRe matches teacher performance on reasoning and deep search with smaller backbones.
+
+On smaller backbones, our method leverages MPS trajectories generated by a “student-led plus one-step teacher correction” process, while training the model by correction-based SFT and short‑horizon RL with key‑step rewards.
+This yields large gains: Averaged over math and factual reasoning benchmarks, 
+SCoRe-RL
+ with a 
+Qwen2.5‑7B‑Instruct
+ backbone scores 50.8 (0.9 below the 72B teacher, +8.3 over BC, +6.3 over GRPO), with a 
+Qwen2.5‑3B‑Instruct
+ backbone +8.4 over BC, and with a 
+Llama‑3.1‑8B-Instruct
+ backbone +10.2 over BC. Ability-aligned training thus enables small models to match or surpass much larger ones while reducing costs.
+
+SCoRe-SFT outperforms pure behavior cloning under the same data budget.
+
+With only teacher‑annotated trajectories, BC performance is limited.
+Under equivalent training data budgets, 
+SCoRe‑SFT
+ delivers consistent gains across backbones on both reasoning and deep search tasks, showing that MPS‑constructed data reduces compounding error growth from 
+
+O
+
+⁡
+
+(
+
+H
+
+2
+
+)
+
+{O}(H^{2})
+
+ to 
+
+O
+
+⁡
+
+(
+
+H
+
+)
+
+{O}(H)
+
+, where 
+
+H
+
+H
+
+ denotes horizon length.
+It further implies that even without RL, training models on correction-based trajectories markedly outperform conventional BC distillation.
+
+RL with short-horizon and key-step rewards drives strong performance.
+
+On the more challenging Deep Search tasks (Table 
+
+2
+
+), 
+SCoRe‑RL
+ achieves very strong performance and in some cases exceeds the teacher. For 
+Qwen3‑8B‑Instruct
+, it scores 30.5 (+7.7 over BC, +8.3 over GRPO, +3.2 over TIR‑Qwen‑72B). On GAIA-Avg, scores rise from 27.2 (BC) to 40.8.
+
+4.3 
+Further Results and Analysis
+
+In the ablation study, we evaluate the contribution of each 
+SCoRe
+ component on math/factual reasoning benchmarks (Table 
+
+3
+
+).
+The BC‑initialized student (Initial Distillation), trained on a subset of high‑quality teacher trajectory data, serves as the explorer for MPS. Unlike the BC baselines in Tables 
+
+1
+
+ and 
+
+2
+
+, which use full teacher data, this model performs poorly.
+
+Figure 3: 
+
+Teacher intervention frequency and performance on “hard” data after training.
+Categories:
+0 = solved by the student solely,
+1 = one teacher correction,
+
+≥
+
+\geq
+
+2 = two or more than two corrections.
+Hard data = unsolved samples even with the teacher’s help.
+
+In contrast, when treating the initial model as the explorer and fine-tuning it on data generated via MPS, performance improves substantially (
+SCoRe‑SFT
+), showing that training on such data effectively reinforces weak links in the reasoning chain. Extending to RL brings further improvements:
+(i) 
+Without short-horizon rollouts
+, stability degrades and performance drops notably, showing that truncation reduces gradient-estimation variance;
+(ii) 
+Without key-step rewards
+, accuracy on multi-step tasks decreases, validating the need for targeted, stepwise guidance beyond final-task rewards.
+The full 
+SCoRe‑RL
+ approach combining both short-horizon rollouts and key-step rewards achieves the best results.
+
+We further examine the teacher–student interaction during the MPS process (Figure 
+
+3
+
+(a)).
+Results show that most tasks require only a single correction, with very few needing 
+
+≥
+
+2
+
+\geq 2
+
+ teacher interventions, indicating that one-step correction is typically sufficient.
+The proportion of 
+hard data
+, defined as instances the teacher fails to teach successfully, is small. These hard samples will not be discarded, and we select part of them as challenging cases for RL training.
+
+As shown in Figure 
+
+3
+
+(b), on the mathematical 
+hard data
+ subset(200 items, already excluded from training), accuracy rises from 
+
+0
+
+%
+
+0\%
+
+ to 
+
+17.3
+
+%
+
+17.3\%
+
+ with 
+SCoRe‑SFT
+, and further to 
+
+24.3
+
+%
+
+24.3\%
+
+ with 
+SCoRe‑RL
+.
+This demonstrates that our approach substantially enhances the student model’s overall capability, and enables it to autonomously solve high-difficulty cases that the teacher could not teach before.
+
+Further results, including math task evaluation with the exact match metric, additional baselines, and analyses of SFT data size impact, are provided in Appendix 
+
+C
+
+. Tables 
+
+6
+
+ and 
+
+7
+
+ also present examples of data generation during the MPS process.
+
+5 
+Related Work
+
+Distillation for LLM Agents.
+
+Agent distillation is a practical way to reduce the cost of deploying large models such as GPT-4 
+(
+Achiam et al., 2023
+)
+ or Gemini 
+(
+Team et al., 2023
+)
+ in a multi-turn agent setting 
+(
+Yao et al., 2023
+; 
+Wang et al., 2024
+)
+. Formal approaches like trajectory distillation 
+(
+Kang et al., 2025
+)
+ and toolformer-style imitation 
+(
+Schick et al., 2023
+; 
+Gao et al., 2023
+)
+ train smaller models to reproduce teacher-generated 
+[Thought, Action, Observation]
+ traces, transferring planning and tool-use skills.
+However, most methods use supervised behavior cloning from expert rollouts, and face the reasoning and knowledge gaps 
+(
+Magister et al., 2022
+)
+ between the teacher and student. Pure imitation also suffers from compounding errors under distribution shift 
+(
+Ross et al., 2011
+)
+.
+Variants such as DAgger, HG-DAgger 
+(
+Ross et al., 2011
+; 
+Kelly et al., 2019
+)
+ mitigate exposure bias, yet remain teacher-led, often misaligning trajectory complexity with student ability.
+
+Agentic Reinforcement Learning.
+
+RL has become a core paradigm for training LLM agents in dynamic, multi‑turn environments 
+(
+Shridhar et al., 2020
+; 
+Mialon et al., 2023
+)
+. Early pipelines relied on supervised or rule‑based tool‑use strategies 
+(
+Schick et al., 2023
+)
+, limiting adaptability to new domains.
+Later work integrated RL into agent policies, enabling joint optimization of reasoning chains and external actions. Classical methods such as deep Q‑learning 
+(
+Mnih et al., 2015
+)
+ and self‑play 
+(
+Silver et al., 2017
+)
+ have been adapted for natural‑language decision‑making, where intermediate thoughts and tool calls form part of the state 
+(
+Li et al., 2025a
+)
+.
+In tool‑augmented settings, recent work optimized multi‑tool coordination under real‑time constraints 
+(
+Qian et al., 2025
+; 
+Xu & Peng, 2025
+)
+.
+Despite these advances, challenges remain: long‑context rollouts cause instability 
+(
+Schulman et al., 2017
+; 
+Peng et al., 2019
+)
+, and sparse or delayed rewards hinder credit assignment 
+(
+Andrychowicz et al., 2017
+)
+. These motivate algorithms that combine trajectory‑level planning with local, verifiable corrections for stable learning and fine‑grained reasoning control.
+
+6 
+Conclusion
+
+We introduce 
+SCoRe
+, a framework for distilling LLM agents that lets students actively explore problem-solving with minimal, targeted teacher corrections. This yields training data aligned with the student’s evolving capabilities and reveals weaknesses for further optimization, helping students advance from imitation to genuine problem-solving. Extensive experiments show 
+SCoRe
+ achieves expert-level performance and consistently outperforms standard distillation baselines. Future work includes improving reward design and extending the framework to broader multi-modal tasks.
+
+References
+
+      
+
+Achiam et al. (2023)
+
+Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al.
+
+Gpt-4 technical report.
+
+arXiv preprint arXiv:2303.08774
+, 2023.
+
+      
+
+Andrychowicz et al. (2017)
+
+Marcin Andrychowicz, Filip Wolski, Alex Ray, Jonas Schneider, Rachel Fong, Peter Welinder, Bob McGrew, Josh Tobin, OpenAI Pieter Abbeel, and Wojciech Zaremba.
+
+Hindsight experience replay.
+
+Advances in neural information processing systems
+, 30, 2017.
+
+      
+
+Badia et al. (2020)
+
+Adrià Puigdomènech Badia, Pablo Sprechmann, Alex Vitvitskyi, Daniel Guo, Bilal Piot, Steven Kapturowski, Olivier Tieleman, Martín Arjovsky, Alexander Pritzel, Andew Bolt, et al.
+
+Never give up: Learning directed exploration strategies.
+
+arXiv preprint arXiv:2002.06038
+, 2020.
+
+      
+
+Chen et al. (2025)
+
+Kaiyuan Chen, Yixin Ren, Yang Liu, Xiaobo Hu, Haotong Tian, Tianbao Xie, Fangfu Liu, Haoye Zhang, Hongzhang Liu, Yuan Gong, et al.
+
+xbench: Tracking agents productivity scaling with profession-aligned real-world evaluations.
+
+arXiv preprint arXiv:2506.13651
+, 2025.
+
+      
+
+Dao (2023)
+
+Tri Dao.
+
+Flashattention-2: Faster attention with better parallelism and work partitioning.
+
+arXiv preprint arXiv:2307.08691
+, 2023.
+
+      
+
+Dong et al. (2025a)
+
+Guanting Dong, Yifei Chen, Xiaoxi Li, Jiajie Jin, Hongjin Qian, Yutao Zhu, Hangyu Mao, Guorui Zhou, Zhicheng Dou, and Ji-Rong Wen.
+
+Tool-star: Empowering llm-brained multi-tool reasoner via reinforcement learning.
+
+arXiv preprint arXiv:2505.16410
+, 2025a.
+
+      
+
+Dong et al. (2025b)
+
+Guanting Dong, Hangyu Mao, Kai Ma, Licheng Bao, Yifei Chen, Zhongyuan Wang, Zhongxia Chen, Jiazhen Du, Huiyang Wang, Fuzheng Zhang, et al.
+
+Agentic reinforced policy optimization.
+
+arXiv preprint arXiv:2507.19849
+, 2025b.
+
+      
+
+Dubey et al. (2024)
+
+Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Amy Yang, Angela Fan, et al.
+
+The llama 3 herd of models.
+
+arXiv e-prints
+, pp.  arXiv–2407, 2024.
+
+      
+
+Gao et al. (2024)
+
+Bofei Gao, Feifan Song, Zhe Yang, Zefan Cai, Yibo Miao, Qingxiu Dong, Lei Li, Chenghao Ma, Liang Chen, Runxin Xu, et al.
+
+Omni-math: A universal olympiad level mathematic benchmark for large language models.
+
+arXiv preprint arXiv:2410.07985
+, 2024.
+
+      
+
+Gao et al. (2023)
+
+Luyu Gao, Aman Madaan, Shuyan Zhou, Uri Alon, Pengfei Liu, Yiming Yang, Jamie Callan, and Graham Neubig.
+
+Pal: Program-aided language models.
+
+In 
+International Conference on Machine Learning
+, pp.  10764–10799. PMLR, 2023.
+
+      
+
+Hendrycks et al. (2021)
+
+Dan Hendrycks, Collin Burns, Saurav Kadavath, Akul Arora, Steven Basart, Eric Tang, Dawn Song, and Jacob Steinhardt.
+
+Measuring mathematical problem solving with the math dataset.
+
+arXiv preprint arXiv:2103.03874
+, 2021.
+
+      
+
+Ho et al. (2020)
+
+Xanh Ho, Anh-Khoa Duong Nguyen, Saku Sugawara, and Akiko Aizawa.
+
+Constructing a multi-hop qa dataset for comprehensive evaluation of reasoning steps.
+
+arXiv preprint arXiv:2011.01060
+, 2020.
+
+      
+
+Kang et al. (2025)
+
+Minki Kang, Jongwon Jeong, Seanie Lee, Jaewoong Cho, and Sung Ju Hwang.
+
+Distilling llm agent into small models with retrieval and code tools.
+
+arXiv preprint arXiv:2505.17612
+, 2025.
+
+      
+
+Kelly et al. (2019)
+
+Michael Kelly, Chelsea Sidrane, Katherine Driggs-Campbell, and Mykel J Kochenderfer.
+
+Hg-dagger: Interactive imitation learning with human experts.
+
+In 
+2019 International Conference on Robotics and Automation (ICRA)
+, pp.  8077–8083. IEEE, 2019.
+
+      
+
+Li et al. (2024)
+
+Jia Li, Edward Beeching, Lewis Tunstall, Ben Lipkin, Roman Soletskyi, Shengyi Huang, Kashif Rasul, Longhui Yu, Albert Q Jiang, Ziju Shen, et al.
+
+Numinamath: The largest public dataset in ai4maths with 860k pairs of competition math problems and solutions.
+
+Hugging Face repository
+, 13(9):9, 2024.
+
+      
+
+Li et al. (2025a)
+
+Weizhen Li, Jianbo Lin, Zhuosong Jiang, Jingyi Cao, Xinpeng Liu, Jiayu Zhang, Zhenqiang Huang, Qianben Chen, Weichen Sun, Qiexiang Wang, et al.
+
+Chain-of-agents: End-to-end agent foundation models via multi-agent distillation and agentic rl.
+
+arXiv preprint arXiv:2508.13167
+, 2025a.
+
+      
+
+Li et al. (2025b)
+
+Xiaoxi Li, Guanting Dong, Jiajie Jin, Yuyao Zhang, Yujia Zhou, Yutao Zhu, Peitian Zhang, and Zhicheng Dou.
+
+Search-o1: Agentic search-enhanced large reasoning models.
+
+arXiv preprint arXiv:2501.05366
+, 2025b.
+
+      
+
+Li et al. (2025c)
+
+Xiaoxi Li, Jiajie Jin, Guanting Dong, Hongjin Qian, Yutao Zhu, Yongkang Wu, Ji-Rong Wen, and Zhicheng Dou.
+
+Webthinker: Empowering large reasoning models with deep research capability.
+
+arXiv preprint arXiv:2504.21776
+, 2025c.
+
+      
+
+Lightman et al. (2023)
+
+Hunter Lightman, Vineet Kosaraju, Yuri Burda, Harrison Edwards, Bowen Baker, Teddy Lee, Jan Leike, John Schulman, Ilya Sutskever, and Karl Cobbe.
+
+Let’s verify step by step.
+
+In 
+The Twelfth International Conference on Learning Representations
+, 2023.
+
+      
+
+Liu et al. (2023)
+
+Xiao Liu, Hao Yu, Hanchen Zhang, Yifan Xu, Xuanyu Lei, Hanyu Lai, Yu Gu, Hangliang Ding, Kaiwen Men, Kejuan Yang, et al.
+
+Agentbench: Evaluating llms as agents.
+
+arXiv preprint arXiv:2308.03688
+, 2023.
+
+      
+
+Magister et al. (2022)
+
+Lucie Charlotte Magister, Jonathan Mallinson, Jakub Adamek, Eric Malmi, and Aliaksei Severyn.
+
+Teaching small language models to reason.
+
+arXiv preprint arXiv:2212.08410
+, 2022.
+
+      
+
+Mialon et al. (2023)
+
+Grégoire Mialon, Clémentine Fourrier, Thomas Wolf, Yann LeCun, and Thomas Scialom.
+
+Gaia: a benchmark for general ai assistants.
+
+In 
+The Twelfth International Conference on Learning Representations
+, 2023.
+
+      
+
+Mnih et al. (2015)
+
+Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei A Rusu, Joel Veness, Marc G Bellemare, Alex Graves, Martin Riedmiller, Andreas K Fidjeland, Georg Ostrovski, et al.
+
+Human-level control through deep reinforcement learning.
+
+nature
+, 518(7540):529–533, 2015.
+
+      
+
+Mroueh (2025)
+
+Youssef Mroueh.
+
+Reinforcement learning with verifiable rewards: Grpo’s effective loss, dynamics, and success amplification.
+
+arXiv preprint arXiv:2503.06639
+, 2025.
+
+      
+
+Peng et al. (2019)
+
+Xue Bin Peng, Aviral Kumar, Grace Zhang, and Sergey Levine.
+
+Advantage-weighted regression: Simple and scalable off-policy reinforcement learning.
+
+arXiv preprint arXiv:1910.00177
+, 2019.
+
+      
+
+Phan et al. (2025)
+
+Long Phan, Alice Gatti, Ziwen Han, Nathaniel Li, Josephina Hu, Hugh Zhang, Chen Bo Calvin Zhang, Mohamed Shaaban, John Ling, Sean Shi, et al.
+
+Humanity’s last exam.
+
+arXiv preprint arXiv:2501.14249
+, 2025.
+
+      
+
+Press et al. (2022)
+
+Ofir Press, Muru Zhang, Sewon Min, Ludwig Schmidt, Noah A Smith, and Mike Lewis.
+
+Measuring and narrowing the compositionality gap in language models.
+
+arXiv preprint arXiv:2210.03350
+, 2022.
+
+      
+
+Qian et al. (2025)
+
+Cheng Qian, Emre Can Acikgoz, Qi He, Hongru Wang, Xiusi Chen, Dilek Hakkani-Tür, Gokhan Tur, and Heng Ji.
+
+Toolrl: Reward is all tool learning needs.
+
+arXiv preprint arXiv:2504.13958
+, 2025.
+
+      
+
+Rasley et al. (2020)
+
+Jeff Rasley, Samyam Rajbhandari, Olatunji Ruwase, and Yuxiong He.
+
+Deepspeed: System optimizations enable training deep learning models with over 100 billion parameters.
+
+In 
+Proceedings of the 26th ACM SIGKDD international conference on knowledge discovery & data mining
+, pp.  3505–3506, 2020.
+
+      
+
+Ross et al. (2011)
+
+Stéphane Ross, Geoffrey Gordon, and Drew Bagnell.
+
+A reduction of imitation learning and structured prediction to no-regret online learning.
+
+In 
+Proceedings of the fourteenth international conference on artificial intelligence and statistics
+, pp.  627–635. JMLR Workshop and Conference Proceedings, 2011.
+
+      
+
+Schick et al. (2023)
+
+Timo Schick, Jane Dwivedi-Yu, Roberto Dessì, Roberta Raileanu, Maria Lomeli, Eric Hambro, Luke Zettlemoyer, Nicola Cancedda, and Thomas Scialom.
+
+Toolformer: Language models can teach themselves to use tools.
+
+Advances in Neural Information Processing Systems
+, 36:68539–68551, 2023.
+
+      
+
+Schulman et al. (2017)
+
+John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov.
+
+Proximal policy optimization algorithms.
+
+arXiv preprint arXiv:1707.06347
+, 2017.
+
+      
+
+Shao et al. (2024)
+
+Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, et al.
+
+Deepseekmath: Pushing the limits of mathematical reasoning in open language models.
+
+arXiv preprint arXiv:2402.03300
+, 2024.
+
+      
+
+Sheng et al. (2024)
+
+Guangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu, Wang Zhang, Ru Zhang, Yanghua Peng, Haibin Lin, and Chuan Wu.
+
+Hybridflow: A flexible and efficient rlhf framework.
+
+arXiv preprint arXiv: 2409.19256
+, 2024.
+
+      
+
+Shridhar et al. (2020)
+
+Mohit Shridhar, Xingdi Yuan, Marc-Alexandre Côté, Yonatan Bisk, Adam Trischler, and Matthew Hausknecht.
+
+Alfworld: Aligning text and embodied environments for interactive learning.
+
+arXiv preprint arXiv:2010.03768
+, 2020.
+
+      
+
+Silver et al. (2017)
+
+David Silver, Thomas Hubert, Julian Schrittwieser, Ioannis Antonoglou, Matthew Lai, Arthur Guez, Marc Lanctot, Laurent Sifre, Dharshan Kumaran, Thore Graepel, et al.
+
+Mastering chess and shogi by self-play with a general reinforcement learning algorithm.
+
+arXiv preprint arXiv:1712.01815
+, 2017.
+
+      
+
+Su et al. (2025)
+
+Yi Su, Dian Yu, Linfeng Song, Juntao Li, Haitao Mi, Zhaopeng Tu, Min Zhang, and Dong Yu.
+
+Crossing the reward bridge: Expanding rl with verifiable rewards across diverse domains.
+
+arXiv preprint arXiv:2503.23829
+, 2025.
+
+      
+
+Sun et al. (2025)
+
+Haoxiang Sun, Yingqian Min, Zhipeng Chen, Wayne Xin Zhao, Lei Fang, Zheng Liu, Zhongyuan Wang, and Ji-Rong Wen.
+
+Challenging the boundaries of reasoning: An olympiad-level math benchmark for large language models.
+
+arXiv preprint arXiv:2503.21380
+, 2025.
+
+      
+
+Team et al. (2023)
+
+Gemini Team, Rohan Anil, Sebastian Borgeaud, Jean-Baptiste Alayrac, Jiahui Yu, Radu Soricut, Johan Schalkwyk, Andrew M Dai, Anja Hauth, Katie Millican, et al.
+
+Gemini: a family of highly capable multimodal models.
+
+arXiv preprint arXiv:2312.11805
+, 2023.
+
+      
+
+Torabi et al. (2018)
+
+Faraz Torabi, Garrett Warnell, and Peter Stone.
+
+Behavioral cloning from observation.
+
+arXiv preprint arXiv:1805.01954
+, 2018.
+
+      
+
+Trivedi et al. (2022)
+
+Harsh Trivedi, Niranjan Balasubramanian, Tushar Khot, and Ashish Sabharwal.
+
+Musique: Multihop questions via single-hop question composition.
+
+Transactions of the Association for Computational Linguistics
+, 10:539–554, 2022.
+
+      
+
+Wang et al. (2024)
+
+Xingyao Wang, Yangyi Chen, Lifan Yuan, Yizhe Zhang, Yunzhu Li, Hao Peng, and Heng Ji.
+
+Executable code actions elicit better llm agents.
+
+In 
+Forty-first International Conference on Machine Learning
+, 2024.
+
+      
+
+Wei et al. (2022)
+
+Jason Wei, Yi Tay, Rishi Bommasani, Colin Raffel, Barret Zoph, Sebastian Borgeaud, Dani Yogatama, Maarten Bosma, Denny Zhou, Donald Metzler, et al.
+
+Emergent abilities of large language models.
+
+arXiv preprint arXiv:2206.07682
+, 2022.
+
+      
+
+Wu et al. (2025)
+
+Jialong Wu, Wenbiao Yin, Yong Jiang, Zhenglin Wang, Zekun Xi, Runnan Fang, Linhai Zhang, Yulan He, Deyu Zhou, Pengjun Xie, et al.
+
+Webwalker: Benchmarking llms in web traversal.
+
+arXiv preprint arXiv:2501.07572
+, 2025.
+
+      
+
+Xi et al. (2025)
+
+Zhiheng Xi, Wenxiang Chen, Xin Guo, Wei He, Yiwen Ding, Boyang Hong, Ming Zhang, Junzhe Wang, Senjie Jin, Enyu Zhou, et al.
+
+The rise and potential of large language model based agents: A survey.
+
+Science China Information Sciences
+, 68(2):121101, 2025.
+
+      
+
+Xu & Peng (2025)
+
+Renjun Xu and Jingwen Peng.
+
+A comprehensive survey of deep research: Systems, methodologies, and applications.
+
+arXiv preprint arXiv:2506.12594
+, 2025.
+
+      
+
+Yang et al. (2025)
+
+An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, et al.
+
+Qwen3 technical report.
+
+arXiv preprint arXiv:2505.09388
+, 2025.
+
+      
+
+Yang et al. (2018)
+
+Zhilin Yang, Peng Qi, Saizheng Zhang, Yoshua Bengio, William W Cohen, Ruslan Salakhutdinov, and Christopher D Manning.
+
+Hotpotqa: A dataset for diverse, explainable multi-hop question answering.
+
+arXiv preprint arXiv:1809.09600
+, 2018.
+
+      
+
+Yao et al. (2023)
+
+Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao.
+
+React: Synergizing reasoning and acting in language models.
+
+In 
+International Conference on Learning Representations (ICLR)
+, 2023.
+
+      
+
+Zheng et al. (2023)
+
+Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi Lin, Zhuohan Li, Dacheng Li, Eric Xing, et al.
+
+Judging llm-as-a-judge with mt-bench and chatbot arena.
+
+Advances in neural information processing systems
+, 36:46595–46623, 2023.
+
+      
+
+Zheng et al. (2024)
+
+Yaowei Zheng, Richong Zhang, Junhao Zhang, Yanhan Ye, Zheyan Luo, Zhangchi Feng, and Yongqiang Ma.
+
+Llamafactory: Unified efficient fine-tuning of 100+ language models.
+
+arXiv preprint arXiv:2403.13372
+, 2024.
+
+    
+
+Appendix A 
+Proofs of Theoretical Results
+
+Theorem A.1
+
+ 
+(BC compounding-error bound)
+.
+
+Suppose the student policy 
+
+π
+
+^
+
+\hat{\pi}
+
+ has a one-step deviation probability of at most 
+
+ε
+
+\varepsilon
+
+ under the expert’s state distribution, i.e.,
+
+ℙ
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+(
+
+π
+
+^
+
+​
+
+(
+
+s
+
+)
+
+≠
+
+π
+
+E
+
+​
+
+(
+
+s
+
+)
+
+)
+
+≤
+
+ε
+
+,
+
+\mathbb{P}_{s\sim d_{t}^{\pi_{E}}}\big(\hat{\pi}(s)\neq\pi_{E}(s)\big)\leq\varepsilon,
+
+and that per-step costs are bounded as 
+
+c
+
+t
+
+∈
+
+[
+
+0
+
+,
+
+1
+
+]
+
+c_{t}\in[0,1]
+
+. Then the student policy satisfies
+
+c
+
+⁡
+
+(
+
+π
+
+^
+
+)
+
+≤
+
+c
+
+⁡
+
+(
+
+π
+
+E
+
+)
+
++
+
+H
+
+⁡
+
+(
+
+H
+
+−
+
+1
+
+)
+
+2
+
+​
+
+ε
+
+=
+
+c
+
+⁡
+
+(
+
+π
+
+E
+
+)
+
++
+
+O
+
+⁡
+
+(
+
+H
+
+2
+
+​
+
+ε
+
+)
+
+.
+
+c(\hat{\pi})\leq c(\pi_{E})+\frac{H(H-1)}{2}\,\varepsilon=c(\pi_{E})+O(H^{2}\varepsilon).
+
+(10)
+
+This theorem was first proved by 
+
+Ross et al. (2011)
+
+, and their proof will be reproduced below.
+
+Proof.
+
+The core of this proof is to quantify how errors accumulate over time. A single mistake can lead the student policy into a state distribution the expert has never seen, causing further deviations. We will bound the total cost by analyzing the probability of such deviations at each step.
+
+For any step 
+
+t
+
+∈
+
+{
+
+1
+
+,
+
+…
+
+,
+
+H
+
+}
+
+t\in\{1,\dots,H\}
+
+, define the event 
+
+ℰ
+
+t
+
+−
+
+1
+
+\mathcal{E}_{t-1}
+
+ as the student making no errors in the first 
+
+t
+
+−
+
+1
+
+t-1
+
+ steps, assuming it encounters states from the expert’s distribution 
+
+d
+
+i
+
+π
+
+E
+
+d_{i}^{\pi_{E}}
+
+:
+
+ℰ
+
+t
+
+−
+
+1
+
+:=
+
+⋂
+
+i
+
+=
+
+1
+
+t
+
+−
+
+1
+
+{
+
+π
+
+^
+
+(
+
+s
+
+i
+
+)
+
+=
+
+π
+
+E
+
+(
+
+s
+
+i
+
+)
+
+}
+
+,
+
+where 
+
+s
+
+i
+
+∼
+
+d
+
+i
+
+π
+
+E
+
+.
+
+\mathcal{E}_{t-1}:=\bigcap_{i=1}^{t-1}\{\hat{\pi}(s_{i})=\pi_{E}(s_{i})\},\quad\text{where }s_{i}\sim d_{i}^{\pi_{E}}.
+
+(11)
+
+The complementary event, 
+
+ℰ
+
+t
+
+−
+
+1
+
+c
+
+\mathcal{E}_{t-1}^{c}
+
+, represents at least one error occurring before step 
+
+t
+
+t
+
+. By the union bound:
+
+ℙ
+
+(
+
+ℰ
+
+t
+
+−
+
+1
+
+c
+
+)
+
+=
+
+ℙ
+
+(
+
+⋃
+
+i
+
+=
+
+1
+
+t
+
+−
+
+1
+
+{
+
+π
+
+^
+
+(
+
+s
+
+i
+
+)
+
+≠
+
+π
+
+E
+
+(
+
+s
+
+i
+
+)
+
+}
+
+)
+
+≤
+
+∑
+
+i
+
+=
+
+1
+
+t
+
+−
+
+1
+
+ℙ
+
+(
+
+π
+
+^
+
+(
+
+s
+
+i
+
+)
+
+≠
+
+π
+
+E
+
+(
+
+s
+
+i
+
+)
+
+)
+
+≤
+
+(
+
+t
+
+−
+
+1
+
+)
+
+ε
+
+.
+
+\mathbb{P}(\mathcal{E}_{t-1}^{c})=\mathbb{P}\!\left(\bigcup_{i=1}^{t-1}\{\hat{\pi}(s_{i})\neq\pi_{E}(s_{i})\}\right)\leq\sum_{i=1}^{t-1}\mathbb{P}(\hat{\pi}(s_{i})\neq\pi_{E}(s_{i}))\leq(t-1)\varepsilon.
+
+(12)
+
+The student’s state distribution at step 
+
+t
+
+t
+
+, 
+
+d
+
+t
+
+π
+
+^
+
+d_{t}^{\hat{\pi}}
+
+, depends on whether an error occurred previously:
+
+•
+ 
+
+If 
+
+ℰ
+
+t
+
+−
+
+1
+
+\mathcal{E}_{t-1}
+
+ occurs (no prior errors), then 
+
+d
+
+t
+
+π
+
+^
+
+=
+
+d
+
+t
+
+π
+
+E
+
+d_{t}^{\hat{\pi}}=d_{t}^{\pi_{E}}
+
+.
+
+•
+ 
+
+If 
+
+ℰ
+
+t
+
+−
+
+1
+
+c
+
+\mathcal{E}_{t-1}^{c}
+
+ occurs (an error was made), the student’s trajectory diverges, leading to an arbitrary worst-case state distribution, denoted 
+
+q
+
+t
+
+q_{t}
+
+.
+
+By the law of total probability, we can express 
+
+d
+
+t
+
+π
+
+^
+
+d_{t}^{\hat{\pi}}
+
+ as a mixture:
+
+d
+
+t
+
+π
+
+^
+
+=
+
+(
+
+1
+
+−
+
+p
+
+t
+
+−
+
+1
+
+)
+
+​
+
+d
+
+t
+
+π
+
+E
+
++
+
+p
+
+t
+
+−
+
+1
+
+​
+
+q
+
+t
+
+,
+
+d_{t}^{\hat{\pi}}=(1-p_{t-1})\,d_{t}^{\pi_{E}}+p_{t-1}\,q_{t},
+
+(13)
+
+where 
+
+p
+
+t
+
+−
+
+1
+
+:=
+
+ℙ
+
+⁡
+
+(
+
+ℰ
+
+t
+
+−
+
+1
+
+c
+
+)
+
+p_{t-1}:=\mathbb{P}(\mathcal{E}_{t-1}^{c})
+
+.
+
+We can now bound the expected cost for the student at step 
+
+t
+
+t
+
+:
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+\displaystyle\mathbb{E}_{s\sim d_{t}^{\hat{\pi}}}[c_{t}(s)]
+
+=
+
+(
+
+1
+
+−
+
+p
+
+t
+
+−
+
+1
+
+)
+
+​
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
++
+
+p
+
+t
+
+−
+
+1
+
+​
+
+𝔼
+
+s
+
+∼
+
+q
+
+t
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+\displaystyle=(1-p_{t-1})\,\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]+p_{t-1}\,\mathbb{E}_{s\sim q_{t}}[c_{t}(s)]
+
+≤
+
+(
+
+1
+
+−
+
+p
+
+t
+
+−
+
+1
+
+)
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+[
+
+c
+
+t
+
+(
+
+s
+
+)
+
+]
+
++
+
+p
+
+t
+
+−
+
+1
+
+⋅
+
+1
+
+(
+
+as 
+
+c
+
+t
+
+∈
+
+[
+
+0
+
+,
+
+1
+
+]
+
+)
+
+\displaystyle\leq(1-p_{t-1})\,\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]+p_{t-1}\cdot 1\quad(\text{as }c_{t}\in[0,1])
+
+=
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+−
+
+p
+
+t
+
+−
+
+1
+
+​
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
++
+
+p
+
+t
+
+−
+
+1
+
+\displaystyle=\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]-p_{t-1}\,\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]+p_{t-1}
+
+≤
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
++
+
+p
+
+t
+
+−
+
+1
+
+\displaystyle\leq\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]+p_{t-1}
+
+≤
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
++
+
+(
+
+t
+
+−
+
+1
+
+)
+
+​
+
+ε
+
+.
+
+\displaystyle\leq\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]+(t-1)\varepsilon.
+
+(14)
+
+This shows the difference in expected cost at step 
+
+t
+
+t
+
+ is bounded by the cumulative error probability up to that point.
+
+Summing over all 
+
+H
+
+H
+
+ steps:
+
+c
+
+⁡
+
+(
+
+π
+
+^
+
+)
+
+−
+
+c
+
+⁡
+
+(
+
+π
+
+E
+
+)
+
+\displaystyle c(\hat{\pi})-c(\pi_{E})
+
+=
+
+∑
+
+t
+
+=
+
+1
+
+H
+
+(
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+−
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+)
+
+\displaystyle=\sum_{t=1}^{H}\left(\mathbb{E}_{s\sim d_{t}^{\hat{\pi}}}[c_{t}(s)]-\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]\right)
+
+≤
+
+∑
+
+t
+
+=
+
+1
+
+H
+
+(
+
+t
+
+−
+
+1
+
+)
+
+​
+
+ε
+
+\displaystyle\leq\sum_{t=1}^{H}(t-1)\varepsilon
+
+=
+
+ε
+
+​
+
+∑
+
+k
+
+=
+
+0
+
+H
+
+−
+
+1
+
+k
+
+=
+
+ε
+
+⋅
+
+(
+
+H
+
+−
+
+1
+
+)
+
+​
+
+H
+
+2
+
+.
+
+\displaystyle=\varepsilon\sum_{k=0}^{H-1}k=\varepsilon\cdot\frac{(H-1)H}{2}.
+
+(15)
+
+Rearranging yields the result.
+∎
+
+Theorem A.2
+
+ 
+(
+SCoRe
+ first-error-correction bound)
+.
+
+Let 
+
+π
+
+^
+
+\hat{\pi}
+
+ be a student policy trained via 
+SCoRe
+ with first-error correction, and let 
+
+π
+
+E
+
+\pi_{E}
+
+ be the teacher policy. Assume that under the student’s own induced state distribution 
+
+d
+
+t
+
+π
+
+^
+
+d_{t}^{\hat{\pi}}
+
+, the per-step error rate is bounded by 
+
+ε
+
+∈
+
+[
+
+0
+
+,
+
+1
+
+]
+
+\varepsilon\in[0,1]
+
+:
+
+ℙ
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+[
+
+π
+
+^
+
+(
+
+s
+
+)
+
+≠
+
+π
+
+E
+
+(
+
+s
+
+)
+
+]
+
+≤
+
+ε
+
+,
+
+∀
+
+t
+
+∈
+
+{
+
+1
+
+,
+
+…
+
+,
+
+H
+
+}
+
+.
+
+\mathbb{P}_{s\sim d_{t}^{\hat{\pi}}}\left[\hat{\pi}(s)\neq\pi_{E}(s)\right]\leq\varepsilon,\quad\forall\,t\in\{1,\dots,H\}.
+
+(16)
+
+Then for any per-step cost function 
+
+c
+
+t
+
+:
+
+𝒮
+
+→
+
+[
+
+0
+
+,
+
+1
+
+]
+
+c_{t}:\mathcal{S}\to[0,1]
+
+, the student policy’s expected total cost is bounded by
+
+c
+
+⁡
+
+(
+
+π
+
+^
+
+)
+
+≤
+
+c
+
+⁡
+
+(
+
+π
+
+E
+
+)
+
++
+
+H
+
+​
+
+ε
+
+.
+
+c(\hat{\pi})\leq c(\pi_{E})+H\varepsilon.
+
+(17)
+
+Proof.
+
+The key advantage of the 
+SCoRe
+ framework is that the student is trained and evaluated on its own state distribution 
+
+d
+
+t
+
+π
+
+^
+
+d_{t}^{\hat{\pi}}
+
+. This on-policy training avoids the covariate shift issue in standard Behavior Cloning. The proof uses a direct bound on the per-step cost difference by leveraging the on-policy error assumption.
+
+Consider the expected cost of 
+
+π
+
+^
+
+\hat{\pi}
+
+ at any step 
+
+t
+
+t
+
+. Let
+
+𝒢
+
+t
+
+:=
+
+{
+
+π
+
+^
+
+(
+
+s
+
+)
+
+=
+
+π
+
+E
+
+(
+
+s
+
+)
+
+}
+
+,
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+,
+
+\mathcal{G}_{t}:=\{\hat{\pi}(s)=\pi_{E}(s)\},\quad s\sim d_{t}^{\hat{\pi}},
+
+i.e., the student takes the same action as the teacher. Its complement 
+
+𝒢
+
+t
+
+c
+
+:=
+
+{
+
+π
+
+^
+
+(
+
+s
+
+)
+
+≠
+
+π
+
+E
+
+(
+
+s
+
+)
+
+}
+
+\mathcal{G}_{t}^{c}:=\{\hat{\pi}(s)\neq\pi_{E}(s)\}
+
+ is the error event.
+
+By the law of total expectation,
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+=
+
+𝔼
+
+⁡
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+∣
+
+𝒢
+
+t
+
+]
+
+⋅
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+)
+
++
+
+𝔼
+
+⁡
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+∣
+
+𝒢
+
+t
+
+c
+
+]
+
+⋅
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+c
+
+)
+
+.
+
+\mathbb{E}_{s\sim d_{t}^{\hat{\pi}}}[c_{t}(s)]=\mathbb{E}[c_{t}(s)\mid\mathcal{G}_{t}]\cdot\mathbb{P}(\mathcal{G}_{t})+\mathbb{E}[c_{t}(s)\mid\mathcal{G}_{t}^{c}]\cdot\mathbb{P}(\mathcal{G}_{t}^{c}).
+
+(18)
+
+From the assumption,
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+c
+
+)
+
+≤
+
+ε
+
+,
+
+so
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+)
+
+≥
+
+1
+
+−
+
+ε
+
+.
+
+\mathbb{P}(\mathcal{G}_{t}^{c})\leq\varepsilon,\quad\text{so}\quad\mathbb{P}(\mathcal{G}_{t})\geq 1-\varepsilon.
+
+(19)
+
+Now, we bound the conditional expectations:
+
+•
+ 
+
+If 
+
+𝒢
+
+t
+
+c
+
+\mathcal{G}_{t}^{c}
+
+ occurs, the cost is at most 
+
+1
+
+1
+
+ since 
+
+c
+
+t
+
+∈
+
+[
+
+0
+
+,
+
+1
+
+]
+
+c_{t}\in[0,1]
+
+. Thus, 
+
+𝔼
+
+⁡
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+∣
+
+𝒢
+
+t
+
+c
+
+]
+
+≤
+
+1
+
+\mathbb{E}[c_{t}(s)\mid\mathcal{G}_{t}^{c}]\leq 1
+
+.
+
+•
+ 
+
+If 
+
+𝒢
+
+t
+
+\mathcal{G}_{t}
+
+ occurs, the student follows the teacher’s action. The cost over these states is aligned with the teacher’s cost. Hence,
+
+𝔼
+
+⁡
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+∣
+
+𝒢
+
+t
+
+]
+
+≤
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+.
+
+\mathbb{E}[c_{t}(s)\mid\mathcal{G}_{t}]\leq\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)].
+
+Plugging these bounds in:
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+\displaystyle\mathbb{E}_{s\sim d_{t}^{\hat{\pi}}}[c_{t}(s)]
+
+≤
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+⋅
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+)
+
++
+
+1
+
+⋅
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+c
+
+)
+
+\displaystyle\leq\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]\cdot\mathbb{P}(\mathcal{G}_{t})+1\cdot\mathbb{P}(\mathcal{G}_{t}^{c})
+
+≤
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+​
+
+(
+
+1
+
+−
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+c
+
+)
+
+)
+
++
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+c
+
+)
+
+\displaystyle\leq\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)](1-\mathbb{P}(\mathcal{G}_{t}^{c}))+\mathbb{P}(\mathcal{G}_{t}^{c})
+
+=
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+−
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+c
+
+)
+
+⋅
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
++
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+c
+
+)
+
+.
+
+\displaystyle=\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]-\mathbb{P}(\mathcal{G}_{t}^{c})\cdot\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]+\mathbb{P}(\mathcal{G}_{t}^{c}).
+
+(20)
+
+As 
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+≥
+
+0
+
+\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]\geq 0
+
+, the negative term can be dropped:
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+≤
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
++
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+c
+
+)
+
+.
+
+\mathbb{E}_{s\sim d_{t}^{\hat{\pi}}}[c_{t}(s)]\leq\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]+\mathbb{P}(\mathcal{G}_{t}^{c}).
+
+(21)
+
+Applying the error bound 
+
+ℙ
+
+⁡
+
+(
+
+𝒢
+
+t
+
+c
+
+)
+
+≤
+
+ε
+
+\mathbb{P}(\mathcal{G}_{t}^{c})\leq\varepsilon
+
+, we get the per-step inequality:
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+≤
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
++
+
+ε
+
+.
+
+\mathbb{E}_{s\sim d_{t}^{\hat{\pi}}}[c_{t}(s)]\leq\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]+\varepsilon.
+
+(22)
+
+Summing over the horizon:
+
+c
+
+⁡
+
+(
+
+π
+
+^
+
+)
+
+−
+
+c
+
+⁡
+
+(
+
+π
+
+E
+
+)
+
+\displaystyle c(\hat{\pi})-c(\pi_{E})
+
+=
+
+∑
+
+t
+
+=
+
+1
+
+H
+
+(
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+^
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+−
+
+𝔼
+
+s
+
+∼
+
+d
+
+t
+
+π
+
+E
+
+​
+
+[
+
+c
+
+t
+
+​
+
+(
+
+s
+
+)
+
+]
+
+)
+
+\displaystyle=\sum_{t=1}^{H}\Big(\mathbb{E}_{s\sim d_{t}^{\hat{\pi}}}[c_{t}(s)]-\mathbb{E}_{s\sim d_{t}^{\pi_{E}}}[c_{t}(s)]\Big)
+
+≤
+
+∑
+
+t
+
+=
+
+1
+
+H
+
+ε
+
+=
+
+H
+
+​
+
+ε
+
+.
+
+\displaystyle\leq\sum_{t=1}^{H}\varepsilon=H\varepsilon.
+
+(23)
+
+This yields the desired bound.
+∎
+
+Theorem A.3
+
+ 
+(Variance bound for shortened rollout)
+.
+
+Under bounded rewards 
+
+|
+
+r
+
+t
+
+|
+
+≤
+
+R
+
+max
+
+|r_{t}|\leq R_{\max}
+
+, bounded policy score norms 
+
+‖
+
+∇
+
+θ
+
+​
+
+log
+
+​
+
+π
+
+θ
+
+​
+
+(
+
+a
+
+t
+
+|
+
+s
+
+t
+
+)
+
+‖
+
+≤
+
+G
+
+max
+
+\|\nabla_{\theta}\log\pi_{\theta}(a_{t}|s_{t})\|\leq G_{\max}
+
+, and discount 
+
+γ
+
+∈
+
+(
+
+0
+
+,
+
+1
+
+)
+
+\gamma\in(0,1)
+
+, the truncated policy gradient estimator
+
+g
+
+k
+
+=
+
+∑
+
+t
+
+=
+
+k
+
+H
+
+∇
+
+θ
+
+​
+
+log
+
+​
+
+π
+
+θ
+
+​
+
+(
+
+a
+
+t
+
+|
+
+s
+
+t
+
+)
+
+⋅
+
+(
+
+∑
+
+t
+
+′
+
+=
+
+t
+
+H
+
+γ
+
+t
+
+′
+
+−
+
+t
+
+​
+
+r
+
+t
+
+′
+
+)
+
+g_{k}=\sum_{t=k}^{H}\nabla_{\theta}\log\pi_{\theta}(a_{t}|s_{t})\cdot\left(\sum_{t^{\prime}=t}^{H}\gamma^{\,t^{\prime}-t}r_{t^{\prime}}\right)
+
+(24)
+
+satisfies
+
+Var
+
+⁡
+
+[
+
+g
+
+k
+
+]
+
+≤
+
+C
+
+(
+
+1
+
+−
+
+γ
+
+)
+
+2
+
+​
+
+(
+
+(
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+−
+
+γ
+
+⁡
+
+(
+
+1
+
+−
+
+γ
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+1
+
+−
+
+γ
+
+)
+
+2
+
+,
+
+C
+
+:=
+
+G
+
+max
+
+2
+
+​
+
+R
+
+max
+
+2
+
+,
+
+\mathrm{Var}[g_{k}]\leq\frac{C}{(1-\gamma)^{2}}\left((H-k+1)-\frac{\gamma(1-\gamma^{H-k+1})}{1-\gamma}\right)^{2},\quad C:=G_{\max}^{2}R_{\max}^{2},
+
+(25)
+
+and the bound decreases monotonically as 
+
+k
+
+k
+
+ increases.
+
+Proof.
+
+The estimator Equation 
+
+24
+
+ can be written as a sum of random variables:
+
+g
+
+k
+
+=
+
+∑
+
+t
+
+=
+
+k
+
+H
+
+X
+
+t
+
+,
+
+X
+
+t
+
+:=
+
+∇
+
+θ
+
+​
+
+log
+
+​
+
+π
+
+θ
+
+​
+
+(
+
+a
+
+t
+
+|
+
+s
+
+t
+
+)
+
+​
+
+G
+
+t
+
+,
+
+g_{k}=\sum_{t=k}^{H}X_{t},\quad X_{t}:=\nabla_{\theta}\log\pi_{\theta}(a_{t}|s_{t})\;G_{t},
+
+(26)
+
+where 
+
+G
+
+t
+
+G_{t}
+
+ is the discounted return from 
+
+t
+
+t
+
+:
+
+G
+
+t
+
+:=
+
+∑
+
+t
+
+′
+
+=
+
+t
+
+H
+
+γ
+
+t
+
+′
+
+−
+
+t
+
+​
+
+r
+
+t
+
+′
+
+.
+
+G_{t}:=\sum_{t^{\prime}=t}^{H}\gamma^{\,t^{\prime}-t}r_{t^{\prime}}.
+
+(27)
+
+Under the boundedness assumptions,
+
+‖
+
+∇
+
+θ
+
+​
+
+log
+
+​
+
+π
+
+θ
+
+​
+
+(
+
+a
+
+t
+
+|
+
+s
+
+t
+
+)
+
+‖
+
+\displaystyle\|\nabla_{\theta}\log\pi_{\theta}(a_{t}|s_{t})\|
+
+≤
+
+G
+
+max
+
+,
+
+\displaystyle\leq G_{\max},
+
+(28)
+
+|
+
+G
+
+t
+
+|
+
+\displaystyle|G_{t}|
+
+≤
+
+R
+
+max
+
+⋅
+
+1
+
+−
+
+γ
+
+H
+
+−
+
+t
+
++
+
+1
+
+1
+
+−
+
+γ
+
+.
+
+\displaystyle\leq R_{\max}\cdot\frac{1-\gamma^{H-t+1}}{1-\gamma}.
+
+(29)
+
+The norm of each term 
+
+‖
+
+X
+
+t
+
+‖
+
+\|X_{t}\|
+
+ is therefore bounded by:
+
+‖
+
+X
+
+t
+
+‖
+
+≤
+
+G
+
+max
+
+​
+
+|
+
+G
+
+t
+
+|
+
+≤
+
+G
+
+max
+
+​
+
+R
+
+max
+
+​
+
+1
+
+−
+
+γ
+
+H
+
+−
+
+t
+
++
+
+1
+
+1
+
+−
+
+γ
+
+.
+
+\|X_{t}\|\leq G_{\max}|G_{t}|\leq G_{\max}R_{\max}\frac{1-\gamma^{H-t+1}}{1-\gamma}.
+
+(30)
+
+To bound the variance, we bound the norm of the total gradient estimator 
+
+g
+
+k
+
+g_{k}
+
+ using the triangle inequality and the time-dependent bound on 
+
+|
+
+G
+
+t
+
+|
+
+|G_{t}|
+
+ from Equation 
+
+29
+
+:
+
+‖
+
+g
+
+k
+
+‖
+
+=
+
+‖
+
+∑
+
+t
+
+=
+
+k
+
+H
+
+X
+
+t
+
+‖
+
+\displaystyle\|g_{k}\|=\left\|\sum_{t=k}^{H}X_{t}\right\|
+
+≤
+
+∑
+
+t
+
+=
+
+k
+
+H
+
+‖
+
+X
+
+t
+
+‖
+
+\displaystyle\leq\sum_{t=k}^{H}\|X_{t}\|
+
+≤
+
+∑
+
+t
+
+=
+
+k
+
+H
+
+G
+
+max
+
+​
+
+R
+
+max
+
+​
+
+1
+
+−
+
+γ
+
+H
+
+−
+
+t
+
++
+
+1
+
+1
+
+−
+
+γ
+
+\displaystyle\leq\sum_{t=k}^{H}G_{\max}R_{\max}\frac{1-\gamma^{H-t+1}}{1-\gamma}
+
+=
+
+G
+
+max
+
+​
+
+R
+
+max
+
+1
+
+−
+
+γ
+
+​
+
+∑
+
+t
+
+=
+
+k
+
+H
+
+(
+
+1
+
+−
+
+γ
+
+H
+
+−
+
+t
+
++
+
+1
+
+)
+
+.
+
+\displaystyle=\frac{G_{\max}R_{\max}}{1-\gamma}\sum_{t=k}^{H}(1-\gamma^{H-t+1}).
+
+(31)
+
+The summation can be computed by letting 
+
+j
+
+=
+
+H
+
+−
+
+t
+
++
+
+1
+
+j=H-t+1
+
+:
+
+∑
+
+j
+
+=
+
+1
+
+H
+
+−
+
+k
+
++
+
+1
+
+(
+
+1
+
+−
+
+γ
+
+j
+
+)
+
+=
+
+(
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+−
+
+∑
+
+j
+
+=
+
+1
+
+H
+
+−
+
+k
+
++
+
+1
+
+γ
+
+j
+
+=
+
+(
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+−
+
+γ
+
+​
+
+1
+
+−
+
+γ
+
+H
+
+−
+
+k
+
++
+
+1
+
+1
+
+−
+
+γ
+
+.
+
+\sum_{j=1}^{H-k+1}(1-\gamma^{j})=(H-k+1)-\sum_{j=1}^{H-k+1}\gamma^{j}=(H-k+1)-\gamma\frac{1-\gamma^{H-k+1}}{1-\gamma}.
+
+(32)
+
+Substituting this back gives the bound on the norm of 
+
+g
+
+k
+
+g_{k}
+
+:
+
+‖
+
+g
+
+k
+
+‖
+
+≤
+
+G
+
+max
+
+​
+
+R
+
+max
+
+1
+
+−
+
+γ
+
+​
+
+(
+
+(
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+−
+
+γ
+
+⁡
+
+(
+
+1
+
+−
+
+γ
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+1
+
+−
+
+γ
+
+)
+
+.
+
+\|g_{k}\|\leq\frac{G_{\max}R_{\max}}{1-\gamma}\left((H-k+1)-\frac{\gamma(1-\gamma^{H-k+1})}{1-\gamma}\right).
+
+(33)
+
+The variance is bounded by the second moment, 
+
+Var
+
+⁡
+
+[
+
+g
+
+k
+
+]
+
+≤
+
+𝔼
+
+⁡
+
+[
+
+‖
+
+g
+
+k
+
+‖
+
+2
+
+]
+
+\mathrm{Var}[g_{k}]\leq\mathbb{E}[\|g_{k}\|^{2}]
+
+. Since our bound on 
+
+‖
+
+g
+
+k
+
+‖
+
+\|g_{k}\|
+
+ is a deterministic constant, we have:
+
+Var
+
+⁡
+
+[
+
+g
+
+k
+
+]
+
+≤
+
+C
+
+(
+
+1
+
+−
+
+γ
+
+)
+
+2
+
+​
+
+(
+
+(
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+−
+
+γ
+
+⁡
+
+(
+
+1
+
+−
+
+γ
+
+H
+
+−
+
+k
+
++
+
+1
+
+)
+
+1
+
+−
+
+γ
+
+)
+
+2
+
+,
+
+\mathrm{Var}[g_{k}]\leq\frac{C}{(1-\gamma)^{2}}\left((H-k+1)-\frac{\gamma(1-\gamma^{H-k+1})}{1-\gamma}\right)^{2},
+
+(34)
+
+where 
+
+C
+
+:=
+
+G
+
+max
+
+2
+
+​
+
+R
+
+max
+
+2
+
+C:=G_{\max}^{2}R_{\max}^{2}
+
+, this bound decreases monotonically as 
+
+k
+
+k
+
+ increases.
+∎
+
+Appendix B 
+Datasets and implementation details
+
+Table 4: 
+Overview of evaluation benchmarks used in our experiments.
+
+Category
+
+Dataset
+
+Test Size
+
+Description
+
+Math
+
+AIME24
+
+1
+
+30 problems
+
+2024 AIME math problems in algebra and geometry; used to assess advanced reasoning.
+
+AIME25
+
+2
+
+30 problems
+
+2025 AIME I&II covering algebra, combinatorics, geometry, and number theory.
+
+MATH500 
+(
+Lightman et al., 2023
+)
+
+500 problems
+
+High‑difficulty MATH subset with university‑level algebra, calculus, and number theory.
+
+OlymMath 
+(
+Sun et al., 2025
+)
+
+200 problems
+
+Olympiad-level mathematics to evaluate the model’s abilities in hard cases.
+
+Factual
+
+HotPotQA 
+(
+Yang et al., 2018
+)
+
+200 QA pairs
+
+Wikipedia‑based multi‑hop QA on complex retrieval and reasoning.
+
+2Wiki 
+(
+Ho et al., 2020
+)
+
+200 QA pairs
+
+Multi‑document QA requiring multi‑step reasoning from two Wikipedia articles.
+
+Musique 
+(
+Trivedi et al., 2022
+)
+
+200 QA pairs
+
+Multi‑hop QA benchmark for semantic understanding and logical inference.
+
+Bamboogle 
+(
+Press et al., 2022
+)
+
+125 QA pairs
+
+Two‑hop questions that are challenging for common web search engines yet have evidence available on Wikipedia.
+
+Deep Search
+
+GAIA 
+(
+Mialon et al., 2023
+)
+
+103 queries
+
+Reasoning, web navigation, and tool‑use tasks for AI assistant evaluation.
+
+HLE 
+(
+Phan et al., 2025
+)
+
+500 queries
+
+Interdisciplinary and abstract problems demanding advanced reasoning.
+
+WebWalker 
+(
+Wu et al., 2025
+)
+
+100 QA pairs
+
+Web‑navigation tasks in dynamic, multi‑hop retrieval settings.
+
+xBench 
+(
+Chen et al., 2025
+)
+
+200 queries
+
+Deep‑search test of breadth and depth in agent reasoning.
+
+1
+ 
+
+https://huggingface.co/datasets/HuggingFaceH4/aime_2024
+
+2
+ 
+
+https://huggingface.co/datasets/math-ai/aime25
+
+Benchmarks and Evaluation Protocol.
+
+We evaluate on exactly the same benchmark datasets and official test splits as ARPO 
+(
+Dong et al., 2025b
+)
+, ensuring a fair comparison. Table 
+
+4
+
+ shows the composition and scale of the test benchmark. Open-domain QA tasks are measured using averaged token-level F1 against ground truth, following ARPO’s protocol, while mathematical reasoning and deep search correctness are judged by 
+Qwen2.5-72B-Instruct
+ under the 
+LLM-as-a-judge
+ paradigm 
+(
+Zheng et al., 2023
+)
+.
+
+Supervised Fine-Tuning.
+
+For BC-initialization and 
+SCoRe-SFT
+, we fine-tune all backbones using the LLaMAFactory framework 
+(
+Zheng et al., 2024
+)
+ with a learning rate of 
+
+7
+
+×
+
+10
+
+−
+
+6
+
+7\times 10^{-6}
+
+, the AdamW optimizer with weight decay 0.1, and a global batch size of 128 for 3 epochs. Training employs DeepSpeed ZeRO-3 
+(
+Rasley et al., 2020
+)
+ and FlashAttention-2 
+(
+Dao, 2023
+)
+ for efficiency, with BF16 mixed precision and a maximum sequence length of 4096 tokens. All tool execution outputs are excluded from the loss; we compute the loss only on natural-language reasoning text and tool invocation requests, ensuring the model focuses on reasoning quality rather than memorizing tool responses. The training data consists of two distinct categories: search and math. For BC initialization, we use 2,031 search trajectories and 2,080 math trajectories, while 
+SCoRe‑SFT
+ employs 4,990 search and 5,019 math trajectories for correction‑based fine‑tuning.
+
+Reinforcement Learning.
+
+The 
+SCoRe-RL
+ phase implements our short-horizon fine-tuning using the GRPO 
+(
+Shao et al., 2024
+)
+ algorithm within the VERL framework 
+(
+Sheng et al., 2024
+)
+. We use a global batch size of 128, PPO mini-batch size of 16, rollout size of 16, and a maximum response length of 4096 tokens. Training runs for 3 epochs on 8
+
+×
+
+\times
+
+NVIDIA H20 (96GB) GPUs. For RL training, we use 5,271 search trajectories and 5,639 math trajectories.
+
+For factual reasoning datasets, the search tool is implemented using the Google search service. To reduce tool-call latency during both training and inference, we use only the textual snippets returned by the search API as the 
+[Observation]
+ content, omitting full web browser navigation or long-form summarization. This design significantly shortens retrieval time while retaining sufficient context to answer queries effectively.
+
+Appendix C 
+Additional Experiment Results
+
+Table 5: 
+Comparison with Agent Distillation 
+(
+Kang et al., 2025
+)
+ on mathematical tasks. Results with a gray background are reported from the original paper. All math tasks are evaluated by exact match, consistent with the original paper. The Agent Distillation model is trained using the BC algorithm, with some additional optimizations in both training and inference.
+
+Method
+
+MATH500
+
+GSM-Hard
+
+AIME
+
+OlymMATH
+
+Avg.
+
+Qwen2.5-32B-Instruct
+
+CoT Prompting
+
+79.2
+
+74.6
+
+13.3
+
+6.0
+
+43.3
+
+Agent Prompting
+
+69.2
+
+76.4
+
+21.1
+
+11.5
+
+44.6
+
+Student: Qwen2.5-7B-Instruct
+
+CoT Prompting
+
+71.8
+
+66.6
+
+12.2
+
+7.5
+
+39.5
+
+CoT Distillation
+
+72.6
+
+67.6
+
+10.0
+
+6.5
+
+39.2
+
+CoT Distillation + RAG
+
+68.0
+
+60.6
+
+6.7
+
+5.0
+
+35.1
+
+Agent Prompting
+
+56.0
+
+62.2
+
+13.3
+
+10.0
+
+35.4
+
+Agent Distillation
+
+67.8
+
+72.4
+
+15.6
+
+11.5
+
+41.8
+
+SCoRe-RL
+
+80.1
+
+79.7
+
+21.2
+
+16.1
+
+49.3
+
+Student: Qwen2.5-3B-Instruct
+
+CoT Prompting
+
+62.8
+
+60.2
+
+6.7
+
+4.5
+
+33.6
+
+CoT Distillation
+
+61.8
+
+54.2
+
+3.3
+
+2.7
+
+30.5
+
+CoT Distillation + RAG
+
+59.6
+
+53.2
+
+5.6
+
+4.5
+
+30.7
+
+Agent Prompting
+
+30.5
+
+25.8
+
+4.4
+
+3.0
+
+15.9
+
+Agent Distillation
+
+60.2
+
+65.4
+
+15.6
+
+7.0
+
+37.1
+
+SCoRe-RL
+
+69.1
+
+70.2
+
+18.0
+
+11.1
+
+42.1
+
+Table 
+
+5
+
+ compares CoT Distillation, Agent Distillation, and our proposed 
+SCoRe‑RL
+. All methods are evaluated with the exact‑match metric on math reasoning benchmarks, consistent with 
+
+Kang et al. (2025)
+
+.
+CoT distillation trains smaller models to replicate step‑by‑step reasoning traces generated by large LLMs via Chain‑of‑Thought prompting. While simple and effective, its reliance on static reasoning limits generalization to novel knowledge or precise computation, leading to potential hallucinations.
+Agent Distillation 
+(
+Kang et al., 2025
+)
+ transfers reasoning and tool‑use skills from LLM agents by imitating complete 
+[Thought-Action-Observation]
+ trajectories. Its training process is similar to our BC baseline in the main experiments(Table 
+
+1
+
+ and 
+
+2
+
+). Besides, Agent Distillation introduces some enhancements, including a first‑thought prefix to produce higher‑quality trajectories, and a self‑consistent action generation strategy to improve inference robustness.
+
+Agent Distillation has been shown to outperform vanilla CoT Distillation by introducing structured, agent-style reasoning into the distillation process. 
+SCoRe-RL
+ further leverages correction-based trajectories and RL to significantly boost performance. On 
+Qwen2.5-7B-Instruct
+, 
+SCoRe-RL
+ achieves an average score of 49.3, a +7.5 improvement over Agent Distillation (41.8), with notable gains on challenging tasks such as AIME (+5.6) and OlymMATH (+4.6). On 
+Qwen2.5-3B-Instruct
+, 
+SCoRe-RL
+ also improves the average score to 42.1, +5.0 over Agent Distillation (37.1). These results highlight that 
+SCoRe-RL
+ enables small models to achieve substantial gains beyond existing distillation methods, closing the gap to much larger teacher models.
+
+In the main experiments, 
+SCoRe
+ was trained with 5K MPS-generated samples for SFT and another 5K for RL. Here, we investigate whether using the entire data for SFT can further improve performance and assess the impact of SFT data scale. As Figure 
+
+4
+
+ shows, for both mathematical and search tasks, training the model on MPS-generated data improves performance; however, increasing the SFT data size from 5K to 10K yields no clear gains, and in some cases causes a slight drop. In contrast, RL training substantially boosts performance across tasks, suggesting that SFT alone is insufficient, while RL is particularly effective for agentic-style tasks.
+
+Figure 4: 
+
+Performance of models SFT on MPS-generated data (data scales: 10K, 5K, 2K), compared to an RL-trained model. For math tasks, performance is measured as agreement between generated and reference answers, using 
+Qwen2.5-72B-Instruct
+; QA tasks are evaluated using the F1 score for answer similarity. The evaluation protocol matches that used in the main paper.
+
+Table 6: 
+An example of 
+MPS
+ data generation for a math problem, with tagged thoughts (
+&lt;thought&gt;
+), Python code, observations, and final answer (
+&lt;answer&gt;
+). Teacher corrections are highlighted in 
+orange
+.
+
+Question:
+ In the figure, 
+
+B
+
+​
+
+A
+
+=
+
+A
+
+​
+
+D
+
+=
+
+D
+
+​
+
+C
+
+BA=AD=DC
+
+ and point 
+
+D
+
+D
+
+ lies on segment 
+
+B
+
+​
+
+C
+
+BC
+
+. The measure of 
+
+∠
+
+​
+
+A
+
+​
+
+C
+
+​
+
+D
+
+\angle ACD
+
+ is 
+
+22.5
+
+∘
+
+22.5^{\circ}
+
+. What is the measure of 
+
+∠
+
+​
+
+A
+
+​
+
+B
+
+​
+
+C
+
+\angle ABC
+
+?
+
+Labeled Answer:
+ 
+
+45
+
+∘
+
+45^{\circ}
+
+Step 0 (Student overall idea)
+
+&lt;first_thought&gt;
+ To solve this problem, I need to analyze the given geometric configuration and use the properties of isosceles triangles and angle relationships. Since 
+
+B
+
+​
+
+A
+
+=
+
+A
+
+​
+
+D
+
+=
+
+D
+
+​
+
+C
+
+BA=AD=DC
+
+, triangles 
+
+A
+
+​
+
+B
+
+​
+
+D
+
+ABD
+
+ and 
+
+A
+
+​
+
+D
+
+​
+
+C
+
+ADC
+
+ are isosceles. I can use 
+
+∠
+
+​
+
+A
+
+​
+
+C
+
+​
+
+D
+
+=
+
+22.5
+
+∘
+
+\angle ACD=22.5^{\circ}
+
+ to find the other angles in 
+
+△
+
+​
+
+A
+
+​
+
+D
+
+​
+
+C
+
+\triangle ADC
+
+, and then use properties of isosceles triangles to find 
+
+∠
+
+​
+
+A
+
+​
+
+B
+
+​
+
+C
+
+\angle ABC
+
+. 
+&lt;/first_thought&gt;
+
+Step 1 (Student incorrect attempt)
+
+&lt;thought&gt;
+ Since 
+
+B
+
+​
+
+A
+
+=
+
+A
+
+​
+
+D
+
+=
+
+D
+
+​
+
+C
+
+BA=AD=DC
+
+, triangles 
+
+B
+
+​
+
+A
+
+​
+
+C
+
+BAC
+
+, 
+
+A
+
+​
+
+B
+
+​
+
+D
+
+ABD
+
+, and 
+
+A
+
+​
+
+D
+
+​
+
+C
+
+ADC
+
+ are isosceles. I can use the fact that 
+
+∠
+
+​
+
+A
+
+​
+
+C
+
+​
+
+D
+
+=
+
+22.5
+
+∘
+
+\angle ACD=22.5^{\circ}
+
+ to find the other angles in 
+
+△
+
+​
+
+A
+
+​
+
+D
+
+​
+
+C
+
+\triangle ADC
+
+. 
+&lt;/thought&gt;
+
+⬇
+
+import
+
+ 
+
+math
+
+#
+ 
+Given
+ 
+angle
+ 
+ACD
+ 
+=
+ 
+22.5
+ 
+degrees
+
+angle_ACD
+
+ 
+
+=
+
+ 
+
+22.5
+
+#
+ 
+Since
+ 
+AD
+ 
+=
+ 
+DC,
+ 
+triangle
+ 
+ADC
+ 
+is
+ 
+isosceles
+ 
+with
+ 
+angle
+ 
+ADC
+ 
+=
+ 
+angle
+ 
+ACD
+
+angle_ADC
+
+ 
+
+=
+
+ 
+
+angle_ACD
+
+#
+ 
+The
+ 
+sum
+ 
+of
+ 
+angles
+ 
+in
+ 
+a
+ 
+triangle
+ 
+is
+ 
+180
+ 
+degrees
+
+angle_CAD
+
+ 
+
+=
+
+ 
+
+180
+
+ 
+
+-
+
+ 
+
+2
+
+ 
+
+*
+
+ 
+
+angle_ACD
+
+print
+
+(
+
+angle_CAD
+
+)
+
+Observation: 135.0
+
+Teacher correction at Step 1:
+
+&lt;thought&gt;
+ Given 
+
+∠
+
+​
+
+A
+
+​
+
+C
+
+​
+
+D
+
+=
+
+22.5
+
+∘
+
+\angle ACD=22.5^{\circ}
+
+ and 
+
+A
+
+​
+
+D
+
+=
+
+D
+
+​
+
+C
+
+AD=DC
+
+, it follows that 
+
+∠
+
+​
+
+C
+
+​
+
+A
+
+​
+
+D
+
+=
+
+∠
+
+​
+
+A
+
+​
+
+C
+
+​
+
+D
+
+=
+
+22.5
+
+∘
+
+\angle CAD=\angle ACD=22.5^{\circ}
+
+. 
+&lt;/thought&gt;
+
+⬇
+
+#
+ 
+Given
+ 
+angle
+ 
+ACD
+ 
+=
+ 
+22.5
+ 
+degrees
+
+angle_ACD
+
+ 
+
+=
+
+ 
+
+22.5
+
+#
+ 
+Isosceles
+ 
+triangle
+ 
+ADC:
+ 
+AD
+ 
+=
+ 
+DC,
+ 
+so
+ 
+angle
+ 
+DAC
+ 
+=
+ 
+22.5
+ 
+degrees
+
+angle_CAD
+
+ 
+
+=
+
+ 
+
+angle_ACD
+
+print
+
+(
+
+angle_CAD
+
+)
+
+Observation: 22.5
+
+Step 2 (Student continues after correction)
+
+&lt;thought&gt;
+ Since 
+
+B
+
+​
+
+A
+
+=
+
+A
+
+​
+
+D
+
+BA=AD
+
+, 
+
+△
+
+​
+
+B
+
+​
+
+A
+
+​
+
+D
+
+\triangle BAD
+
+ is isosceles with 
+
+∠
+
+​
+
+A
+
+​
+
+B
+
+​
+
+D
+
+=
+
+∠
+
+​
+
+A
+
+​
+
+D
+
+​
+
+B
+
+\angle ABD=\angle ADB
+
+. Given 
+
+∠
+
+​
+
+A
+
+​
+
+D
+
+​
+
+C
+
+\angle ADC
+
+, we find 
+
+∠
+
+​
+
+A
+
+​
+
+D
+
+​
+
+B
+
+\angle ADB
+
+, then determine 
+
+∠
+
+​
+
+A
+
+​
+
+B
+
+​
+
+C
+
+=
+
+∠
+
+​
+
+A
+
+​
+
+D
+
+​
+
+B
+
+\angle ABC=\angle ADB
+
+. 
+&lt;/thought&gt;
+
+⬇
+
+#
+ 
+Find
+ 
+angle
+ 
+ADC
+
+angle_ADC
+
+ 
+
+=
+
+ 
+
+180
+
+ 
+
+-
+
+ 
+
+angle_CAD
+
+ 
+
+-
+
+ 
+
+angle_ACD
+
+#
+ 
+Angles
+ 
+ADC
+ 
+and
+ 
+ADB
+ 
+are
+ 
+supplementary
+
+angle_ADB
+
+ 
+
+=
+
+ 
+
+180
+
+ 
+
+-
+
+ 
+
+angle_ADC
+
+#
+ 
+Triangle
+ 
+BAD
+ 
+is
+ 
+isosceles
+ 
+(BA
+ 
+=
+ 
+AD):
+ 
+angle
+ 
+ABC
+ 
+=
+ 
+angle
+ 
+ADB
+
+angle_ABC
+
+ 
+
+=
+
+ 
+
+angle_ADB
+
+final_answer_print
+
+(
+
+angle_ABC
+
+)
+
+Observation: 45.0
+
+&lt;answer&gt;
+ 45.0 
+&lt;/answer&gt;
+
+Table 7: 
+An example of 
+MPS
+ data generation for a music trivia question, with wrong step and teacher correction. Teacher corrections are highlighted in 
+orange
+.
+
+Question:
+ What is the award that the performer of the song “Smoke On The Water” earned?
+
+Labeled Answer:
+ Rock and Roll Hall of Fame
+
+Step 0 (Student overall idea)
+
+&lt;first_thought&gt;
+ To find out the award that the performer of the song “Smoke On The Water” earned, I will first need to identify the performer of the song. Once I have the name of the performer, I can then search for any awards they have won. I will use a search tool to gather this information. 
+&lt;/first_thought&gt;
+
+Step 1 (Correct prefix)
+
+&lt;thought&gt;
+ I need to find out who performed the song “Smoke On The Water” and then search for any awards they have won. 
+&lt;/thought&gt;
+
+⬇
+
+web_search
+
+(
+
+"performer
+ 
+of
+ 
+Smoke
+ 
+On
+ 
+The
+ 
+Water"
+
+)
+
+Observation: Web Pages: … (The search results show that “Smoke On The Water” was performed by Deep Purple, with Ian Gillan as lead singer).
+
+Step 2 (Correct prefix)
+
+&lt;thought&gt;
+ The search results indicate the performer is Deep Purple (lead singer Ian Gillan). Next, I need to search for any awards that Ian Gillan or Deep Purple have won. 
+&lt;/thought&gt;
+
+⬇
+
+web_search
+
+(
+
+"awards
+ 
+won
+ 
+by
+ 
+Ian
+ 
+Gillan"
+
+)
+
+Observation: Web Pages: … (Found references to Ivor Novello Award for International Achievement, Legend Award at 2008 World Music Awards, and Classic Rock Innovator Award).
+
+Step 3 (Student incorrect attempt)
+
+&lt;thought&gt;
+ The most relevant award is the Ivor Novello Award for International Achievement, received by Ian Gillan, Roger Glover, and Ian Paice of Deep Purple. I will use this as the final answer. 
+&lt;/thought&gt;
+
+⬇
+
+final_answer_print
+
+(
+
+"Ivor
+ 
+Novello
+ 
+Award
+ 
+for
+ 
+International
+ 
+Achievement"
+
+)
+
+Observation: Ivor Novello Award for International Achievement(Incorrect in context)
+
+Teacher correction at Step 3:
+
+Error Analysis: While Deep Purple members did win the Ivor Novello Award, the question asks for the award that the performer of “Smoke On The Water” earned. However, the band has not received this award in any context directly related to “Smoke on the Water”.
+
+&lt;thought&gt;
+ The most significant award for Deep Purple, especially tied to the legacy of “Smoke On The Water”, is their Rock and Roll Hall of Fame induction in 2016. I will verify this. 
+&lt;/thought&gt;
+
+⬇
+
+web_search
+
+(
+
+"Deep
+ 
+Purple
+ 
+Rock
+ 
+and
+ 
+Roll
+ 
+Hall
+ 
+of
+ 
+Fame"
+
+)
+
+Observation: Web Pages: … (Confirmed — Deep Purple inducted into the Rock and Roll Hall of Fame in 2016).
+
+Step 4 (Student continues after correction)
+
+&lt;thought&gt;
+ Based on confirmation, the correct award is Rock and Roll Hall of Fame. 
+&lt;/thought&gt;
+
+⬇
+
+final_answer_print
+
+(
+
+"Rock
+ 
+and
+ 
+Roll
+ 
+Hall
+ 
+of
+ 
+Fame"
+
+)
+
+Observation: Rock and Roll Hall of Fame
+
+&lt;answer&gt;
+ Rock and Roll Hall of Fame 
+&lt;/answer&gt;
+
+  
+
+    Experimental support, please
+    
+view the build logs
+
+    for errors. Generated by
+    
+
+      
+
+        L
+        
+A
+
+        T
+        
+E
+
+      
+
+      
+xml
+
+      
+
+    
+.
+  
+
+  
+
+    
+Instructions for reporting errors
+
+    
+We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below:
+
+    
+
+      
+Click the "Report Issue" 
+(
+
+            
+
+          
+)
+ button, located in the page header.
+
+    
+
+    
+
+Tip:
+ You can select the relevant text first, to include it in your report.
+
+    
+Our team has already identified 
+the following issues
+. We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all.
+
+    
+Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a 
+list of packages that need conversion
+, and welcome 
+developer contributions
+.
+
+  
+
+  
+
+    
+
+      
+
+        We gratefully acknowledge support from
+        our 
+major funders
+,
+        
+
+member institutions
+
+, 
+
+,
+        and all contributors.
+      
+
+      
+
+        
+About
+
+        
+&middot;
+
+        
+Help
+
+        
+&middot;
+
+        
+Contact
+
+        
+&middot;
+
+        
+Subscribe
+
+        
+&middot;
+
+        
+Copyright
+
+        
+&middot;
+
+        
+Privacy
+
+        
+&middot;
+
+        
+Accessibility
+
+        
+&middot;
+
+        
+Operational Status
+ (opens in new tab)
+
+      
+
+    
+
+    
+
+      
+Major funding support from
+
+      
+
+        
+
+          
+
+        
+
+        
+
+          
+
+        
+
+        
+
+          
+
+        
+
+      
+
+    
+
+  
+
+  
+
+    
+
+      
+
+    
+
+  
+

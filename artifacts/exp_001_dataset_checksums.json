@@ -1,0 +1,211 @@
+{
+  "dataset": "greghavens/kimi-k3-coding-and-debugging-traces",
+  "files": {
+    "data/train-00053.parquet": {
+      "bytes": 119236,
+      "sha256": "0d5ebf2f94fc4b535aad259756208ce7ff3337e2601464f9516ab8451b98ab62"
+    },
+    "data/train-00055.parquet": {
+      "bytes": 106592,
+      "sha256": "0576bfbb8aa90a92b835dacb67739e44c15a0b999f8b0eaa737ebb5a85750a1d"
+    },
+    "data/train-00081.parquet": {
+      "bytes": 70454,
+      "sha256": "c0226303e1ce5c2ffb9e0292b890a9c7cde8d822ba4de9a008325014fd7e61a9"
+    },
+    "data/train-00083.parquet": {
+      "bytes": 36079,
+      "sha256": "536d113bfe1f52c6d01ef384d51a6fad37682416d0ac90ec19362e2b354c866f"
+    },
+    "data/train-00087.parquet": {
+      "bytes": 47085,
+      "sha256": "ea9b0b363f2864639440510479c4969b2b2cd3a2d9f9e4da41877156793071dc"
+    },
+    "data/train-00090.parquet": {
+      "bytes": 51513,
+      "sha256": "57b5310d94101158fc290765269d9a7836b445222fce3768be8faf6cc520f77d"
+    },
+    "data/train-00092.parquet": {
+      "bytes": 39655,
+      "sha256": "52458c8d4aada379f42f998578ff2b48ef3103a77721805ec8d100cfdaf85beb"
+    },
+    "data/train-00094.parquet": {
+      "bytes": 27961,
+      "sha256": "d074f46f06a723b2454c78f7f5c0e813dd9b22c9d86beb93a5f8c67215999414"
+    },
+    "data/train-00095.parquet": {
+      "bytes": 30939,
+      "sha256": "255ce384b592b110bda4bce8983071787f19f9aae2f64e35aee08a0bbd3d811b"
+    },
+    "data/train-00096.parquet": {
+      "bytes": 53409,
+      "sha256": "ad6e28b22128691376f45bb2960d4ffd734d1c933517d7e88ead3db238d30490"
+    },
+    "data/train-00098.parquet": {
+      "bytes": 47766,
+      "sha256": "c237ad05a2177e0350f0fb5eb3766e3efe676fdbfa18215a2cd42fd93a53beeb"
+    },
+    "data/train-00106.parquet": {
+      "bytes": 58059,
+      "sha256": "44955a7e80e062c7d71c9d853b652649a2d51d841c992ce1914f09036bc9e9fc"
+    },
+    "data/train-00109.parquet": {
+      "bytes": 54250,
+      "sha256": "513e696598cac754ccf3ac1cd084ed0f37c17884f53f49a15334025b6e14eef8"
+    },
+    "data/train-00110.parquet": {
+      "bytes": 56053,
+      "sha256": "e8dce79d748ce4e8ce9bdb0381ade00430a62a278f54dab71d2db20d60f85fd0"
+    },
+    "data/train-00114.parquet": {
+      "bytes": 45669,
+      "sha256": "fb9d82ab250f589cc70446ef937e9776032f13e8e3f5c31721a3f9876c0ff418"
+    },
+    "data/train-00115.parquet": {
+      "bytes": 21070,
+      "sha256": "a96a36b1dafe4aeaf9bd0db9b3b11f4d07a1613564a34aba0eb743bb14c60ab4"
+    },
+    "data/train-00117.parquet": {
+      "bytes": 23771,
+      "sha256": "cebc74e3fb771e5092e73d47558b86f71cd568435a166e2aa32a1d89d0048d9d"
+    },
+    "data/train-00119.parquet": {
+      "bytes": 19941,
+      "sha256": "3c36b68df3a6fc9f02f4e9953b1501d94e7fa53ab745f044ed50a0cb48e68547"
+    },
+    "data/train-00122.parquet": {
+      "bytes": 27476,
+      "sha256": "666b1a90bae4ffb3e0bed537a8fdebc8a91d787e1e62630f1c824a8681c62af4"
+    },
+    "data/train-00126.parquet": {
+      "bytes": 64341,
+      "sha256": "b182a0f7ccb8242345544307e60ffe26285cd1f563e6c858466d5deeb434b93a"
+    },
+    "data/train-00132.parquet": {
+      "bytes": 56467,
+      "sha256": "80b3a23050d93bd9b4b4504df2670cfb9981acec1866ba69aadb8fdf657071fb"
+    },
+    "data/train-00138.parquet": {
+      "bytes": 79839,
+      "sha256": "2bbd9b7fe5cd3ef8388768bc032cd4ed19d0dea76fbbb991f32b826c007aa75a"
+    },
+    "data/train-00145.parquet": {
+      "bytes": 60206,
+      "sha256": "ff17c025f18f4f1eac7bdbefa720225408227b41f9f7de96b68439aae50b0687"
+    },
+    "data/train-00151.parquet": {
+      "bytes": 54076,
+      "sha256": "6b5d0d744c43b89c7f6cf5b5584d09acbc2ffd5c952cea712019548ba0d9420a"
+    },
+    "data/train-00160.parquet": {
+      "bytes": 113201,
+      "sha256": "b1b720e1ffe618f3adbce79c758fa1d2b877fe2702b51fa5810f6d8c3c0a50d3"
+    },
+    "data/train-00167.parquet": {
+      "bytes": 86029,
+      "sha256": "596e2977b41be3ba090465def89bce5401a4555785c260ed38a2d077752c2584"
+    },
+    "data/train-00170.parquet": {
+      "bytes": 127313,
+      "sha256": "25ce98b7baf0a0b3d508014cf29591903e2a7d1706875a49af1f470c03e9de86"
+    },
+    "data/train-00171.parquet": {
+      "bytes": 74930,
+      "sha256": "fb4b45f977a3ba079a6eba19da145d8c2e040537eb93ec4004b544894d4223b5"
+    },
+    "data/train-00175.parquet": {
+      "bytes": 73267,
+      "sha256": "a82c7cbc5c51b4dcce0fa1d52b4499a78c0695ffd25dbe92b6d7a373c9d09f84"
+    },
+    "data/train-00180.parquet": {
+      "bytes": 60956,
+      "sha256": "c4b5a609b00d1ce5520863a00d7b0c8f4c23d3dbbcc8f9396abfba0e44c93a19"
+    },
+    "data/train-00181.parquet": {
+      "bytes": 69844,
+      "sha256": "752e120ab5cf10b9ddeef859a4f4f28841c78c48fcda1ef6962d24b93ad70e39"
+    },
+    "data/train-00182.parquet": {
+      "bytes": 49559,
+      "sha256": "8cb143be0e7b1c5447cf6cead8740922a11e6997128bdefc3c4e9b2854861b48"
+    },
+    "data/train-00185.parquet": {
+      "bytes": 98434,
+      "sha256": "0545d1b44fd9e6954e3111a295cf452a17e4f44b9007f198858d9b575214c0bc"
+    },
+    "data/train-00186.parquet": {
+      "bytes": 141188,
+      "sha256": "7c54e400e005facf70afd98412432af63dae26b9379babe75f944b3334b11e96"
+    },
+    "data/train-00187.parquet": {
+      "bytes": 63547,
+      "sha256": "c6c300734b1b89f748935a55ef45d75f9a6478c25fabf9aa3185e5b181db88cd"
+    },
+    "data/train-00189.parquet": {
+      "bytes": 99996,
+      "sha256": "f9cc61b2397a5ab07a64200caf77f22edca146a06c0f0285455ee628e83eeaf6"
+    },
+    "data/train-00191.parquet": {
+      "bytes": 153054,
+      "sha256": "4bb33892e0c4110f2fa2e1a48bad00e647e817fa388b348a1b8c5280d4f628b7"
+    },
+    "data/train-00192.parquet": {
+      "bytes": 90651,
+      "sha256": "7e4eba1103c58fec52008f01bfbfdcc97a895587c1727e0fa5faace7ec6924e9"
+    },
+    "data/train-00193.parquet": {
+      "bytes": 54383,
+      "sha256": "dead7c638e3e8dd74206c1defd40b2b01d5e08f5a2360d2a45a63e2e0a6bdfd5"
+    },
+    "data/train-00198.parquet": {
+      "bytes": 83869,
+      "sha256": "a8f37bc42b0bfa83be88472d835f491600870d173ca80d2b9e6f26f981bdf978"
+    },
+    "data/train-00200.parquet": {
+      "bytes": 89914,
+      "sha256": "659229cc1e5d96150cfa0b1ca8f5abad934a0de39926d8fcb65f246beec3e304"
+    },
+    "data/train-00204.parquet": {
+      "bytes": 59721,
+      "sha256": "a51c44ad2b6f1f5e4bd307aeff3ec41104bc106527e7a5b8bc31bbcc5c028e3e"
+    },
+    "data/train-00206.parquet": {
+      "bytes": 102796,
+      "sha256": "f42d13f0b841c5cc8f76a646dd6b3bcfa0cfdeb51957594605327ff2ff62f270"
+    },
+    "data/train-00207.parquet": {
+      "bytes": 140396,
+      "sha256": "737c00d8cb4ea4f504aa48cab41233c70be146f9dae328d892bf4f06f798335c"
+    },
+    "data/train-00208.parquet": {
+      "bytes": 112438,
+      "sha256": "793ec83db692226b8304b04985b7c6eb0fd3017c3461e19f3f920a09043ecc3e"
+    },
+    "data/train-00209.parquet": {
+      "bytes": 123926,
+      "sha256": "cfb83174a09932a627c5c938e3710af7d22e3db1201dc8f6131de96ee1e8930f"
+    },
+    "data/train-00210.parquet": {
+      "bytes": 28692,
+      "sha256": "f59039a3fc1f4bca9dbf28c937d7fcb822183a92f1360ba1305e189d178fd024"
+    },
+    "data/train-00211.parquet": {
+      "bytes": 78692,
+      "sha256": "79ba0176eb034871809493c82c30681412601621ce382a125c9fdb376b887bb3"
+    },
+    "data/train-00212.parquet": {
+      "bytes": 32074,
+      "sha256": "5e95502bd8d5be56194b588c5a15295502fcbe2f65493a469ec7b6c22898b64b"
+    },
+    "data/train-00213.parquet": {
+      "bytes": 42742,
+      "sha256": "c92f7344795afec70b33f3aab60c8c2096e66af35b78690b9933cd3c6860f8ce"
+    },
+    "dataset-manifest.json": {
+      "bytes": 25005,
+      "sha256": "cd579a954d6bc1f5e2c940c7833d84c2194202caf123feb250fc7b4082da61cb"
+    }
+  },
+  "hash_algorithm": "sha256",
+  "revision": "33a874c3affbdb97e142752a9144e6624ef5bd07"
+}

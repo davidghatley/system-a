@@ -1,0 +1,722 @@
+{
+  "coverage": [
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "models": [
+        "aws/claude-opus-4-5"
+      ],
+      "sessions": 3
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "models": [
+        "azure/DeepSeek-V3.2"
+      ],
+      "sessions": 25
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "models": [
+        "azure/Kimi-K2.5"
+      ],
+      "sessions": 18
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "tool_calling",
+      "models": [
+        "aws/claude-opus-4-5"
+      ],
+      "sessions": 66
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "tool_calling",
+      "models": [
+        "azure/DeepSeek-V3.2"
+      ],
+      "sessions": 9
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "tool_calling",
+      "models": [
+        "azure/Kimi-K2.5"
+      ],
+      "sessions": 17
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "tool_calling_with_shortlisting",
+      "models": [
+        "gcp/gemini-3-pro-preview"
+      ],
+      "sessions": 38
+    },
+    {
+      "benchmark": "browsecompplus",
+      "harness": "claude_code",
+      "models": [
+        "aws/claude-opus-4-5"
+      ],
+      "sessions": 49
+    },
+    {
+      "benchmark": "browsecompplus",
+      "harness": "claude_code",
+      "models": [
+        "azure/Kimi-K2.5"
+      ],
+      "sessions": 4
+    },
+    {
+      "benchmark": "browsecompplus",
+      "harness": "claude_code",
+      "models": [
+        "gcp/gemini-3-pro-preview"
+      ],
+      "sessions": 1
+    },
+    {
+      "benchmark": "swebench",
+      "harness": "claude_code",
+      "models": [
+        "Azure/gpt-5.2-2025-12-11"
+      ],
+      "sessions": 31
+    },
+    {
+      "benchmark": "swebench",
+      "harness": "claude_code",
+      "models": [
+        "azure/Kimi-K2.5"
+      ],
+      "sessions": 2
+    },
+    {
+      "benchmark": "swebench",
+      "harness": "claude_code",
+      "models": [
+        "gpt-5.2-2025-12-11"
+      ],
+      "sessions": 13
+    },
+    {
+      "benchmark": "tau2_airline",
+      "harness": "openai_solo",
+      "models": [
+        "openai/Azure/gpt-4.1"
+      ],
+      "sessions": 7
+    },
+    {
+      "benchmark": "tau2_airline",
+      "harness": "openai_solo",
+      "models": [
+        "openai/Azure/gpt-4.1",
+        "Azure/gpt-4.1"
+      ],
+      "sessions": 1
+    },
+    {
+      "benchmark": "tau2_airline",
+      "harness": "smolagents_code",
+      "models": [
+        "openai/Azure/gpt-4.1"
+      ],
+      "sessions": 26
+    },
+    {
+      "benchmark": "tau2_airline",
+      "harness": "smolagents_code",
+      "models": [
+        "openai/Azure/gpt-4.1",
+        "Azure/gpt-4.1"
+      ],
+      "sessions": 12
+    },
+    {
+      "benchmark": "tau2_retail",
+      "harness": "openai_solo",
+      "models": [
+        "openai/Azure/gpt-4.1"
+      ],
+      "sessions": 10
+    },
+    {
+      "benchmark": "tau2_retail",
+      "harness": "openai_solo",
+      "models": [
+        "openai/Azure/gpt-4.1",
+        "Azure/gpt-4.1"
+      ],
+      "sessions": 23
+    },
+    {
+      "benchmark": "tau2_retail",
+      "harness": "smolagents_code",
+      "models": [
+        "openai/Azure/gpt-4.1"
+      ],
+      "sessions": 4
+    },
+    {
+      "benchmark": "tau2_retail",
+      "harness": "smolagents_code",
+      "models": [
+        "openai/Azure/gpt-4.1",
+        "Azure/gpt-4.1"
+      ],
+      "sessions": 8
+    },
+    {
+      "benchmark": "tau2_telecom",
+      "harness": "claude_code",
+      "models": [
+        "aws/claude-opus-4-5"
+      ],
+      "sessions": 29
+    },
+    {
+      "benchmark": "tau2_telecom",
+      "harness": "claude_code",
+      "models": [
+        "openai/Azure/gpt-4.1",
+        "Azure/gpt-4.1"
+      ],
+      "sessions": 16
+    },
+    {
+      "benchmark": "tau2_telecom",
+      "harness": "smolagents_code",
+      "models": [
+        "openai/Azure/gpt-4.1"
+      ],
+      "sessions": 6
+    },
+    {
+      "benchmark": "tau2_telecom",
+      "harness": "smolagents_code",
+      "models": [
+        "openai/Azure/gpt-4.1",
+        "Azure/gpt-4.1"
+      ],
+      "sessions": 9
+    },
+    {
+      "benchmark": "tau2_telecom",
+      "harness": "tool_calling",
+      "models": [
+        "aws/claude-opus-4-5"
+      ],
+      "sessions": 4
+    },
+    {
+      "benchmark": "tau2_telecom",
+      "harness": "tool_calling",
+      "models": [
+        "gcp/gemini-3-pro-preview"
+      ],
+      "sessions": 2
+    },
+    {
+      "benchmark": "tau2_telecom",
+      "harness": "tool_calling",
+      "models": [
+        "openai/Azure/gpt-4.1"
+      ],
+      "sessions": 6
+    },
+    {
+      "benchmark": "tau2_telecom",
+      "harness": "tool_calling",
+      "models": [
+        "openai/Azure/gpt-4.1",
+        "Azure/gpt-4.1"
+      ],
+      "sessions": 18
+    }
+  ],
+  "coverage_by_shard": {
+    "data/train-00000-of-00039.parquet": [
+      {
+        "benchmark": "appworld",
+        "harness": "claude_code",
+        "sessions": 46
+      }
+    ],
+    "data/train-00003-of-00039.parquet": [
+      {
+        "benchmark": "appworld",
+        "harness": "tool_calling",
+        "sessions": 46
+      }
+    ],
+    "data/train-00004-of-00039.parquet": [
+      {
+        "benchmark": "appworld",
+        "harness": "tool_calling",
+        "sessions": 46
+      }
+    ],
+    "data/train-00008-of-00039.parquet": [
+      {
+        "benchmark": "appworld",
+        "harness": "tool_calling_with_shortlisting",
+        "sessions": 38
+      },
+      {
+        "benchmark": "browsecompplus",
+        "harness": "claude_code",
+        "sessions": 8
+      }
+    ],
+    "data/train-00009-of-00039.parquet": [
+      {
+        "benchmark": "browsecompplus",
+        "harness": "claude_code",
+        "sessions": 46
+      }
+    ],
+    "data/train-00013-of-00039.parquet": [
+      {
+        "benchmark": "swebench",
+        "harness": "claude_code",
+        "sessions": 46
+      }
+    ],
+    "data/train-00022-of-00039.parquet": [
+      {
+        "benchmark": "tau2_airline",
+        "harness": "openai_solo",
+        "sessions": 8
+      },
+      {
+        "benchmark": "tau2_airline",
+        "harness": "smolagents_code",
+        "sessions": 38
+      }
+    ],
+    "data/train-00029-of-00039.parquet": [
+      {
+        "benchmark": "tau2_retail",
+        "harness": "openai_solo",
+        "sessions": 33
+      },
+      {
+        "benchmark": "tau2_retail",
+        "harness": "smolagents_code",
+        "sessions": 12
+      }
+    ],
+    "data/train-00035-of-00039.parquet": [
+      {
+        "benchmark": "tau2_telecom",
+        "harness": "claude_code",
+        "sessions": 45
+      }
+    ],
+    "data/train-00038-of-00039.parquet": [
+      {
+        "benchmark": "tau2_telecom",
+        "harness": "smolagents_code",
+        "sessions": 15
+      },
+      {
+        "benchmark": "tau2_telecom",
+        "harness": "tool_calling",
+        "sessions": 30
+      }
+    ]
+  },
+  "dataset": "Exgentic/agent-llm-traces",
+  "duplicates": {
+    "duplicate_session_ids": 0,
+    "excess_exact_output_messages": 363
+  },
+  "examples": [
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "TodoWrite"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "2f8989c28bd888d7"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "TodoWrite"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "4adc2d5e17873fca"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "mcp__environment__supervisor__show_payment_cards"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "4c638ed5174d3184"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "TodoWrite"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "6df9bc0e84b3ba73"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "mcp__environment__phone__show_contact_relationships"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "12d12b0d2559bfe2"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "mcp__environment__phone__login"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "f7a900c1d56a92a5"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "mcp__environment__supervisor__show_account_passwords"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "1632363737154edc"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "mcp__environment__phone__login"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "b140e4b3f2a156a9"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "mcp__environment__phone__search_contacts"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "45d3d82c55093f59"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "mcp__environment__phone__search_contacts"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "868efef01d4bc964"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "TodoWrite"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "46f8dacedef46421"
+    },
+    {
+      "benchmark": "appworld",
+      "harness": "claude_code",
+      "input_result_types": [
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response",
+        "tool_call_response"
+      ],
+      "model": "azure/DeepSeek-V3.2",
+      "output_call_names": [
+        "mcp__environment__venmo__login"
+      ],
+      "session_id": "2a21e94e0687_1b28ad67",
+      "span_id": "23e34913e41ceee2"
+    }
+  ],
+  "files": [
+    {
+      "bytes": 7623,
+      "path": "README.md",
+      "remote_bytes": 7623,
+      "sha256": "5673e49cae3525e7b9b1415840a9827f4da5f7b0e153e201e7f915bde5fec8de"
+    },
+    {
+      "bytes": 24144062,
+      "path": "data/train-00000-of-00039.parquet",
+      "remote_bytes": 24144062,
+      "sha256": "5cfde1c01460d2f7d90fdc6c245278cee20f32101d5275b6cf3d06f30a5f8f60"
+    },
+    {
+      "bytes": 2620639,
+      "path": "data/train-00003-of-00039.parquet",
+      "remote_bytes": 2620639,
+      "sha256": "e631d7cd79b8ec06dc1f4dbe622ea545d4a6157bd4da012e4f4f52be65dff9f1"
+    },
+    {
+      "bytes": 4252315,
+      "path": "data/train-00004-of-00039.parquet",
+      "remote_bytes": 4252315,
+      "sha256": "9275682f710f5321e05ecb314f1b1b520be637f60b525df9fe313ec82a246d36"
+    },
+    {
+      "bytes": 40355325,
+      "path": "data/train-00008-of-00039.parquet",
+      "remote_bytes": 40355325,
+      "sha256": "b79a0f50a3b3257477cf4d4aa1aa3779ae7e57caef07781d874c206b98dfb57b"
+    },
+    {
+      "bytes": 136468470,
+      "path": "data/train-00009-of-00039.parquet",
+      "remote_bytes": 136468470,
+      "sha256": "596b5f27fb93b001f4417d494649f83e920eee317a696fcd953d0c9783d30ace"
+    },
+    {
+      "bytes": 14873293,
+      "path": "data/train-00013-of-00039.parquet",
+      "remote_bytes": 14873293,
+      "sha256": "28c650bd2e1d47e6cd08fb3c1a7217a0d8108749f9c5118e2cb6128c2e5a0784"
+    },
+    {
+      "bytes": 265853,
+      "path": "data/train-00022-of-00039.parquet",
+      "remote_bytes": 265853,
+      "sha256": "38bd8d57ceb882de7d2afb7354fec558687dbc67621c2293e92a3f9ce4d3351a"
+    },
+    {
+      "bytes": 323877,
+      "path": "data/train-00029-of-00039.parquet",
+      "remote_bytes": 323877,
+      "sha256": "36258df7a80e4b48c2002dc77f359835ae32b4850929373723aab3c648c45df9"
+    },
+    {
+      "bytes": 5637536,
+      "path": "data/train-00035-of-00039.parquet",
+      "remote_bytes": 5637536,
+      "sha256": "bcf6f5bb11508049b1822f484179c4fbdad5c91cd2789a20e8888bd8c4869040"
+    },
+    {
+      "bytes": 2542646,
+      "path": "data/train-00038-of-00039.parquet",
+      "remote_bytes": 2542646,
+      "sha256": "1f6d582adfd96eff8adac9446746546c05af176e20f2a451559b31dfad007f38"
+    }
+  ],
+  "license": "cdla-permissive-2.0",
+  "limitations": [
+    "Sample measurements are not full-corpus estimates.",
+    "Dataset has no task ID, task outcome, reward, or benchmark score column.",
+    "Same-span ID matching is diagnostic only; results normally occur in later call inputs."
+  ],
+  "message_part_types": {
+    "text": 106670,
+    "thinking": 7831,
+    "tool_call": 159194,
+    "tool_call_response": 149151
+  },
+  "profile_version": 1,
+  "revision": "70036b93a04e61b0ea2706a68b962f4f26774587",
+  "sample_counts": {
+    "action_call_ids_matched_in_next_input": 8831,
+    "action_call_ids_with_later_span": 9702,
+    "action_spans_reconstructable_from_next_input": 6226,
+    "action_spans_with_later_span": 6748,
+    "input_tool_results": 149151,
+    "output_tool_calls": 10043,
+    "same_span_matched_call_result_ids": 11,
+    "sessions": 457,
+    "spans": 9249,
+    "spans_with_input_tool_results": 7567,
+    "spans_with_output_tool_calls": 6957,
+    "spans_with_tool_definitions": 7988,
+    "thinking_parts": 7831,
+    "unparseable_output_messages": 504
+  },
+  "scope": {
+    "downloaded_bytes": 231491639,
+    "sampling": "bounded shard sample",
+    "selected_shards": [
+      0,
+      3,
+      4,
+      8,
+      9,
+      13,
+      22,
+      29,
+      35,
+      38
+    ]
+  },
+  "serialized_context_characters": {
+    "input": {
+      "max": 673140,
+      "median": 24519,
+      "p95": 313437
+    },
+    "output": {
+      "max": 12638,
+      "median": 372,
+      "p95": 1793
+    }
+  },
+  "source_claimed_totals": {
+    "bytes": 983592848,
+    "sessions": 1781,
+    "shards": 39
+  },
+  "tool_definitions": {
+    "most_common": {
+      "AskUserQuestion": 3138,
+      "Bash": 4237,
+      "Edit": 4225,
+      "EnterPlanMode": 4225,
+      "ExitPlanMode": 4225,
+      "Glob": 4237,
+      "Grep": 4237,
+      "KillShell": 3619,
+      "ListMcpResourcesTool": 4237,
+      "NotebookEdit": 3138,
+      "Read": 4237,
+      "ReadMcpResourceTool": 4237,
+      "Skill": 4237,
+      "Task": 4225,
+      "TaskOutput": 4225,
+      "TodoWrite": 4237,
+      "WebFetch": 4237,
+      "WebSearch": 4237,
+      "Write": 4225,
+      "finish": 2567,
+      "supervisor__show_account_passwords": 2395,
+      "supervisor__show_profile": 2379,
+      "venmo__create_transaction": 2378,
+      "venmo__search_friends": 2377,
+      "venmo__search_users": 2394,
+      "venmo__show_account": 2378,
+      "venmo__show_profile": 2421,
+      "venmo__show_transaction": 2438,
+      "venmo__show_transactions": 2430,
+      "venmo__show_venmo_balance": 2415
+    },
+    "unique_names": 1017
+  },
+  "tool_definitions_per_span": {
+    "max": 487,
+    "median": 30.0,
+    "min": 1
+  }
+}

@@ -1,0 +1,16 @@
+HTTP/2 200 
+alt-svc: h3=":443"; ma=2592000
+cache-control: public, max-age=0, must-revalidate
+content-type: text/html
+date: Sun, 20 Sep 2026 18:19:45 GMT
+etag: "23c98b3268253caab6a80b329bd77178"
+framer-site-id: f8111b111e9ce8d3e21d0f9765b6ce69c2a2f3f8b0f0744a436382f9f9a8231e
+last-modified: Sun, 20 Sep 2026 03:20:12 GMT
+link: <https://framerusercontent.com>; rel="preconnect", <https://framerusercontent.com>; rel="preconnect"; crossorigin=""
+server: Framer/9cfa469
+server-timing: region;desc="us-west-2", cache;desc="cached", ssg-status;desc="optimized", version;desc="9cfa469", instance;desc="e470a16", route;dur=1;desc="id=TwNWInrzR&locale=default&var.m3EQRHzYt=introducing-system-one-models-and-jev", country;desc="US", ss-only-routes
+strict-transport-security: max-age=31536000
+vary: Accept-Encoding, Accept
+x-content-type-options: nosniff
+content-length: 254256
+

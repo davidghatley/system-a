@@ -1,0 +1,16 @@
+# Kimi observation audit reproduction command log
+# Workspace boundary: /home/davidhatley/Projects/research/system_a
+$ .venv/bin/python scripts/reproduce_kimi_observation_audit.py
+loaded_rows=3956 active_shards=50 checksum_failures=0
+explicit_result_rows=0 matched_pairs=0
+assistant_after_call=5844 heuristic_output_like=0
+output=artifacts/reviews/kimi_reproduction.json sha256=64cb13842a1368d801bd49e91719e81e13b05e707cd149955c9df883aecc38d5
+$ .venv/bin/python -m py_compile scripts/reproduce_kimi_observation_audit.py
+exit=0
+$ sha256sum artifacts/reviews/kimi_reproduction.json artifacts/exp_001_data_profile.json artifacts/exp_001_dataset_checksums.json
+64cb13842a1368d801bd49e91719e81e13b05e707cd149955c9df883aecc38d5  artifacts/reviews/kimi_reproduction.json
+884e572aae43395a738003ac8f2db7dabe5bfe5030048ac53f03986b1754599d  artifacts/exp_001_data_profile.json
+e08f7a2abd3408e2816d05821d33c9df1cafd4617cdc912223936a6e6f9d258f  artifacts/exp_001_dataset_checksums.json
+$ .venv/bin/python scripts/reproduce_kimi_observation_audit.py && sha256sum artifacts/reviews/kimi_reproduction.json
+second_run_sha256=64cb13842a1368d801bd49e91719e81e13b05e707cd149955c9df883aecc38d5
+deterministic=true

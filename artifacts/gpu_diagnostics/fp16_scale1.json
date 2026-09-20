@@ -1,0 +1,146 @@
+{
+  "batch": {
+    "actual_tokens": 48,
+    "option_counts": [
+      2
+    ],
+    "sequences": 1,
+    "tensor_shape": [
+      1,
+      512
+    ]
+  },
+  "diagnostic": {
+    "grad_scaler_init_scale": 1.0,
+    "grad_scaler_scale_at_backward": 1.0,
+    "mode": "fp16_scale1_no_step",
+    "optimizer_step_statically_prohibited": true
+  },
+  "environment": {
+    "compute_capability": [
+      8,
+      6
+    ],
+    "cudnn": 91900,
+    "driver_version": "610.57.04",
+    "gpu_name": "NVIDIA GeForce RTX 3060",
+    "gpu_total_bytes": 12478185472,
+    "packages": {
+      "huggingface-hub": "1.32.0",
+      "numpy": "2.5.3",
+      "safetensors": "0.8.0",
+      "torch": "2.11.0+cu128",
+      "transformers": "5.17.0"
+    },
+    "python": "3.14.7",
+    "torch_cuda": "12.8"
+  },
+  "files": {
+    "model_safetensors_sha256": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c",
+    "resolved_snapshot": "/home/davidhatley/Projects/research/system_a/data/cache/huggingface/hub/models--convaiinnovations--laya/snapshots/1c5edc17a7acd8701df6fc341c0d179f1c62c982"
+  },
+  "gradients": {
+    "finite": true,
+    "first_nonfinite_parameters": [],
+    "nonfinite_parameter_count": 0,
+    "post_unscale": {
+      "all_offending": [],
+      "finite": true,
+      "first_offending": null,
+      "global_norm": 293.410888671875
+    },
+    "pre_unscale": {
+      "all_offending": [],
+      "finite": true,
+      "first_offending": null,
+      "global_norm": 293.410888671875
+    }
+  },
+  "hardware_preflight": {
+    "nvidia_smi": "NVIDIA GeForce RTX 3060, 610.57.04, 12288, 11081, 8.6"
+  },
+  "loss": {
+    "combined": 2.2289695739746094,
+    "cross_entropy": 2.478915214538574,
+    "finite_before_backward": {
+      "combined": true,
+      "cross_entropy": true,
+      "reward_all": true,
+      "rl": true
+    },
+    "reward_mean": -3.0006046295166016,
+    "reward_std": 0.2648705244064331,
+    "rl": -0.24994561076164246
+  },
+  "memory": {
+    "baseline_allocated_bytes": 1686235136,
+    "baseline_reserved_bytes": 1700790272,
+    "peak_allocated_bytes": 3750020608,
+    "peak_allocated_gib": 3.492478847503662,
+    "peak_reserved_bytes": 3873439744,
+    "peak_reserved_gib": 3.607421875
+  },
+  "parameter_verification": {
+    "sha256_after": "9286915c980c8b11e8941bbc8d8e6face4da721b9a74fdd5607e5e6652d4fcf8",
+    "sha256_before": "9286915c980c8b11e8941bbc8d8e6face4da721b9a74fdd5607e5e6652d4fcf8",
+    "unchanged": true
+  },
+  "parameters": {
+    "action_optimized": false,
+    "encoder": 394781696,
+    "excluded_action": 263938,
+    "master_dtype": "float32",
+    "non_encoder": 26512131,
+    "optimized_head": 26248193,
+    "state_elements_including_buffers": 421293830,
+    "total": 421293827
+  },
+  "paths": {
+    "cache": "/home/davidhatley/Projects/research/system_a/data/cache",
+    "config": "/home/davidhatley/Projects/research/system_a/experiments/laya_smoke_test/config.json",
+    "output": "/home/davidhatley/Projects/research/system_a/artifacts/gpu_diagnostics/fp16_scale1.json",
+    "root": "/home/davidhatley/Projects/research/system_a",
+    "source": "/home/davidhatley/Projects/research/system_a/data/laya"
+  },
+  "pins": {
+    "dataset_unused": "ea9306458d6e9563628369a3d1e72e362fb381d2",
+    "laya_source": "d113dca2512fb3eaca313534bc54c7162d87c1d4",
+    "model": "1c5edc17a7acd8701df6fc341c0d179f1c62c982"
+  },
+  "resolved_config": {
+    "amp_dtype": "fp16",
+    "dataset_id": "LocalLLaMA/typed-decisions",
+    "dataset_revision": "ea9306458d6e9563628369a3d1e72e362fb381d2",
+    "encoder_learning_rate": 2.5e-05,
+    "gradient_accumulation": 1,
+    "gradient_checkpointing": true,
+    "group_size": 2,
+    "head_checkpointing": false,
+    "head_learning_rate": 0.0001,
+    "head_max_len": 192,
+    "laya_source_revision": "d113dca2512fb3eaca313534bc54c7162d87c1d4",
+    "max_len": 512,
+    "max_steps": 1,
+    "micro_batch": 1,
+    "model_id": "convaiinnovations/laya",
+    "model_revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
+    "purpose": "first measured one-step feasibility check, not a full training run",
+    "record_cuda_peak_memory": true,
+    "seed": 42,
+    "weight_decay": 0.01
+  },
+  "safety": {
+    "backwards": 1,
+    "forwards": 1,
+    "max_steps": 1,
+    "optimizer_steps_attempted": 0,
+    "optimizer_steps_completed": 0
+  },
+  "status": "completed_diagnostic",
+  "timings": {
+    "backward_seconds": 0.22748225001851097,
+    "forward_seconds": 0.5620462030055933,
+    "total_seconds": 5.60869649000233,
+    "unscale_seconds": 0.026488795992918313
+  }
+}

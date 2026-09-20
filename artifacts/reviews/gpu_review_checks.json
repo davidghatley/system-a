@@ -1,0 +1,88 @@
+{
+  "classification": "INCONCLUSIVE",
+  "review_scope": "code_and_artifact_only",
+  "review_date": "2026-09-20",
+  "execution_boundary": {
+    "forward_executed": false,
+    "backward_executed": false,
+    "optimizer_step_executed": false
+  },
+  "static_checks": {
+    "runner_python_syntax": "VERIFIED",
+    "measurement_json_parse": "VERIFIED",
+    "pinned_source_revision": {
+      "status": "VERIFIED",
+      "value": "d113dca2512fb3eaca313534bc54c7162d87c1d4"
+    },
+    "pinned_source_worktree": "VERIFIED clean"
+  },
+  "checks": [
+    {
+      "id": "loss_algebra",
+      "status": "VERIFIED",
+      "finding": "Runner RL, reward, and CE equations match the upstream notebook algebra.",
+      "runner_lines": "scripts/run_laya_one_step.py:213-224",
+      "upstream_lines": "data/laya/notebooks/laya_finetune_typed_decisions_2xT4_kaggle.ipynb:299-320"
+    },
+    {
+      "id": "perturbation_count",
+      "status": "VERIFIED",
+      "finding": "Runner uses G=2 while upstream uses G=4; sigma=0.4 and masked zero-mean projection otherwise match.",
+      "runner_lines": "scripts/run_laya_one_step.py:212-215",
+      "upstream_lines": "data/laya/notebooks/laya_finetune_typed_decisions_2xT4_kaggle.ipynb:251-255,304-308"
+    },
+    {
+      "id": "mask_semantics",
+      "status": "VERIFIED",
+      "finding": "Marker masks are boolean, valid markers are true, perturbations and losses mask invalid options, and attention padding is zero.",
+      "runner_lines": "scripts/run_laya_one_step.py:160-166,209-224",
+      "upstream_lines": "data/laya/laya/common.py:218-250; data/laya/notebooks/laya_finetune_typed_decisions_2xT4_kaggle.ipynb:299-319"
+    },
+    {
+      "id": "autocast",
+      "status": "VERIFIED",
+      "finding": "Both paths autocast only the model forward to FP16 and cast logits to FP32 before loss construction.",
+      "runner_lines": "scripts/run_laya_one_step.py:205-208",
+      "upstream_lines": "data/laya/notebooks/laya_finetune_typed_decisions_2xT4_kaggle.ipynb:290-300"
+    },
+    {
+      "id": "scaler_semantics",
+      "status": "VERIFIED",
+      "finding": "Runner aborts immediately after unscale on any non-finite gradient; upstream passes directly to scaler.step(), which is designed to skip an overflowed step and reduce the scale.",
+      "runner_lines": "scripts/run_laya_one_step.py:228-235",
+      "upstream_lines": "data/laya/notebooks/laya_finetune_typed_decisions_2xT4_kaggle.ipynb:322-331"
+    },
+    {
+      "id": "gradient_evidence",
+      "status": "UNKNOWN",
+      "finding": "The executed artifact contains neither loss values nor offending parameter names. Current diagnostic code was added after the recorded run, and no executed-script hash was retained.",
+      "artifact_lines": "artifacts/laya_one_step.json:13-16,88-95",
+      "current_runner_lines": "scripts/run_laya_one_step.py:225-235",
+      "command_lines": "artifacts/laya_one_step_commands.log:29-37"
+    },
+    {
+      "id": "parameter_accounting",
+      "status": "VERIFIED",
+      "finding": "Runtime accounting is internally consistent: 421293827 named parameters plus a three-element temperature buffer equals 421293830 state elements. The runner intentionally excludes the 263938-parameter action head, unlike upstream.",
+      "runner_lines": "scripts/run_laya_one_step.py:175-189",
+      "artifact_lines": "artifacts/laya_one_step.json:44-52",
+      "upstream_lines": "data/laya/notebooks/laya_finetune_typed_decisions_2xT4_kaggle.ipynb:257-263"
+    },
+    {
+      "id": "memory_result",
+      "status": "VERIFIED",
+      "finding": "One forward and backward reached 3873439744 peak reserved bytes, below 11.5 GiB; Adam state allocation and a completed step were not measured.",
+      "artifact_lines": "artifacts/laya_one_step.json:40-43,88-95"
+    },
+    {
+      "id": "nonfinite_cause",
+      "status": "INFERRED",
+      "finding": "Default GradScaler initial scaling overflow is the leading explanation. FP16 attention/backward instability remains possible; the artifact cannot distinguish these causes. The RL and CE values were not retained."
+    }
+  ],
+  "safest_next_diagnostic": {
+    "status": "RECOMMENDED",
+    "specification": "Run exactly one otherwise-identical forward and backward with torch.amp.GradScaler('cuda', init_scale=1.0, growth_interval=2000), then unscale and stop without calling scaler.step, optimizer.step, or scaler.update. Persist combined, CE, and RL losses; reward extrema; scaler scale; finite/non-finite counts and first names separately for encoder and decision head; and peak memory.",
+    "decision_rule": "Finite unscaled gradients disproves intrinsic FP16-gradient failure and identifies default loss scaling as the prior blocker. Non-finite gradients at scale 1.0 confirms a model/autocast backward issue and justifies a separately authorized BF16 diagnostic."
+  }
+}

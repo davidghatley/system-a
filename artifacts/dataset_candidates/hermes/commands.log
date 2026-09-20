@@ -1,0 +1,6 @@
+[2026-09-20T18:39:43.573782+00:00] .venv/bin/python scripts/audit_hermes_candidate.py
+GET https://huggingface.co/api/datasets/lambda/hermes-agent-reasoning-traces
+GET https://huggingface.co/datasets/lambda/hermes-agent-reasoning-traces/resolve/b92885e4f0161d4b2536512710e004d4892cac6e/data/kimi/train.parquet -> data/hermes_audit/kimi-b92885e4f0161d4b2536512710e004d4892cac6e.parquet
+profiled complete kimi config: 7646 trajectories; no training
+source sha256: d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02
+completed: 2026-09-20T18:40:54.117433+00:00

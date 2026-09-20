@@ -1,0 +1,13 @@
+2026-09-20T00:00:00Z (audit date; wall-clock time intentionally not asserted)
+BOUNDARY: /home/davidhatley/Projects/research/system_a only
+COMMAND: .venv/bin/python -c "from huggingface_hub import HfApi; x=HfApi().dataset_info('Exgentic/agent-llm-traces', files_metadata=True); print(x.sha); print(len(x.siblings))"
+RESULT: revision 70036b93a04e61b0ea2706a68b962f4f26774587; 41 repository files
+COMMAND: .venv/bin/python scripts/audit_exgentic_dataset.py --download
+PURPOSE: download and profile the bounded pinned shard sample declared in the script
+RESULT: first pass downloaded shards 0,3,13,22,29,35,38; 50,415,529 bytes including README; five benchmarks/four harnesses covered
+COMMAND: .venv/bin/python scripts/audit_exgentic_dataset.py --download
+PURPOSE: add shards 4,8,9 to close BrowseCompPlus and shortlisting-harness coverage gaps
+RESULT: final bounded sample 10 shards plus README; 231,491,639 bytes; 457 sessions; all six benchmarks and all five harnesses covered
+COMMAND: .venv/bin/python -m py_compile scripts/audit_exgentic_dataset.py && .venv/bin/python scripts/audit_exgentic_dataset.py && sha256sum artifacts/dataset_candidates/exgentic/profile.json artifacts/dataset_candidates/exgentic/source_manifest.json
+RESULT: syntax check passed; deterministic no-download rerun completed; profile SHA-256 9e277f7de824f7a42d57eae10e7ef6f86345bfd33358e2e84eb0b2bb9054ccf6; manifest SHA-256 6a5d1f0438c536d4b3c4b8fc627c88230d3befddec99fd582c2e4a4945dba8db
+NOTE: no training, tuning, model inference, benchmark execution, or broad framework build was performed

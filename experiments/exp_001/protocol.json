@@ -2,8 +2,10 @@
   "protocol_version": "0.2.0",
   "experiment_id": "exp_001",
   "title": "Task-disjoint next-control prediction from verified Kimi K3 traces",
-  "status": "FROZEN_DESIGN_BLOCKED_ON_DATA_PREFLIGHT_AND_VRAM_SMOKE",
+  "status": "STOPPED_DATA_VIABILITY_GATE_FAILED",
   "frozen_date": "2026-09-20",
+  "stopped_date": "2026-09-20",
+  "stop_reason": "Pinned Kimi K3 data contains zero authentic tool-result observations across all 3372 prefixes with prior tool calls; observable_history_not_mostly_absent failed. No training or official test scoring occurred.",
   "hypothesis": "Laya can learn task-conditioned next-control decisions from successful frontier-agent traces and expose uncertainty useful for selective execution.",
   "claim_scope": {
     "included": [

@@ -1,0 +1,106 @@
+{
+  "access_date": "2026-09-20",
+  "scope": "Primary sources used for research/06_prior_art_update.md",
+  "sources": [
+    {
+      "id": "agent-distillation",
+      "title": "Distilling LLM Agent into Small Models with Retrieval and Code Tools",
+      "url": "https://arxiv.org/abs/2505.17612",
+      "revision": "arXiv:2505.17612v2",
+      "repo_url": "https://github.com/Nardien/agent-distillation",
+      "repo_revision": "8884b80ea3d22e53a2e1e4b9fd324600d13e0430",
+      "local_evidence": ["arxiv_2505.17612v2.html", "arxiv_2505.17612v2.txt", "revision_agent_distillation.txt"]
+    },
+    {
+      "id": "score",
+      "title": "Student-Centered Distillation Narrows the Agentic Gap Between Small and Large LLMs",
+      "url": "https://arxiv.org/abs/2509.14257",
+      "revision": "arXiv:2509.14257v1",
+      "local_evidence": ["arxiv_2509.14257v1.html", "arxiv_2509.14257v1.txt"]
+    },
+    {
+      "id": "mentor",
+      "title": "MENTOR: Reinforcement Learning via Flexible Teacher-Optimized Rewards for Tool-Use Distillation",
+      "url": "https://arxiv.org/abs/2510.18383",
+      "revision": "arXiv:2510.18383v1",
+      "local_evidence": ["arxiv_2510.18383v1.html", "arxiv_2510.18383v1.txt"]
+    },
+    {
+      "id": "litesearch-vl",
+      "title": "LiteSearch-VL: Small Multimodal Search Agents via Trajectory Distillation and Synthetic Step-DPO",
+      "url": "https://arxiv.org/abs/2608.29357",
+      "revision": "arXiv:2608.29357v1",
+      "local_evidence": ["arxiv_2608.29357v1.html", "arxiv_2608.29357v1.txt"]
+    },
+    {
+      "id": "adaptive-vlm-routing",
+      "title": "Adaptive Vision-Language Model Routing for Computer Use Agents",
+      "url": "https://arxiv.org/abs/2603.12823",
+      "revision": "arXiv:2603.12823v1",
+      "repo_url": "https://github.com/vllm-project/semantic-router",
+      "repo_revision": "c5456a5d1063a77e25a5bbb059d18af4a75f2899",
+      "local_evidence": ["arxiv_2603.12823v1.html", "arxiv_2603.12823v1.txt", "revision_semantic_router.txt"]
+    },
+    {
+      "id": "typesafe-jev",
+      "title": "Introducing System One Models & Jev",
+      "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
+      "revision": "HTTP ETag 23c98b3268253caab6a80b329bd77178; page dated 2026-09-15",
+      "local_evidence": ["typesafe_jev.html", "typesafe_jev.txt", "typesafe_jev_headers.txt"]
+    },
+    {
+      "id": "hermes-traces",
+      "title": "Hermes Agent Reasoning Traces",
+      "url": "https://huggingface.co/datasets/lambda/hermes-agent-reasoning-traces",
+      "revision": "b92885e4f0161d4b2536512710e004d4892cac6e",
+      "local_evidence": ["hf_revision_hermes.json"]
+    },
+    {
+      "id": "kimi-k3-traces",
+      "title": "Kimi K3 Coding, Tool Use & Instruction Following Traces",
+      "url": "https://huggingface.co/datasets/greghavens/kimi-k3-coding-and-debugging-traces",
+      "revision": "33a874c3affbdb97e142752a9144e6624ef5bd07",
+      "local_evidence": ["../exp_001_data_profile.json", "../exp_001_dataset_checksums.json"]
+    },
+    {
+      "id": "exgentic-traces",
+      "title": "Multi-Benchmark LLM Agent Traces",
+      "url": "https://huggingface.co/datasets/Exgentic/agent-llm-traces",
+      "revision": "70036b93a04e61b0ea2706a68b962f4f26774587",
+      "local_evidence": ["hf_revision_exgentic.json"]
+    },
+    {
+      "id": "fable-aggregate",
+      "title": "Agent Traces Curated 2026 (Fable-GPT-5.5-Distillation-Traces)",
+      "url": "https://huggingface.co/datasets/RESMP-DEV/Fable-GPT-5.5-Distillation-Traces",
+      "revision": "15ba38ac01b610cc986b728a2d55fcb8db9c2096",
+      "local_evidence": ["hf_revision_fable.json"]
+    },
+    {
+      "id": "hf-agent-traces",
+      "title": "Hugging Face Hub Agent Traces documentation",
+      "url": "https://huggingface.co/docs/hub/en/agent-traces",
+      "revision": "live documentation inspected 2026-09-20",
+      "local_evidence": []
+    },
+    {
+      "id": "semantic-scholar-searches",
+      "title": "Semantic Scholar API discovery queries",
+      "url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk",
+      "revision": "responses retrieved 2026-09-20",
+      "local_evidence": [
+        "semantic_agent_policy_distillation.json",
+        "semantic_small_agent_next_action.json",
+        "semantic_confidence_escalation.json",
+        "semantic_tool_trajectory_distillation.json",
+        "semantic_agent_abstention.json"
+      ]
+    }
+  ],
+  "notes": [
+    "Local evidence paths are relative to artifacts/prior_art unless prefixed with ../.",
+    "ArXiv HTML files are retained verbatim; corresponding .txt files are tag-stripped derivatives for inspection.",
+    "Hub API metadata is retained verbatim for the listed dataset revisions.",
+    "A Hugging Face MCP paper read produced an automatic tool cache outside the repository; it was not accessed or used because the task boundary forbids external filesystem reads. All cited evidence was independently retained inside this directory."
+  ]
+}

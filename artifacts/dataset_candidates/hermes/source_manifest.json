@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "bytes": 508262558,
+      "hub_lfs_sha256": null,
+      "local_path": "data/hermes_audit/kimi-b92885e4f0161d4b2536512710e004d4892cac6e.parquet",
+      "repo_path": "data/kimi/train.parquet",
+      "sha256": "d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02"
+    }
+  ],
+  "generated_at_utc": "2026-09-20T18:40:54.117433+00:00",
+  "metadata_api": "https://huggingface.co/api/datasets/lambda/hermes-agent-reasoning-traces",
+  "metadata_response_sha256": "82bccfd708e9f138db56aede848f9c6362b1e4f09c95ded0e3fdd9d47c7e1c40",
+  "repo": "lambda/hermes-agent-reasoning-traces",
+  "revision": "b92885e4f0161d4b2536512710e004d4892cac6e"
+}

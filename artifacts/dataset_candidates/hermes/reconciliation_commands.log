@@ -1,0 +1,5 @@
+[2026-09-20T18:58:22.806195+00:00] .venv/bin/python scripts/reconcile_hermes_candidate.py
+local-only: no download, task replay, model inference, or training
+source_sha256=d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02
+tokenizer=data/cache/huggingface/hub/models--convaiinnovations--laya/snapshots/1c5edc17a7acd8701df6fc341c0d179f1c62c982/tokenizer
+completed=2026-09-20T19:01:37.579279+00:00

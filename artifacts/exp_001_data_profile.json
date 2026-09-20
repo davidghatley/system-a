@@ -1,0 +1,201 @@
+{
+  "candidate_tool_family_maps": [
+    {
+      "map": {
+        "bash": "bash",
+        "edit": "edit",
+        "read": "read",
+        "write": "write"
+      },
+      "name": "identity-minimal",
+      "rationale": "No semantic collapse; one family per observed raw tool name.",
+      "status": "CANDIDATE_NOT_SELECTED"
+    },
+    {
+      "map": {
+        "bash": "shell",
+        "edit": "file",
+        "read": "file",
+        "write": "file"
+      },
+      "name": "lexical-coarse",
+      "rationale": "Review-only lexical grouping; ambiguous names remain other.",
+      "status": "CANDIDATE_NOT_SELECTED"
+    }
+  ],
+  "counts": {
+    "normalized_tasks": 438,
+    "rows": 3956,
+    "rows_by_split": {
+      "train": 3651,
+      "val": 305
+    },
+    "trajectories": 582,
+    "trajectories_by_split": {
+      "train": 533,
+      "val": 49
+    }
+  },
+  "dataset": "greghavens/kimi-k3-coding-and-debugging-traces",
+  "duplicates": {
+    "exact_full_trajectories": {
+      "duplicate_groups": 38,
+      "excess_duplicate_rows": 38,
+      "rows_in_duplicate_groups": 76
+    },
+    "exact_rendered_states": {
+      "duplicate_groups": 470,
+      "excess_duplicate_rows": 470,
+      "rows_in_duplicate_groups": 940
+    },
+    "normalized_tasks": {
+      "duplicate_groups": 438,
+      "excess_duplicate_rows": 3518,
+      "rows_in_duplicate_groups": 3956
+    }
+  },
+  "inspection_scope": "All active Parquet shards at the pinned revision; structural audit only, with no model training, tuning, prediction scoring, or outcome-based selection.",
+  "integrity_assertions": {
+    "manifest_valid": true,
+    "passed": true,
+    "schema_valid": true,
+    "source_splits_trajectory_disjoint": true,
+    "target_indexes_valid": true
+  },
+  "manifest_claims": {
+    "bytes": 3503519,
+    "row_count": 3956,
+    "shards": 50
+  },
+  "manifest_validation": {
+    "byte_count_matches": true,
+    "row_count_matches": true,
+    "shard_count_matches": true
+  },
+  "observations": {
+    "historical_message_roles": {
+      "assistant": 14448,
+      "system": 1391,
+      "user": 5347
+    },
+    "historical_tool_calls_with_ids": 18291,
+    "historical_tool_result_messages_with_ids": 0,
+    "matched_call_result_pairs": 0,
+    "missing_tool_result_observations": 18291,
+    "observable_history_row_ratio_given_prior_call": 0.0,
+    "rows_with_actual_tool_result_observation": 0,
+    "rows_with_prior_tool_call": 3372
+  },
+  "profile_version": 1,
+  "renderer_assertions": {
+    "candidate_template": "exp001-observable-v1-candidate",
+    "reasoning_content_excluded_recursively": true,
+    "status": "PROPOSED_NOT_FROZEN",
+    "target_assistant_excluded": true
+  },
+  "revision": "33a874c3affbdb97e142752a9144e6624ef5bd07",
+  "schema_validation": {
+    "errors": [],
+    "passed": true,
+    "required_fields": [
+      "assistant_step",
+      "category",
+      "messages",
+      "source_trajectory_sha256",
+      "split",
+      "target_message_index",
+      "task"
+    ]
+  },
+  "sequence_lengths": {
+    "messages_per_row": {
+      "max": 57,
+      "mean": 6.355,
+      "min": 2,
+      "p50": 6,
+      "p90": 10,
+      "p95": 12,
+      "p99": 22
+    },
+    "note": "Character counts are tokenizer-independent; enforce model-token limits only after tokenizer pinning.",
+    "rendered_state_characters": {
+      "max": 47132,
+      "mean": 8490.18,
+      "min": 605,
+      "p50": 7035,
+      "p90": 14639,
+      "p95": 19565,
+      "p99": 32075
+    },
+    "target_message_characters": {
+      "max": 89738,
+      "mean": 2369.701,
+      "min": 146,
+      "p50": 460,
+      "p90": 4390,
+      "p95": 11252,
+      "p99": 35040
+    }
+  },
+  "source_url": "https://huggingface.co/datasets/greghavens/kimi-k3-coding-and-debugging-traces/tree/33a874c3affbdb97e142752a9144e6624ef5bd07",
+  "split_leakage": {
+    "exact_rendered_state_overlap": {
+      "train__val": {
+        "count": 0,
+        "sample_count_capped": 0
+      }
+    },
+    "normalized_task_overlap": {
+      "train__val": {
+        "count": 0,
+        "sample_count_capped": 0
+      }
+    },
+    "trajectory_disjoint_passed": true,
+    "trajectory_hash_overlap": {
+      "train__val": {
+        "count": 0,
+        "sample_count_capped": 0
+      }
+    }
+  },
+  "target_index": {
+    "all_valid": true,
+    "assistant_role": 3956,
+    "in_bounds": 3956,
+    "is_final_message": 3956
+  },
+  "targets": {
+    "duplicate_exact_name_and_arguments_excess": 1803,
+    "empty_arguments": 1415,
+    "empty_targets": 0,
+    "redacted_arguments": 5,
+    "response_only_turns": 584,
+    "tool_call_multiplicity_per_turn": {
+      "0": 584,
+      "1": 2750,
+      "2": 494,
+      "3": 83,
+      "4": 30,
+      "5": 7,
+      "7": 5,
+      "8": 3
+    },
+    "tool_calls": 4201,
+    "tool_names": {
+      "bash": 2456,
+      "edit": 319,
+      "read": 947,
+      "write": 479
+    },
+    "turns_with_duplicate_exact_calls": 103,
+    "turns_with_duplicate_tool_names": 431
+  },
+  "viability_gates": {
+    "minimum_source_train_rows_1500": true,
+    "minimum_source_val_rows_300": true,
+    "observable_history_not_mostly_absent": false,
+    "passed": false,
+    "trajectory_disjoint": true
+  }
+}

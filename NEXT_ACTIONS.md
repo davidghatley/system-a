@@ -1,5 +1,11 @@
 # Next Actions
 
+## Current Decision
+
+The Kimi K3 Experiment 001 is stopped. The Laya one-step substrate smoke passed. The only authorized next experiment is `exp_001b`, a Hermes preprocessing prototype with no model training or official evaluation.
+
+Follow `experiments/exp_001b_hermes_preprocessing/protocol.json`. If it conflicts with older instructions below, the newer protocol controls.
+
 Do not run the main training job until steps 1-6 are complete and a frozen copy of the resolved protocol exists.
 
 ## 1. Run the Existing Safe Preflight

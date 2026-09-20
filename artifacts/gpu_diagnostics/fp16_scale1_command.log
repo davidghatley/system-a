@@ -1,0 +1,17 @@
+Script started on 2026-09-20 12:32:46-06:00 [COMMAND="env TMPDIR="$PWD/data/cache/tmp" PIP_CACHE_DIR="$PWD/data/cache/pip" HF_HOME="$PWD/data/cache/huggingface" HF_HUB_CACHE="$PWD/data/cache/huggingface/hub" HF_DATASETS_CACHE="$PWD/data/cache/huggingface/datasets" TRANSFORMERS_CACHE="$PWD/data/cache/huggingface/transformers" TORCH_HOME="$PWD/data/cache/torch" XDG_CACHE_HOME="$PWD/data/cache/xdg" .venv/bin/python scripts/run_laya_one_step.py --diagnostic-fp16-scale1 --output artifacts/gpu_diagnostics/fp16_scale1.json" <not executed on terminal>]
+
+
+
+/home/davidhatley/Projects/research/system_a/scripts/run_laya_one_step.py:238: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  result["loss"] = {"combined": float(loss), "cross_entropy": float(loss_ce), "rl": float(loss_rl), "reward_mean": float(reward.mean()), "reward_std": float(reward.std()), "finite_before_backward": {"combined": bool(torch.isfinite(loss)), "cross_entropy": bool(torch.isfinite(loss_ce)), "rl": bool(torch.isfinite(loss_rl)), "reward_all": bool(torch.isfinite(reward).all())}}
+/home/davidhatley/Projects/research/system_a/.venv/lib/python3.14/site-packages/torch/autograd/graph.py:869: UserWarning: Memory Efficient attention defaults to a non-deterministic algorithm. To explicitly enable determinism call torch.use_deterministic_algorithms(True, warn_only=False). (Triggered internally at /pytorch/aten/src/ATen/native/transformers/cuda/attention_backward.cu:900.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+{
+  "status": "completed_diagnostic",
+  "output": "/home/davidhatley/Projects/research/system_a/artifacts/gpu_diagnostics/fp16_scale1.json",
+  "optimizer_steps_attempted": 0,
+  "optimizer_steps_completed": 0
+}
+
+Script done on 2026-09-20 12:33:10-06:00 [COMMAND_EXIT_CODE="0"]

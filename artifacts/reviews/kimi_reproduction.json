@@ -1,0 +1,136 @@
+{
+  "adversarial_channels": {
+    "assistant_content_messages_after_prior_call": 5844,
+    "heuristic_candidate_examples": [],
+    "heuristic_limit": "Lexical candidates are not authenticated observations and are reported only to challenge false negatives.",
+    "heuristic_output_like_assistant_messages_after_prior_call": 0,
+    "matched_explicit_call_result_pairs": 0,
+    "message_roles": {
+      "assistant": 18404,
+      "system": 1391,
+      "user": 5347
+    },
+    "messages_with_nonempty_observation_named_fields": 0,
+    "nonassistant_content_messages_after_prior_call": 0,
+    "nonempty_content_messages_by_role": {
+      "assistant": 5851,
+      "system": 1391,
+      "user": 5347
+    },
+    "rows_with_assistant_content_after_prior_call": 2601,
+    "rows_with_explicit_result_channel": 0,
+    "rows_with_heuristic_output_like_assistant_content_after_prior_call": 0,
+    "tool_call_id_messages_by_role": {},
+    "tool_calls_by_message_role": {
+      "assistant": 22492
+    }
+  },
+  "dataset": "greghavens/kimi-k3-coding-and-debugging-traces",
+  "integrity": {
+    "checksum_failures": [],
+    "checksum_files_checked": 51,
+    "distinct_schema_count": 1,
+    "loaded_rows": 3956,
+    "manifest_active_shards": 50,
+    "manifest_rows": 3956,
+    "uniform_parquet_schema": true
+  },
+  "labels": {
+    "INFERRED": [
+      "Assistant prose after a tool call can describe or imitate execution output, but the records provide no provenance that makes it an authentic environment observation.",
+      "Tool-call arguments encode requested actions or payloads, not the environment response to those actions."
+    ],
+    "RECOMMENDED": [
+      "Keep the stop gate closed for observation-conditioned training.",
+      "Only reopen after pinning and auditing a source with explicit, provenance-preserving environment result records."
+    ],
+    "UNKNOWN": [
+      "Whether any assistant prose was copied from unretained tool output cannot be established from the pinned release.",
+      "Whether an upstream artifact outside this pinned release retains authentic observations is not established here."
+    ],
+    "VERIFIED": [
+      "All pinned manifest and Parquet file bytes match the recorded SHA-256 and size claims.",
+      "Loaded 3956 rows from 50 active shards.",
+      "No explicit environment-result channel was found in any record."
+    ]
+  },
+  "raw_schema": {
+    "arrow_schema": "task: string\nsource_trajectory_id: string\nsource_trajectory_sha256: string\nlang: string\ncategory: string\ndomain: string\nverifier: string\nsplit: string\nteacher_runtime: string\nteacher_model: string\nreasoning_effort: string\nprovider: string\nobserved_models: list<element: string>\n  child 0, element: string\nmodel_attested: bool\ntrace_format: string\ntools_used: list<element: string>\n  child 0, element: string\nderivation: string\nassistant_step: int64\nassistant_steps: int64\ntarget_message_index: int64\noriginal_n_messages: int64\nn_messages: int64\nmessages: list<element: struct<role: string, content: string, reasoning_content: string, tool_calls: list<elem (... 127 chars omitted)\n  child 0, element: struct<role: string, content: string, reasoning_content: string, tool_calls: list<element: struct<id (... 112 chars omitted)\n      child 0, role: string\n      child 1, content: string\n      child 2, reasoning_content: string\n      child 3, tool_calls: list<element: struct<id: string, type: string, function: struct<name: string, arguments: string>>>\n          child 0, element: struct<id: string, type: string, function: struct<name: string, arguments: string>>\n              child 0, id: string\n              child 1, type: string\n              child 2, function: struct<name: string, arguments: string>\n                  child 0, name: string\n                  child 1, arguments: string\n      child 4, tool_call_id: string\n      child 5, name: string",
+    "nested_field_presence": {
+      "assistant_step": 3956,
+      "assistant_steps": 3956,
+      "category": 3956,
+      "derivation": 3956,
+      "domain": 3956,
+      "lang": 3956,
+      "messages": 3956,
+      "messages[].content": 25142,
+      "messages[].name": 25142,
+      "messages[].reasoning_content": 25142,
+      "messages[].role": 25142,
+      "messages[].tool_call_id": 25142,
+      "messages[].tool_calls": 25142,
+      "messages[].tool_calls[].function": 22492,
+      "messages[].tool_calls[].function.arguments": 22492,
+      "messages[].tool_calls[].function.name": 22492,
+      "messages[].tool_calls[].id": 22492,
+      "messages[].tool_calls[].type": 22492,
+      "model_attested": 3956,
+      "n_messages": 3956,
+      "observed_models": 3956,
+      "original_n_messages": 3956,
+      "provider": 3956,
+      "reasoning_effort": 3956,
+      "source_trajectory_id": 3956,
+      "source_trajectory_sha256": 3956,
+      "split": 3956,
+      "target_message_index": 3956,
+      "task": 3956,
+      "teacher_model": 3956,
+      "teacher_runtime": 3956,
+      "tools_used": 3956,
+      "trace_format": 3956,
+      "verifier": 3956
+    },
+    "observation_named_field_presence": {},
+    "tool_call_field_presence": {
+      "messages[].tool_calls[].function.arguments": 22492,
+      "messages[].tool_calls[].function.name": 22492,
+      "messages[].tool_calls[].id": 22492,
+      "messages[].tool_calls[].type": 22492
+    },
+    "top_level_field_presence": {
+      "assistant_step": 3956,
+      "assistant_steps": 3956,
+      "category": 3956,
+      "derivation": 3956,
+      "domain": 3956,
+      "lang": 3956,
+      "messages": 3956,
+      "model_attested": 3956,
+      "n_messages": 3956,
+      "observed_models": 3956,
+      "original_n_messages": 3956,
+      "provider": 3956,
+      "reasoning_effort": 3956,
+      "source_trajectory_id": 3956,
+      "source_trajectory_sha256": 3956,
+      "split": 3956,
+      "target_message_index": 3956,
+      "task": 3956,
+      "teacher_model": 3956,
+      "teacher_runtime": 3956,
+      "tools_used": 3956,
+      "trace_format": 3956,
+      "verifier": 3956
+    }
+  },
+  "review_version": 1,
+  "revision": "33a874c3affbdb97e142752a9144e6624ef5bd07",
+  "scope": "All locally pinned active shards; structural inspection only; no training or model scoring.",
+  "verdict": {
+    "honest_representation_recovers_environment_observations": false,
+    "reason": "The pinned bytes contain actions and assistant-authored text but no explicit result role, linked result ID, result/output field, or other provenance-preserving environment channel.",
+    "stop_gate_justified": true
+  }
+}

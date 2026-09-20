@@ -1,0 +1,27 @@
+Experiment 001 dataset audit command record
+Working directory for every command: /home/davidhatley/Projects/research/system_a
+Dataset: greghavens/kimi-k3-coding-and-debugging-traces
+Pinned revision: 33a874c3affbdb97e142752a9144e6624ef5bd07
+
+Profile command:
+./.venv/bin/python scripts/preflight_exp001_data.py --dataset greghavens/kimi-k3-coding-and-debugging-traces --revision 33a874c3affbdb97e142752a9144e6624ef5bd07 --output artifacts/exp_001_data_profile.json
+Run 1 result: exit 0; rows=3956; trajectories=582; integrity assertions passed; viability gate failed because observable history is absent.
+Run 2 result: exit 0; rows=3956; trajectories=582; integrity assertions passed; viability gate failed because observable history is absent.
+
+Determinism and validation commands (run after profiling):
+sha256sum artifacts/exp_001_data_profile.json artifacts/exp_001_dataset_checksums.json
+./.venv/bin/python -m json.tool artifacts/exp_001_data_profile.json
+./.venv/bin/python -m json.tool artifacts/exp_001_dataset_checksums.json
+./.venv/bin/python -m py_compile scripts/preflight_exp001_data.py
+git diff --check
+git status --short
+
+Validation results:
+- Both JSON documents parsed successfully.
+- scripts/preflight_exp001_data.py compiled successfully.
+- git diff --check reported no whitespace errors.
+- Both complete runs produced the same output hashes:
+  884e572aae43395a738003ac8f2db7dabe5bfe5030048ac53f03986b1754599d  artifacts/exp_001_data_profile.json
+  e08f7a2abd3408e2816d05821d33c9df1cafd4617cdc912223936a6e6f9d258f  artifacts/exp_001_dataset_checksums.json
+
+Network inputs are limited to dataset-manifest.json and the 50 active shards named by that manifest at the pinned revision. Downloads are retained under data/exp_001_dataset/33a874c3affbdb97e142752a9144e6624ef5bd07/.

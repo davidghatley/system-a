@@ -1,0 +1,224 @@
+{
+  "decision": "GO_BOUNDED_PREPROCESSING_PROTOTYPE_ONLY",
+  "filters": {
+    "candidate_observation_conditioned_targets": 63239,
+    "exact_tokenized_state_duplicates_removed": 637,
+    "final_rows": 28220,
+    "final_task_template_proxy_groups": 640,
+    "final_trajectories": 5300,
+    "malformed_reasoning_messages_in_selected_subset": 18,
+    "mixed_text_plus_call_targets_before_budget_and_dedup": 14289,
+    "prior_linkage_exceptions": 0,
+    "representable_before_exact_state_dedup": 28857,
+    "targets_rejected_for_invalid_or_out_of_toolset_target_calls": 31,
+    "targets_rejected_over_512": 34351,
+    "trajectories_rejected_for_any_malformed_reasoning": 16
+  },
+  "generated_at_utc": "2026-09-20T19:01:37.579279+00:00",
+  "main_training_decision": "NO_GO",
+  "profile_version": "hermes-reconciliation-v1",
+  "prototype_stop_gates": [
+    "No training or official test access under this profile.",
+    "Stop if any generated row contains a reasoning marker, target canary, incomplete call/result pair, non-six-tool label, or more than 512 tokens.",
+    "Stop before training unless task-family/repository/site isolation is established from auditable evidence or the claim is narrowed to template-proxy-disjoint within-corpus imitation.",
+    "Stop before redistribution until embedded-content provenance and license policy is accepted explicitly.",
+    "Stop if every split lacks prespecified minimum independent trajectories and positive trajectories per retained tool; thresholds must be frozen in a revised protocol.",
+    "Do not describe responses as authenticated execution, traces as successful, or teacher/harness identity as row-attested."
+  ],
+  "provenance": {
+    "embedded_content_license": "unknown; repository Apache-2.0 metadata does not authenticate embedded-content rights",
+    "execution": "not externally authenticated; no replay, signature, call-side ID, or external log reference",
+    "repository_site_task_family_ids": "absent; not inferred as trusted identifiers",
+    "teacher_harness": "publisher-level attribution only; absent from row fields"
+  },
+  "renderer": {
+    "eligible_token_lengths": {
+      "max": 512,
+      "mean": 309.32,
+      "median": 283,
+      "min": 174,
+      "p95": 474
+    },
+    "fields": [
+      "task",
+      "fixed active-tool names",
+      "latest complete assistant call",
+      "latest complete tool response",
+      "six frozen question strings"
+    ],
+    "max_tokens_including_special_tokens_and_questions": 512,
+    "renderer_accepts_target_content": false,
+    "target_canary_absent_after_tokenization": true,
+    "tokenizer_path": "data/cache/huggingface/hub/models--convaiinnovations--laya/snapshots/1c5edc17a7acd8701df6fc341c0d179f1c62c982/tokenizer",
+    "truncation": "none; reject over-budget states so no call/result payload is split"
+  },
+  "source": {
+    "path": "data/hermes_audit/kimi-b92885e4f0161d4b2536512710e004d4892cac6e.parquet",
+    "rows": 7646,
+    "sha256": "d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02"
+  },
+  "split": {
+    "algorithm": "sha256(UTF-8 '20260920\\n' + group_key), first 64 bits modulo 10000; [0,7000) train, [7000,8000) development, [8000,9000) calibration, [9000,10000) test",
+    "group_key": "lowercase whitespace-normalized task with numeric and quoted literals replaced",
+    "groups": {
+      "calibration": 55,
+      "development": 63,
+      "test": 69,
+      "train": 453
+    },
+    "positive_rows_by_tool": {
+      "calibration": {
+        "patch": 45,
+        "process": 21,
+        "read_file": 179,
+        "search_files": 239,
+        "terminal": 1724,
+        "write_file": 288
+      },
+      "development": {
+        "patch": 52,
+        "process": 17,
+        "read_file": 167,
+        "search_files": 249,
+        "terminal": 1884,
+        "write_file": 362
+      },
+      "test": {
+        "patch": 51,
+        "process": 23,
+        "read_file": 160,
+        "search_files": 240,
+        "terminal": 1721,
+        "write_file": 477
+      },
+      "train": {
+        "patch": 443,
+        "process": 176,
+        "read_file": 1330,
+        "search_files": 1953,
+        "terminal": 13292,
+        "write_file": 2801
+      }
+    },
+    "positive_trajectories_by_tool": {
+      "calibration": {
+        "patch": 35,
+        "process": 16,
+        "read_file": 113,
+        "search_files": 141,
+        "terminal": 398,
+        "write_file": 213
+      },
+      "development": {
+        "patch": 43,
+        "process": 12,
+        "read_file": 102,
+        "search_files": 164,
+        "terminal": 455,
+        "write_file": 254
+      },
+      "test": {
+        "patch": 38,
+        "process": 16,
+        "read_file": 107,
+        "search_files": 134,
+        "terminal": 420,
+        "write_file": 281
+      },
+      "train": {
+        "patch": 341,
+        "process": 115,
+        "read_file": 867,
+        "search_files": 1043,
+        "terminal": 3307,
+        "write_file": 1846
+      }
+    },
+    "rows": {
+      "calibration": 2481,
+      "development": 2744,
+      "test": 2691,
+      "train": 20304
+    },
+    "state_hashes_unique": true,
+    "task_groups_crossing_splits": 0,
+    "trajectories": {
+      "calibration": 454,
+      "development": 515,
+      "test": 506,
+      "train": 3825
+    },
+    "trajectories_crossing_splits": 0,
+    "warning": "This is a deterministic template proxy, not authenticated repository/site/task-family identity."
+  },
+  "subset": {
+    "exact_row_toolset": [
+      "patch",
+      "process",
+      "read_file",
+      "search_files",
+      "terminal",
+      "write_file"
+    ],
+    "physical_execution_authenticated": false,
+    "requires_prior_immediately_adjacent_parseable_call_result_pair": true,
+    "serialization_description": "publisher-attributed responses with measured ordered adjacency and name agreement",
+    "source_trajectories": 6071
+  },
+  "target": {
+    "decoder": "independent scores are decoded to the highest-scoring member of the 64 valid six-bit bundles; mode is derived",
+    "mixed_text_plus_call": "tool set is the target; non-reasoning text is not a separate label",
+    "questions": [
+      {
+        "name": "call_patch",
+        "options": [
+          "no",
+          "yes"
+        ],
+        "primitive": "noul"
+      },
+      {
+        "name": "call_process",
+        "options": [
+          "no",
+          "yes"
+        ],
+        "primitive": "noul"
+      },
+      {
+        "name": "call_read_file",
+        "options": [
+          "no",
+          "yes"
+        ],
+        "primitive": "noul"
+      },
+      {
+        "name": "call_search_files",
+        "options": [
+          "no",
+          "yes"
+        ],
+        "primitive": "noul"
+      },
+      {
+        "name": "call_terminal",
+        "options": [
+          "no",
+          "yes"
+        ],
+        "primitive": "noul"
+      },
+      {
+        "name": "call_write_file",
+        "options": [
+          "no",
+          "yes"
+        ],
+        "primitive": "noul"
+      }
+    ],
+    "unknown_or_malformed": "exclude; never map to RESPOND_OR_FINISH; OTHER_TOOL is unreachable in this fixed-toolset prototype",
+    "valid_bundle": "empty set means RESPOND_OR_FINISH; otherwise nonempty set of yes tools"
+  }
+}

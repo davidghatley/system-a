@@ -1,0 +1,72 @@
+{
+  "dataset": "Exgentic/agent-llm-traces",
+  "files": [
+    {
+      "bytes": 7623,
+      "path": "README.md",
+      "remote_bytes": 7623,
+      "sha256": "5673e49cae3525e7b9b1415840a9827f4da5f7b0e153e201e7f915bde5fec8de"
+    },
+    {
+      "bytes": 24144062,
+      "path": "data/train-00000-of-00039.parquet",
+      "remote_bytes": 24144062,
+      "sha256": "5cfde1c01460d2f7d90fdc6c245278cee20f32101d5275b6cf3d06f30a5f8f60"
+    },
+    {
+      "bytes": 2620639,
+      "path": "data/train-00003-of-00039.parquet",
+      "remote_bytes": 2620639,
+      "sha256": "e631d7cd79b8ec06dc1f4dbe622ea545d4a6157bd4da012e4f4f52be65dff9f1"
+    },
+    {
+      "bytes": 4252315,
+      "path": "data/train-00004-of-00039.parquet",
+      "remote_bytes": 4252315,
+      "sha256": "9275682f710f5321e05ecb314f1b1b520be637f60b525df9fe313ec82a246d36"
+    },
+    {
+      "bytes": 40355325,
+      "path": "data/train-00008-of-00039.parquet",
+      "remote_bytes": 40355325,
+      "sha256": "b79a0f50a3b3257477cf4d4aa1aa3779ae7e57caef07781d874c206b98dfb57b"
+    },
+    {
+      "bytes": 136468470,
+      "path": "data/train-00009-of-00039.parquet",
+      "remote_bytes": 136468470,
+      "sha256": "596b5f27fb93b001f4417d494649f83e920eee317a696fcd953d0c9783d30ace"
+    },
+    {
+      "bytes": 14873293,
+      "path": "data/train-00013-of-00039.parquet",
+      "remote_bytes": 14873293,
+      "sha256": "28c650bd2e1d47e6cd08fb3c1a7217a0d8108749f9c5118e2cb6128c2e5a0784"
+    },
+    {
+      "bytes": 265853,
+      "path": "data/train-00022-of-00039.parquet",
+      "remote_bytes": 265853,
+      "sha256": "38bd8d57ceb882de7d2afb7354fec558687dbc67621c2293e92a3f9ce4d3351a"
+    },
+    {
+      "bytes": 323877,
+      "path": "data/train-00029-of-00039.parquet",
+      "remote_bytes": 323877,
+      "sha256": "36258df7a80e4b48c2002dc77f359835ae32b4850929373723aab3c648c45df9"
+    },
+    {
+      "bytes": 5637536,
+      "path": "data/train-00035-of-00039.parquet",
+      "remote_bytes": 5637536,
+      "sha256": "bcf6f5bb11508049b1822f484179c4fbdad5c91cd2789a20e8888bd8c4869040"
+    },
+    {
+      "bytes": 2542646,
+      "path": "data/train-00038-of-00039.parquet",
+      "remote_bytes": 2542646,
+      "sha256": "1f6d582adfd96eff8adac9446746546c05af176e20f2a451559b31dfad007f38"
+    }
+  ],
+  "revision": "70036b93a04e61b0ea2706a68b962f4f26774587"
+}

@@ -5,4 +5,6 @@ __pycache__/
 
 # Local datasets, model checkouts, and generated run artifacts.
 data/
-artifacts/
+
+# Large binary run outputs should be ignored individually if introduced.
+# Small logs, profiles, manifests, and measurements under artifacts/ are tracked.

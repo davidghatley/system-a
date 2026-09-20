@@ -1,0 +1,68 @@
+{
+  "protocol_version": "0.1.0",
+  "experiment_id": "exp_001b",
+  "title": "Hermes six-tool deterministic preprocessing prototype",
+  "status": "FROZEN_FOR_PREPROCESSING_ONLY",
+  "frozen_date": "2026-09-20",
+  "training_authorized": false,
+  "official_evaluation_authorized": false,
+  "source": {
+    "repo": "lambda/hermes-agent-reasoning-traces",
+    "revision": "b92885e4f0161d4b2536512710e004d4892cac6e",
+    "shard_sha256": "d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02",
+    "attribution": "publisher-attributed Kimi-K2.5/Hermes execution; not externally authenticated"
+  },
+  "subset": {
+    "exact_available_tools": ["patch", "process", "read_file", "search_files", "terminal", "write_file"],
+    "requires_adjacent_complete_call_result_pair": true,
+    "reject_trajectory_on_malformed_or_nested_reasoning_tags": true,
+    "reject_unknown_or_malformed_target_calls": true,
+    "max_tokens_including_questions": 512,
+    "truncation": "none",
+    "deduplication": "global exact token-id sequence; deterministic first row"
+  },
+  "target": {
+    "primitive": "six independent noul questions",
+    "options": ["no", "yes"],
+    "bundle": "six-bit exact called-tool set",
+    "control_mode": "derived from bundle emptiness",
+    "same_tool_multiplicity": "collapsed",
+    "unknown_call": "exclude"
+  },
+  "split": {
+    "seed": 20260920,
+    "group_proxy": "lowercase whitespace-normalized task with numeric and quoted literals replaced",
+    "allocation": {"train": 0.7, "development": 0.1, "calibration": 0.1, "test": 0.1},
+    "claim_limit": "template-proxy-disjoint within-corpus only; not authenticated task-family or repository isolation"
+  },
+  "required_outputs": [
+    "model-ready candidate rows without sealed-test model access",
+    "row-level exclusion ledger",
+    "trajectory and proxy-group split manifests",
+    "source and output checksums",
+    "target and excluded-metadata canary results",
+    "reasoning-marker scan",
+    "call-result linkage assertions",
+    "token and state-hash assertions",
+    "selection-bias tables by split, proxy group, category, and label",
+    "positive-row and positive-trajectory support by tool and split"
+  ],
+  "stop_gates": [
+    "source checksum mismatch",
+    "any residual reasoning marker",
+    "any target or excluded-metadata canary reaches rendered tokens",
+    "any incomplete, nonadjacent, unparsable, count-mismatched, or name-mismatched retained call-result pair",
+    "any unavailable or malformed retained target label",
+    "any retained state exceeds 512 tokens or loses required content",
+    "any duplicate retained tokenized state",
+    "any trajectory or proxy group crosses splits",
+    "any split has fewer than 10 positive trajectories for a retained tool",
+    "over-budget exclusion-rate absolute difference exceeds 10 percentage points between any two splits",
+    "over-budget exclusion-rate absolute difference exceeds 20 percentage points between positive and negative examples for any retained tool"
+  ],
+  "interpretation": {
+    "pass": "converter and candidate subset are technically viable for subsequent protocol review",
+    "fail": "Hermes candidate is rejected or the subset/protocol must become a new explicit revision",
+    "not_established": ["successful behavior", "authenticated physical execution", "semantic task-family generalization", "embedded-content rights", "model learnability"]
+  }
+}
