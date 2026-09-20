@@ -1,0 +1,207 @@
+{
+  "protocol_version": "0.2.0",
+  "experiment_id": "exp_001",
+  "title": "Task-disjoint next-control prediction from verified Kimi K3 traces",
+  "status": "FROZEN_DESIGN_BLOCKED_ON_DATA_PREFLIGHT_AND_VRAM_SMOKE",
+  "frozen_date": "2026-09-20",
+  "hypothesis": "Laya can learn task-conditioned next-control decisions from successful frontier-agent traces and expose uncertainty useful for selective execution.",
+  "claim_scope": {
+    "included": [
+      "offline one-step behavioral cloning",
+      "task-disjoint generalization within one coding harness",
+      "parallel tool-family prediction",
+      "confidence-based abstention"
+    ],
+    "excluded": [
+      "tool arguments",
+      "closed-loop task success",
+      "teacher optimality",
+      "cross-harness generalization",
+      "hidden-reasoning imitation"
+    ]
+  },
+  "dataset": {
+    "repo": "greghavens/kimi-k3-coding-and-debugging-traces",
+    "revision": "UNRESOLVED_DATASET_COMMIT_SHA",
+    "license": "CC-BY-4.0",
+    "teacher": "moonshotai/kimi-k3",
+    "harness": "moonshiner/pi",
+    "verified_size": {
+      "trajectories": 582,
+      "rows": 3956
+    },
+    "unit": "one cumulative trajectory prefix ending in one target assistant turn",
+    "group_key": "source_trajectory_sha256",
+    "source_split_field": "split",
+    "required_fields": [
+      "task",
+      "source_trajectory_sha256",
+      "category",
+      "split",
+      "assistant_step",
+      "messages"
+    ],
+    "preflight_requirements": [
+      "pin revision and file checksums",
+      "verify source split is trajectory-disjoint",
+      "enumerate assistant target tool names and multiplicities",
+      "confirm every row ends at target_message_index",
+      "quantify missing or redacted tool observations and arguments",
+      "deduplicate exact rendered states by trajectory group"
+    ]
+  },
+  "input": {
+    "state_fields": [
+      "task text from first user message",
+      "observable messages strictly before target_message_index"
+    ],
+    "excluded_fields": [
+      "target assistant message",
+      "reasoning_content",
+      "verifier",
+      "teacher_model",
+      "category",
+      "split",
+      "source trajectory IDs and hashes"
+    ],
+    "max_length": 512,
+    "truncation": "retain task and most recent observable history",
+    "state_template_version": "UNRESOLVED_AFTER_SCHEMA_PREFLIGHT"
+  },
+  "target": {
+    "primary_questions": [
+      {
+        "name": "control_mode",
+        "primitive": "choice",
+        "options": ["CALL_TOOL", "RESPOND_OR_FINISH"]
+      },
+      {
+        "name": "call_<tool_family>",
+        "primitive": "noul",
+        "one_per_family": true,
+        "semantics": "binary membership in the target assistant turn's tool-call set"
+      }
+    ],
+    "tool_family_map": "UNRESOLVED_PREFLIGHT_THEN_FROZEN_BEFORE_TRAINING",
+    "parallel_calls": "preserved as a multi-label family set",
+    "duplicate_calls_same_family": "collapsed for the primary target and reported separately",
+    "teacher_probabilities": "hard one-hot distributions derived from observable target tool calls",
+    "reasoning_used_as_target": false,
+    "arguments_used_as_target": false,
+    "abstention": "post-hoc threshold on calibrated probability of the predicted complete decision bundle; no synthetic escalation labels"
+  },
+  "splits": {
+    "train": "source train trajectories excluding deterministic calibration groups",
+    "calibration": "20% of source train trajectories by sha256(group_key + seed)",
+    "test": "source val trajectories, untouched until model/checkpoint/threshold freeze",
+    "seed": 20260920,
+    "no_row_level_random_split": true,
+    "generalization_test": "task-disjoint source validation split",
+    "leakage_checks": [
+      "no trajectory hash overlap",
+      "no exact rendered-state overlap",
+      "normalized task-text duplicate audit",
+      "target-message exclusion assertion"
+    ]
+  },
+  "subsets": {
+    "smoke": "100 train trajectories capped at 500 decision rows; one optimizer step then at most 100 updates; no test scoring",
+    "main": "all eligible source train trajectories after calibration holdout; test is all eligible source val trajectories",
+    "minimum_main_train_rows": 1500,
+    "minimum_test_rows": 300
+  },
+  "model": {
+    "checkpoint": "convaiinnovations/laya",
+    "revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
+    "architecture": "ModernBERT-large encoder plus Laya decision head",
+    "parameters": 421293830,
+    "training_regime": "full encoder and decision-head fine-tuning using upstream RLCD plus soft cross-entropy",
+    "primary_precision": "fp16",
+    "gradient_checkpointing": true,
+    "micro_batch": 1,
+    "gradient_accumulation": 32,
+    "max_length": 512,
+    "optimizer": "AdamW",
+    "encoder_learning_rate": 0.000025,
+    "head_learning_rate": 0.0001,
+    "weight_decay": 0.01,
+    "max_epochs": 4,
+    "checkpoint_selection": "lowest calibration NLL, tie-broken by bundle exact match",
+    "temperature_fitting": "held-out calibration only; remove stale option-count temperatures or fit the same buckets"
+  },
+  "baselines": [
+    "per-question majority predictor",
+    "TF-IDF plus one-vs-rest logistic regression",
+    "untuned pinned Laya",
+    "fine-tuned Laya",
+    "task-only fine-tuned ablation",
+    "history-only fine-tuned ablation"
+  ],
+  "metrics": {
+    "primary": "complete decision-bundle exact match on task-disjoint test",
+    "secondary": [
+      "control-mode accuracy",
+      "tool-family micro and macro F1",
+      "per-question top-1 accuracy",
+      "NLL",
+      "Brier score",
+      "ECE with 10 equal-mass bins",
+      "top-k accuracy where a choice has more than two options",
+      "teacher agreement"
+    ],
+    "selective": [
+      "risk-coverage curve",
+      "AURC",
+      "accuracy at 25%, 50%, 75%, and 90% coverage",
+      "coverage at calibration-frozen 80% and 90% target accuracy",
+      "escalation rate"
+    ],
+    "systems": [
+      "p50 and p95 latency",
+      "decisions per second",
+      "peak allocated and reserved VRAM",
+      "training wall-clock"
+    ],
+    "uncertainty": "95% trajectory-cluster bootstrap intervals with 10000 resamples"
+  },
+  "promotion_criteria": {
+    "all_required": true,
+    "bundle_exact_match_gain_over_strongest_non_laya_baseline_points": 5.0,
+    "gain_95pct_ci_lower_bound_gt_points": 0.0,
+    "full_state_gain_over_better_task_only_or_history_only_ablation_points": 3.0,
+    "selective_accuracy_min": 0.8,
+    "selective_coverage_min": 0.5,
+    "selective_accuracy_95pct_ci_lower_min": 0.75,
+    "ece_max": 0.1,
+    "no_leakage_or_target_marker_findings": true,
+    "one_seed_interpretation": "pilot support only"
+  },
+  "failure_criteria": [
+    "bundle gain 95% CI upper bound is below +5 points",
+    "full-state model does not beat both task-only and history-only ablations",
+    "no calibration-frozen threshold reaches 80% accuracy at 50% coverage",
+    "ECE exceeds 0.20 after held-out temperature fitting",
+    "fewer than minimum eligible rows remain after preflight",
+    "one-step full-model smoke exceeds 11.5 GiB or the projected main run exceeds 24 hours"
+  ],
+  "invalidating_conditions": [
+    "test-guided tuning",
+    "trajectory leakage across splits",
+    "target assistant message or reasoning in model state",
+    "post-hoc target taxonomy changes",
+    "post-hoc promotion threshold changes"
+  ],
+  "execution_gates": [
+    "resolve every UNRESOLVED field and write a frozen protocol copy",
+    "pass dataset schema and leakage preflight",
+    "pass one-step RTX 3060 VRAM smoke",
+    "freeze splits, tool-family map, and checksums",
+    "train and freeze baselines before official test scoring"
+  ],
+  "experiment_002": {
+    "status": "CONCEPT_ONLY_DO_NOT_EXECUTE",
+    "trigger": "Experiment 001 fails broad pilot criteria without invalidation",
+    "design": "Repeat the same protocol on one coherent domain, selected from observed data coverage; design/frontend/Three.js is eligible only after obtaining verified domain traces.",
+    "comparison": "pre-register whether narrowing improves accuracy, calibration, and selective coverage under the same trajectory-level split discipline"
+  }
+}

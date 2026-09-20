@@ -1,0 +1,8 @@
+.firecrawl/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local datasets, model checkouts, and generated run artifacts.
+data/
+artifacts/
