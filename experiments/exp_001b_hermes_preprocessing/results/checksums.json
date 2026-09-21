@@ -1,0 +1,21 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "data/hermes_audit/kimi-b92885e4f0161d4b2536512710e004d4892cac6e.parquet": {
+      "bytes": 508262558,
+      "sha256": "d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02"
+    },
+    "experiments/exp_001b_hermes_preprocessing/analysis/selection_bias.md": {
+      "bytes": 805,
+      "sha256": "bfcd3e82e45e24a9e2702335df1397a33f510bc43af4e4444eafe15c8fa14f84"
+    },
+    "experiments/exp_001b_hermes_preprocessing/results/exclusion_ledger.jsonl.gz": {
+      "bytes": 74120,
+      "sha256": "20eb5a58e44e609a67a2c1b3d7958f3e2f88960a9cb07744a0d51b79b0c36e13"
+    },
+    "experiments/exp_001b_hermes_preprocessing/results/profile.json": {
+      "bytes": 133733,
+      "sha256": "2f204b395f0a37a1b6909660f5e9f5a2d6b644e2c7949eea97dc65361105e5dd"
+    }
+  }
+}

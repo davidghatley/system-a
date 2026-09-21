@@ -1,0 +1,3745 @@
+{
+  "assertions": {
+    "canary_failures": 87980,
+    "proxy_group_cross_split": 0,
+    "residual_reasoning_marker_rows": 0,
+    "trajectory_cross_split": 0
+  },
+  "counts": {
+    "dedup_exclusions": 720,
+    "exact_toolset_trajectories": 6071,
+    "invalid_target_exclusions": 31,
+    "malformed_reasoning_trajectories": 16,
+    "observation_conditioned_candidates": 63239,
+    "over_budget_exclusions": 0,
+    "retained_rows": 62488,
+    "valid_before_budget": 63208
+  },
+  "disposition": "FAIL",
+  "positive_support": {
+    "calibration": {
+      "patch": {
+        "positive_rows": 204,
+        "positive_trajectories": 101
+      },
+      "process": {
+        "positive_rows": 47,
+        "positive_trajectories": 22
+      },
+      "read_file": {
+        "positive_rows": 790,
+        "positive_trajectories": 202
+      },
+      "search_files": {
+        "positive_rows": 396,
+        "positive_trajectories": 185
+      },
+      "terminal": {
+        "positive_rows": 3459,
+        "positive_trajectories": 450
+      },
+      "write_file": {
+        "positive_rows": 800,
+        "positive_trajectories": 298
+      }
+    },
+    "development": {
+      "patch": {
+        "positive_rows": 185,
+        "positive_trajectories": 100
+      },
+      "process": {
+        "positive_rows": 18,
+        "positive_trajectories": 13
+      },
+      "read_file": {
+        "positive_rows": 536,
+        "positive_trajectories": 185
+      },
+      "search_files": {
+        "positive_rows": 421,
+        "positive_trajectories": 194
+      },
+      "terminal": {
+        "positive_rows": 3560,
+        "positive_trajectories": 498
+      },
+      "write_file": {
+        "positive_rows": 1137,
+        "positive_trajectories": 325
+      }
+    },
+    "test": {
+      "patch": {
+        "positive_rows": 195,
+        "positive_trajectories": 103
+      },
+      "process": {
+        "positive_rows": 26,
+        "positive_trajectories": 17
+      },
+      "read_file": {
+        "positive_rows": 581,
+        "positive_trajectories": 179
+      },
+      "search_files": {
+        "positive_rows": 422,
+        "positive_trajectories": 172
+      },
+      "terminal": {
+        "positive_rows": 3319,
+        "positive_trajectories": 502
+      },
+      "write_file": {
+        "positive_rows": 1456,
+        "positive_trajectories": 395
+      }
+    },
+    "train": {
+      "patch": {
+        "positive_rows": 1703,
+        "positive_trajectories": 839
+      },
+      "process": {
+        "positive_rows": 310,
+        "positive_trajectories": 156
+      },
+      "read_file": {
+        "positive_rows": 4900,
+        "positive_trajectories": 1431
+      },
+      "search_files": {
+        "positive_rows": 3340,
+        "positive_trajectories": 1306
+      },
+      "terminal": {
+        "positive_rows": 25539,
+        "positive_trajectories": 3885
+      },
+      "write_file": {
+        "positive_rows": 8417,
+        "positive_trajectories": 2645
+      }
+    }
+  },
+  "profile_version": "exp001b-preprocessing-v2",
+  "retained_max_token_lengths": {
+    "max": 512,
+    "mean": 409.5,
+    "median": 512,
+    "min": 150,
+    "p95": 512
+  },
+  "retained_mean_token_lengths": {
+    "max": 512.0,
+    "mean": 409.03,
+    "median": 512.0,
+    "min": 149.0,
+    "p95": 512.0
+  },
+  "selection_bias": {
+    "by_category": {
+      "Agent Tools": {
+        "candidates": 7864,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "Conversational": {
+        "candidates": 110,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "File Operations": {
+        "candidates": 4426,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "Multi-Tool": {
+        "candidates": 9402,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "Planning & Organization": {
+        "candidates": 732,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "Repository Tasks": {
+        "candidates": 24440,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "Scheduling": {
+        "candidates": 2057,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "Terminal & Coding": {
+        "candidates": 14177,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      }
+    },
+    "by_label": {
+      "patch": {
+        "negative": {
+          "candidates": 60921,
+          "over_budget_rate": 0.0
+        },
+        "positive": {
+          "candidates": 2287,
+          "over_budget_rate": 0.0
+        }
+      },
+      "process": {
+        "negative": {
+          "candidates": 62807,
+          "over_budget_rate": 0.0
+        },
+        "positive": {
+          "candidates": 401,
+          "over_budget_rate": 0.0
+        }
+      },
+      "read_file": {
+        "negative": {
+          "candidates": 56367,
+          "over_budget_rate": 0.0
+        },
+        "positive": {
+          "candidates": 6841,
+          "over_budget_rate": 0.0
+        }
+      },
+      "search_files": {
+        "negative": {
+          "candidates": 58270,
+          "over_budget_rate": 0.0
+        },
+        "positive": {
+          "candidates": 4938,
+          "over_budget_rate": 0.0
+        }
+      },
+      "terminal": {
+        "negative": {
+          "candidates": 27026,
+          "over_budget_rate": 0.0
+        },
+        "positive": {
+          "candidates": 36182,
+          "over_budget_rate": 0.0
+        }
+      },
+      "write_file": {
+        "negative": {
+          "candidates": 51369,
+          "over_budget_rate": 0.0
+        },
+        "positive": {
+          "candidates": 11839,
+          "over_budget_rate": 0.0
+        }
+      }
+    },
+    "by_proxy_group": {
+      "benchmark different hash algorithms for large files using different approaches and compare results": {
+        "candidates": 142,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "benchmark json parsing libraries (json, ujson, orjson) using different approaches and compare res...": {
+        "candidates": 131,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "benchmark sync vs async http request patterns using different approaches and compare results": {
+        "candidates": 105,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "benchmark various serialization formats (json, msgpack, protobuf) using different approaches and ...": {
+        "candidates": 185,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "browse https://docs": {
+        "candidates": 396,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "browse https://fastapi": {
+        "candidates": 245,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "check my saved memories for any notes about our coding conventions": {
+        "candidates": 41,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "check my saved memories for any notes about the database credentials": {
+        "candidates": 42,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "check my saved memories for any notes about the team's deployment process": {
+        "candidates": 23,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "compare postgresql vs docker compose for a high-throughput analytics platform": {
+        "candidates": 1,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a": {
+        "candidates": 76,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that backs up a directory with timestamps and keeps the last <num> backups": {
+        "candidates": 15,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that creates a simple database backup and restore workflow": {
+        "candidates": 62,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that finds all large files (>100mb) and lists them sorted by size": {
+        "candidates": 17,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that finds and removes all": {
+        "candidates": 32,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that finds duplicate files in a directory tree using checksums": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that generates a system health report (cpu, memory, disk, network)": {
+        "candidates": 25,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that monitors disk usage and sends a warning when above <num>%": {
+        "candidates": 40,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that rotates log files and compresses old ones": {
+        "candidates": 68,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that sets up a development environment with common tools": {
+        "candidates": 75,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a bash script that sets up ssh key-based authentication for a remote server": {
+        "candidates": 23,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a cli tool using argparse that converts between different data formats": {
+        "candidates": 170,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a cli tool using argparse that generates project scaffolding from templates": {
+        "candidates": 97,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a cli tool using argparse that manages a local password vault": {
+        "candidates": 170,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a cli tool using argparse that processes and transforms text files": {
+        "candidates": 167,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for a ci/cd pipeline (github actions) with build, test, and deploy st...": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for a ci/cd pipeline (github actions) with health checks and resource...": {
+        "candidates": 27,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for a ci/cd pipeline (github actions) with import sorting and line le...": {
+        "candidates": 8,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for a ci/cd pipeline (github actions) with ssl termination and rate l...": {
+        "candidates": 35,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for a python linter (ruff) with custom rules with build, test, and de...": {
+        "candidates": 76,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for a python linter (ruff) with custom rules with health checks and r...": {
+        "candidates": 16,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for a python linter (ruff) with custom rules with import sorting and ...": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for a python linter (ruff) with custom rules with ssl termination and...": {
+        "candidates": 20,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for docker compose with multiple services with build, test, and deplo...": {
+        "candidates": 19,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for docker compose with multiple services with health checks and reso...": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for docker compose with multiple services with import sorting and lin...": {
+        "candidates": 18,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for docker compose with multiple services with ssl termination and ra...": {
+        "candidates": 65,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for nginx as a reverse proxy with build, test, and deploy stages": {
+        "candidates": 15,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for nginx as a reverse proxy with health checks and resource limits": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for nginx as a reverse proxy with import sorting and line length rules": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a configuration file for nginx as a reverse proxy with ssl termination and rate limiting": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a cron job that backs up the database every night at <num> am": {
+        "candidates": 152,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a cron job that checks for security updates weekly": {
+        "candidates": 239,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a cron job that cleans up temporary files every hour": {
+        "candidates": 146,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a cron job that sends a daily digest email at <num> am": {
+        "candidates": 216,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a daily summary that aggregates key metrics from various data sources": {
+        "candidates": 168,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a daily summary that compiles a digest of new github issues and prs": {
+        "candidates": 134,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a daily summary that summarizes slack messages from key channels": {
+        "candidates": 91,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a detailed implementation plan for a distributed task queue system": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a detailed implementation plan for a model serving infrastructure with a/b testing": {
+        "candidates": 1,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a detailed implementation plan for a multi-tenant saas application": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a detailed implementation plan for a real-time data streaming pipeline": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a detailed implementation plan for an ai-powered code review tool": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a dockerfile that creates a development environment with postgresql and redis": {
+        "candidates": 193,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a dockerfile that runs a machine learning inference server with gpu support": {
+        "candidates": 206,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a dockerfile that runs a python fastapi app with hot reloading": {
+        "candidates": 86,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a dockerfile that sets up a microservices stack with nginx reverse proxy": {
+        "candidates": 167,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a dockerfile that sets up a multi-stage build for a node": {
+        "candidates": 82,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a file watcher that regenerates documentation when markdown files change": {
+        "candidates": 136,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a file watcher that runs tests when test files are modified": {
+        "candidates": 126,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a file watcher that syncs files to a remote server on modification": {
+        "candidates": 63,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a file watcher that triggers rebuilds when source files change": {
+        "candidates": 61,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a jupyter notebook that demonstrates comparing different statistical tests": {
+        "candidates": 29,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a jupyter notebook that demonstrates exploratory data analysis on a sample dataset": {
+        "candidates": 38,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a jupyter notebook that demonstrates time series forecasting techniques": {
+        "candidates": 25,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a jupyter notebook that demonstrates training a simple ml model with visualizations": {
+        "candidates": 24,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a logging configuration for a python app that adds request id tracking across async calls": {
+        "candidates": 37,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a logging configuration for a python app that filters sensitive data from log messages": {
+        "candidates": 82,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a logging configuration for a python app that includes structured json logging for production": {
+        "candidates": 73,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a logging configuration for a python app that logs to both console and rotating file with ...": {
+        "candidates": 57,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a browser extension application with proper directory layout": {
+        "candidates": 80,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a cli tool application with proper directory layout": {
+        "candidates": 51,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a data processing etl application with proper directory layout": {
+        "candidates": 83,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a fastapi backend application with proper directory layout": {
+        "candidates": 57,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a go microservice application with proper directory layout": {
+        "candidates": 102,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a ml training pipeline application with proper directory layout": {
+        "candidates": 37,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a python library application with proper directory layout": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a react app application with proper directory layout": {
+        "candidates": 47,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a rust cli tool application with proper directory layout": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a project structure for a vs code extension application with proper directory layout": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a python package with proper setup": {
+        "candidates": 640,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a rest api using fastapi that handles user authentication with jwt tokens": {
+        "candidates": 138,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a rest api using fastapi that manages a book collection (crud operations)": {
+        "candidates": 206,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a rest api using fastapi that processes file uploads and serves transformed outputs": {
+        "candidates": 76,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a rest api using fastapi that provides a weather data aggregation service": {
+        "candidates": 215,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a skill from the workflow we just used for debugging production issues with log analysis": {
+        "candidates": 26,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a skill from the workflow we just used for deploying to staging and running smoke tests": {
+        "candidates": 56,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a skill from the workflow we just used for setting up a new microservice from template": {
+        "candidates": 88,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a sprint plan for building the data ingestion pipeline": {
+        "candidates": 48,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a sprint plan for creating the admin dashboard": {
+        "candidates": 43,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create a sprint plan for implementing user authentication and authorization": {
+        "candidates": 16,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create documentation in markdown for the api endpoints with request/response examples": {
+        "candidates": 163,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create documentation in markdown for the database schema with relationship diagrams": {
+        "candidates": 162,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "create documentation in markdown for the deployment process with troubleshooting guide": {
+        "candidates": 106,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: connectionrefusederror: [errn...": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: connectionrefusederror: [errno <num>] ...": {
+        "candidates": 6,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: connectionrefusederror: [errno <num>] conn...": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: filenotfounderror: config": {
+        "candidates": 128,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: modulenotfounderror: no modul...": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: modulenotfounderror: no module named...": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: oserror: [errno <num>] no space ...": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: oserror: [errno <num>] no space left on d...": {
+        "candidates": 27,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: oserror: [errno <num>] no space left on...": {
+        "candidates": 46,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: permissionerror: [errno <num>] p...": {
+        "candidates": 42,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: permissionerror: [errno <num>] permissi...": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: permissionerror: [errno <num>] permission d...": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: runtimeerror: cuda out of memory": {
+        "candidates": 95,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running <quoted>: typeerror: expected str, got nonetype": {
+        "candidates": 107,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running `kubectl apply -f deployment": {
+        "candidates": 63,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i'm getting when running `python manage": {
+        "candidates": 75,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i<quoted>...": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i<quoted>x' fr...": {
+        "candidates": 50,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i<quoted>x' from...": {
+        "candidates": 15,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug this error i<quoted>x...": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug why this test is flaky: a test that depends on external api availability": {
+        "candidates": 180,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug why this test is flaky: a test that sometimes fails due to timing issues in async code": {
+        "candidates": 111,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug why this test is flaky: a test that's sensitive to locale or timezone settings": {
+        "candidates": 185,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "debug why this test is flaky: a test with race conditions in concurrent operations": {
+        "candidates": 91,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "delegate the following independent tasks and combine results: analyze code quality, research alte...": {
+        "candidates": 119,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "delegate the following independent tasks and combine results: search for documentation, write uni...": {
+        "candidates": 124,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "delegate the research on api design best practices and the implementation of a prototype implemen...": {
+        "candidates": 85,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "delegate the research on api design best practices and the implementation of a test suite to sepa...": {
+        "candidates": 105,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "delegate the research on market research on competitor tools and the implementation of a prototyp...": {
+        "candidates": 102,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "delegate the research on market research on competitor tools and the implementation of a test sui...": {
+        "candidates": 83,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "design the architecture for a data lake with streaming ingestion": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "design the architecture for a multi-region deployment infrastructure": {
+        "candidates": 39,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "design the architecture for a real-time notification system": {
+        "candidates": 19,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "design the architecture for an ai model serving platform": {
+        "candidates": 24,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find a public api for article metadata, write a script to fetch data from it, process the results...": {
+        "candidates": 81,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find a public api for pricing data, write a script to fetch data from it, process the results, an...": {
+        "candidates": 83,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find a public api for product listings, write a script to fetch data from it, process the results...": {
+        "candidates": 57,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find a public api for user statistics, write a script to fetch data from it, process the results,...": {
+        "candidates": 68,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find sample data for e-commerce transactions, create a database schema, import the data, and writ...": {
+        "candidates": 74,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find sample data for iot sensor readings, create a database schema, import the data, and write an...": {
+        "candidates": 46,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find sample data for social media interactions, create a database schema, import the data, and wr...": {
+        "candidates": 187,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find sample data for stock market, create a database schema, import the data, and write analysis ...": {
+        "candidates": 107,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find sample data for weather data, create a database schema, import the data, and write analysis ...": {
+        "candidates": 54,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the api documentation for anthropic claude api, write a client library, and test it with exa...": {
+        "candidates": 134,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the api documentation for cloudflare workers api, write a client library, and test it with e...": {
+        "candidates": 83,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the api documentation for github rest api, write a client library, and test it with example ...": {
+        "candidates": 95,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the api documentation for huggingface inference api, write a client library, and test it wit...": {
+        "candidates": 141,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the api documentation for openai api, write a client library, and test it with example calls": {
+        "candidates": 259,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the api documentation for stripe api, write a client library, and test it with example calls": {
+        "candidates": 195,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the latest c++ style guide, create a formatter config, and apply it to all source files": {
+        "candidates": 139,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the latest go style guide, create a formatter config, and apply it to all source files": {
+        "candidates": 138,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the latest java style guide, create a formatter config, and apply it to all source files": {
+        "candidates": 84,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the latest python style guide, create a formatter config, and apply it to all source files": {
+        "candidates": 103,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the latest rust style guide, create a formatter config, and apply it to all source files": {
+        "candidates": 83,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "find the latest typescript style guide, create a formatter config, and apply it to all source files": {
+        "candidates": 95,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research async programming while you prepare the project structure": {
+        "candidates": 53,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research compiler design while you prepare the project structure": {
+        "candidates": 26,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research container orchestration while you prepare the project structure": {
+        "candidates": 23,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research cryptography while you prepare the project structure": {
+        "candidates": 26,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research database indexing while you prepare the project structure": {
+        "candidates": 20,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research distributed systems while you prepare the project structure": {
+        "candidates": 37,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research functional programming while you prepare the project structure": {
+        "candidates": 16,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research machine learning optimization while you prepare the project structure": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research memory management while you prepare the project structure": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research network protocols while you prepare the project structure": {
+        "candidates": 37,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research operating systems while you prepare the project structure": {
+        "candidates": 30,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "have a sub-agent research transformer architecture while you prepare the project structure": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "help me understand compiler design": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "help me understand cryptography": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "help me understand memory management": {
+        "candidates": 6,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "i need to build an internal developer platform": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "i need to implement real-time collaboration features": {
+        "candidates": 47,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "i need to set up a machine learning pipeline for production": {
+        "candidates": 23,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "i'm stuck on debugging intermittent test failures in ci": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "i'm stuck on handling race conditions in a distributed lock": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "i'm stuck on reducing docker image build time from <num> minutes": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "implement a rate limiter in python for api calls (token bucket algorithm)": {
+        "candidates": 38,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "implement a rate limiter in python for concurrent connections per user": {
+        "candidates": 87,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "implement a rate limiter in python for database queries per second": {
+        "candidates": 83,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "implement a rate limiter in python for file upload bandwidth": {
+        "candidates": 122,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the ansible documentation, install it, configure it for our project, and run it": {
+        "candidates": 38,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the docker compose documentation, install it, configure it for our project, and run it": {
+        "candidates": 169,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the k6 load testing documentation, install it, configure it for our project, and run it": {
+        "candidates": 58,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest django tutorial, set up a project from scratch, and build a simple data pipeline": {
+        "candidates": 70,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest django tutorial, set up a project from scratch, and build a simple rest api": {
+        "candidates": 42,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest django tutorial, set up a project from scratch, and build a simple web dashboard": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest fastapi tutorial, set up a project from scratch, and build a simple cli tool": {
+        "candidates": 55,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest fastapi tutorial, set up a project from scratch, and build a simple data pipeline": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest fastapi tutorial, set up a project from scratch, and build a simple rest api": {
+        "candidates": 26,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest fastapi tutorial, set up a project from scratch, and build a simple web dashboard": {
+        "candidates": 59,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest flask tutorial, set up a project from scratch, and build a simple cli tool": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest flask tutorial, set up a project from scratch, and build a simple data pipeline": {
+        "candidates": 56,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest flask tutorial, set up a project from scratch, and build a simple rest api": {
+        "candidates": 104,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest flask tutorial, set up a project from scratch, and build a simple web dashboard": {
+        "candidates": 48,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest next": {
+        "candidates": 126,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest svelte tutorial, set up a project from scratch, and build a simple cli tool": {
+        "candidates": 70,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest svelte tutorial, set up a project from scratch, and build a simple data pipeline": {
+        "candidates": 55,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the latest svelte tutorial, set up a project from scratch, and build a simple rest api": {
+        "candidates": 70,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the mypy documentation, install it, configure it for our project, and run it": {
+        "candidates": 105,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the pytest documentation, install it, configure it for our project, and run it": {
+        "candidates": 111,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the ruff documentation, install it, configure it for our project, and run it": {
+        "candidates": 87,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "look up the terraform documentation, install it, configure it for our project, and run it": {
+        "candidates": 153,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "parse the json/yaml file at config": {
+        "candidates": 67,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "parse the json/yaml file at docker-compose": {
+        "candidates": 96,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "parse the json/yaml file at readme": {
+        "candidates": 102,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "parse the json/yaml file at src/main": {
+        "candidates": 76,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "parse the json/yaml file at tests/test_main": {
+        "candidates": 75,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from flask to fastapi": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from flask to github actions": {
+        "candidates": 35,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from flask to graphql": {
+        "candidates": 25,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from flask to postgresql": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from flask to vite": {
+        "candidates": 33,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from jenkins to fastapi": {
+        "candidates": 51,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from jenkins to github actions": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from jenkins to graphql": {
+        "candidates": 15,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from jenkins to postgresql": {
+        "candidates": 1,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from jenkins to vite": {
+        "candidates": 33,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from mongodb to fastapi": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from mongodb to github actions": {
+        "candidates": 31,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from mongodb to graphql": {
+        "candidates": 16,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from mongodb to postgresql": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from mongodb to vite": {
+        "candidates": 1,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from rest api to fastapi": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from rest api to github actions": {
+        "candidates": 17,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from rest api to graphql": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from rest api to postgresql": {
+        "candidates": 39,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from rest api to vite": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from webpack to fastapi": {
+        "candidates": 20,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from webpack to github actions": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from webpack to graphql": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from webpack to postgresql": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "plan the migration from webpack to vite": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "profile the performance of this python code: <quoted>": {
+        "candidates": 291,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "profile the performance of this python code: `for i in range(len(big_list)): result": {
+        "candidates": 68,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "profile the performance of this python code: `reading a large file line-by-line and doing regex o...": {
+        "candidates": 253,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "read the file at config": {
+        "candidates": 75,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "read the file at docker-compose": {
+        "candidates": 103,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "read the file at readme": {
+        "candidates": 64,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "read the file at src/main": {
+        "candidates": 121,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "read the file at tests/test_main": {
+        "candidates": 94,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "read the log file and identify slow requests taking more than <num> seconds": {
+        "candidates": 157,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "read the log file and identify the most frequent errors in the last <num> hours": {
+        "candidates": 231,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "read the log file and identify unusual access patterns that might indicate an attack": {
+        "candidates": 262,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "recall what we discussed about the api design and continue from where we left off": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "recall what we discussed about the database schema and continue from where we left off": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "recall what we discussed about the deployment pipeline and continue from where we left off": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "recall what we discussed about the testing strategy and continue from where we left off": {
+        "candidates": 1,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "refactor the file at config": {
+        "candidates": 85,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "refactor the file at docker-compose": {
+        "candidates": 98,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "refactor the file at readme": {
+        "candidates": 95,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "refactor the file at src/main": {
+        "candidates": 156,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "refactor the file at tests/test_main": {
+        "candidates": 109,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "refactor this code to be more efficient: a <num>-line function into smaller, testable units": {
+        "candidates": 11,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "refactor this code to be more efficient: a monolithic script into a proper package structure": {
+        "candidates": 75,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "refactor this code to be more efficient: global state into dependency injection": {
+        "candidates": 8,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "refactor this code to be more efficient: nested callbacks into async/await": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred coding style is fish shell": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred coding style is pytest with fixtures": {
+        "candidates": 8,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred coding style is python with rust for performance-critical parts": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred documentation format is neovim": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred documentation format is pytest with fixtures": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred documentation format is python with rust for performance-critical parts": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred editor is fish shell": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred editor is functional style with type hints": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred editor is neovim": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred programming language is concise markdown with code examples": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred programming language is fish shell": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred programming language is functional style with type hints": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred programming language is neovim": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred programming language is python with rust for performance-critical parts": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred shell is concise markdown with code examples": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred shell is functional style with type hints": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred shell is pytest with fixtures": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred shell is python with rust for performance-critical parts": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred test framework is fish shell": {
+        "candidates": 26,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred test framework is functional style with type hints": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred test framework is neovim": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred test framework is pytest with fixtures": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "remember that my preferred test framework is python with rust for performance-critical parts": {
+        "candidates": 31,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research a* pathfinding online, implement it in python, write tests, and benchmark it": {
+        "candidates": 189,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research async programming online, then write a python script that implements the key concept": {
+        "candidates": 29,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research best practices for api versioning, create a linting config, and apply it to the project": {
+        "candidates": 100,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research best practices for database migration strategies, create a linting config, and apply it ...": {
+        "candidates": 171,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research best practices for infrastructure as code, create a linting config, and apply it to the ...": {
+        "candidates": 193,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research best practices for python type checking with mypy, create a linting config, and apply it...": {
+        "candidates": 148,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research blue-green deployment, write deployment scripts, and create documentation for the process": {
+        "candidates": 217,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research canary releases, write deployment scripts, and create documentation for the process": {
+        "candidates": 206,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research compiler design online, then write a python script that implements the key concept": {
+        "candidates": 27,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research container runtime vulnerabilities, scan the current codebase for vulnerabilities, and fi...": {
+        "candidates": 134,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research cryptography online, then write a python script that implements the key concept": {
+        "candidates": 40,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research database indexing online, then write a python script that implements the key concept": {
+        "candidates": 39,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research distributed systems online, then write a python script that implements the key concept": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research dns rebinding attacks, scan the current codebase for vulnerabilities, and fix any issues...": {
+        "candidates": 165,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research functional programming online, then write a python script that implements the key concept": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research gitops with argocd, write deployment scripts, and create documentation for the process": {
+        "candidates": 81,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research gradient descent online, implement it in python, write tests, and benchmark it": {
+        "candidates": 134,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research jwt token handling, scan the current codebase for vulnerabilities, and fix any issues found": {
+        "candidates": 37,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research k-means clustering online, implement it in python, write tests, and benchmark it": {
+        "candidates": 178,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research llm prompt injection, scan the current codebase for vulnerabilities, and fix any issues ...": {
+        "candidates": 123,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research machine learning optimization online, then write a python script that implements the key...": {
+        "candidates": 33,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research memory management online, then write a python script that implements the key concept": {
+        "candidates": 44,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research minimax online, implement it in python, write tests, and benchmark it": {
+        "candidates": 63,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research network protocols online, then write a python script that implements the key concept": {
+        "candidates": 22,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research oauth implementation flaws, scan the current codebase for vulnerabilities, and fix any i...": {
+        "candidates": 118,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research operating systems online, then write a python script that implements the key concept": {
+        "candidates": 33,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research pagerank online, implement it in python, write tests, and benchmark it": {
+        "candidates": 184,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research python package supply chain attacks, scan the current codebase for vulnerabilities, and ...": {
+        "candidates": 133,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research serverless deployment, write deployment scripts, and create documentation for the process": {
+        "candidates": 139,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "research transformer architecture online, then write a python script that implements the key concept": {
+        "candidates": 79,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "review this approach to handling database migrations in production and suggest improvements: blue...": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "review this approach to handling database migrations in production and suggest improvements: cqrs...": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "review this approach to implementing feature flags for gradual rollout and suggest improvements: ...": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "review this approach to structuring a python monorepo and suggest improvements: blue-green deploy...": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "review this approach to structuring a python monorepo and suggest improvements: cqrs with separat...": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "review this approach to structuring a python monorepo and suggest improvements: event-driven arch...": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "save a note about our agreed-upon code review checklist": {
+        "candidates": 1,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "save a note about the database migration process": {
+        "candidates": 1,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "save a note about the deployment credentials setup": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "save this debugging approach as a skill: bisecting git history to find regression points": {
+        "candidates": 27,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "save this debugging approach as a skill: using py-spy for python performance profiling": {
+        "candidates": 25,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "save this debugging approach as a skill: using strace to diagnose file descriptor leaks": {
+        "candidates": 30,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "schedule a weekly check that checks for available software updates": {
+        "candidates": 193,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "schedule a weekly check that runs security scans on dependencies": {
+        "candidates": 149,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "schedule a weekly check that validates ssl certificate expiry dates": {
+        "candidates": 164,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for all files containing deprecated function calls in the current directory and summarize ...": {
+        "candidates": 200,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for all files containing hardcoded api keys or secrets in the current directory and summar...": {
+        "candidates": 205,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for all files containing todo or fixme comments in the current directory and summarize fin...": {
+        "candidates": 90,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for all files containing unused imports in the current directory and summarize findings": {
+        "candidates": 209,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for api response time techniques, profile the current code, and apply relevant optimizations": {
+        "candidates": 106,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for connectionrefusederror: [errno <num>] connection refused solutions online, then apply th...": {
+        "candidates": 70,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for container image size techniques, profile the current code, and apply relevant optimiza...": {
+        "candidates": 125,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for database query performance techniques, profile the current code, and apply relevant op...": {
+        "candidates": 98,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for filenotfounderror: config": {
+        "candidates": 84,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for importerror: cannot import name <quoted> from <quoted> solutions online, then apply the fix to t...": {
+        "candidates": 70,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for modulenotfounderror: no module named <quoted> solutions online, then apply the fix to the...": {
+        "candidates": 99,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for oserror: [errno <num>] no space left on device solutions online, then apply the fix to th...": {
+        "candidates": 87,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for permissionerror: [errno <num>] permission denied solutions online, then apply the fix to ...": {
+        "candidates": 77,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for python memory usage techniques, profile the current code, and apply relevant optimizat...": {
+        "candidates": 190,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for runtimeerror: cuda out of memory solutions online, then apply the fix to the codebase ...": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search for typeerror: expected str, got nonetype solutions online, then apply the fix to the code...": {
+        "candidates": 135,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search my past sessions for when we worked on the authentication refactor": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search my past sessions for when we worked on the database migration": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search my past sessions for when we worked on the performance optimization sprint": {
+        "candidates": 1,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search the web for academic data portals, download the dataset, write a python analysis script, a...": {
+        "candidates": 163,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search the web for open data repositories, download the dataset, write a python analysis script, ...": {
+        "candidates": 209,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "search the web for public datasets on data": {
+        "candidates": 273,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a git repository, create a": {
+        "candidates": 333,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a pre-commit hook that checks for secrets in staged files": {
+        "candidates": 124,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a pre-commit hook that enforces conventional commit message format": {
+        "candidates": 158,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a pre-commit hook that runs affected tests before allowing commits": {
+        "candidates": 275,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a pre-commit hook that runs ruff and mypy before each commit": {
+        "candidates": 143,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install aiohttp, and write a small demo script using it": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install black, and write a small demo script using it": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install boto3, and write a small demo script using it": {
+        "candidates": 23,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install celery, and write a small demo script using it": {
+        "candidates": 19,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install fastapi, and write a small demo script using it": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install flask, and write a small demo script using it": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install httpx, and write a small demo script using it": {
+        "candidates": 16,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install mypy, and write a small demo script using it": {
+        "candidates": 18,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install numpy, and write a small demo script using it": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install pandas, and write a small demo script using it": {
+        "candidates": 6,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install pytest, and write a small demo script using it": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install redis, and write a small demo script using it": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install requests, and write a small demo script using it": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install rich, and write a small demo script using it": {
+        "candidates": 16,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install ruff, and write a small demo script using it": {
+        "candidates": 17,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install sqlalchemy, and write a small demo script using it": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a python virtual environment, install typer, and write a small demo script using it": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that backs up important files to cloud storage every <num> hours": {
+        "candidates": 54,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that backs up important files to cloud storage every day": {
+        "candidates": 30,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that backs up important files to cloud storage every hour": {
+        "candidates": 25,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that backs up important files to cloud storage every week": {
+        "candidates": 35,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that checks for new emails and summarizes them every <num> hours": {
+        "candidates": 30,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that checks for new emails and summarizes them every day": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that checks for new emails and summarizes them every hour": {
+        "candidates": 61,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that checks for new emails and summarizes them every week": {
+        "candidates": 38,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that fetches the latest news headlines every <num> hours": {
+        "candidates": 33,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that fetches the latest news headlines every day": {
+        "candidates": 29,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that fetches the latest news headlines every week": {
+        "candidates": 69,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that monitors website uptime and reports issues every <num> hours": {
+        "candidates": 42,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that monitors website uptime and reports issues every day": {
+        "candidates": 51,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that monitors website uptime and reports issues every hour": {
+        "candidates": 27,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a recurring job that monitors website uptime and reports issues every week": {
+        "candidates": 37,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a sqlite database, create tables for a blog (users, posts, comments, tags), insert sample ...": {
+        "candidates": 97,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a sqlite database, create tables for a library system (books, members, loans, reservations...": {
+        "candidates": 105,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a sqlite database, create tables for a project tracker (projects, tasks, users, time entri...": {
+        "candidates": 89,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up a sqlite database, create tables for an e-commerce store (products, orders, customers, rev...": {
+        "candidates": 98,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a browser extension project with linting and testing": {
+        "candidates": 70,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a cli tool project with linting and testing": {
+        "candidates": 81,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a data processing etl project with linting and testing": {
+        "candidates": 73,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a fastapi backend project with linting and testing": {
+        "candidates": 53,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a go microservice project with linting and testing": {
+        "candidates": 59,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a ml training pipeline project with linting and testing": {
+        "candidates": 61,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a python library project with linting and testing": {
+        "candidates": 39,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a react app project with linting and testing": {
+        "candidates": 63,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a rust cli tool project with linting and testing": {
+        "candidates": 44,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up github actions ci for a vs code extension project with linting and testing": {
+        "candidates": 79,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up monitoring that runs api endpoint health checks every <num> hour": {
+        "candidates": 6,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up monitoring that runs api endpoint health checks every <num> minutes": {
+        "candidates": 175,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up monitoring that runs container resource utilization every <num> hour": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up monitoring that runs container resource utilization every <num> minutes": {
+        "candidates": 174,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up monitoring that runs database connection pool status every <num> hour": {
+        "candidates": 64,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "set up monitoring that runs database connection pool status every <num> minutes": {
+        "candidates": 152,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository anomalyco/opencode (typescript) has been cloned to /workspace/repo": {
+        "candidates": 659,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository axios/axios (javascript) has been cloned to /workspace/repo": {
+        "candidates": 679,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository denoland/deno (rust) has been cloned to /workspace/repo": {
+        "candidates": 713,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository electron/electron (c++) has been cloned to /workspace/repo": {
+        "candidates": 724,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository excalidraw/excalidraw (typescript) has been cloned to /workspace/repo": {
+        "candidates": 702,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository facebook/react (javascript) has been cloned to /workspace/repo": {
+        "candidates": 833,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository facebook/react-native (c++) has been cloned to /workspace/repo": {
+        "candidates": 700,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository fatedier/frp (go) has been cloned to /workspace/repo": {
+        "candidates": 678,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository flutter/flutter (dart) has been cloned to /workspace/repo": {
+        "candidates": 700,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository freecodecamp/freecodecamp (typescript) has been cloned to /workspace/repo": {
+        "candidates": 678,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository genymobile/scrcpy (c) has been cloned to /workspace/repo": {
+        "candidates": 735,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository godotengine/godot (c++) has been cloned to /workspace/repo": {
+        "candidates": 552,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository golang/go (go) has been cloned to /workspace/repo": {
+        "candidates": 714,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository huggingface/transformers (python) has been cloned to /workspace/repo": {
+        "candidates": 696,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository iptv-org/iptv (typescript) has been cloned to /workspace/repo": {
+        "candidates": 721,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository kubernetes/kubernetes (go) has been cloned to /workspace/repo": {
+        "candidates": 513,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository langchain-ai/langchain (python) has been cloned to /workspace/repo": {
+        "candidates": 533,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository langflow-ai/langflow (python) has been cloned to /workspace/repo": {
+        "candidates": 742,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository microsoft/generative-ai-for-beginners (jupyter notebook) has been cloned to /workspac": {
+        "candidates": 795,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository microsoft/powertoys (c#) has been cloned to /workspace/repo": {
+        "candidates": 663,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository microsoft/terminal (c++) has been cloned to /workspace/repo": {
+        "candidates": 622,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository microsoft/typescript (typescript) has been cloned to /workspace/repo": {
+        "candidates": 581,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository microsoft/vscode (typescript) has been cloned to /workspace/repo": {
+        "candidates": 590,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository mrdoob/three": {
+        "candidates": 624,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository nodejs/node (javascript) has been cloned to /workspace/repo": {
+        "candidates": 730,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository obra/superpowers (shell) has been cloned to /workspace/repo": {
+        "candidates": 491,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository ohmyzsh/ohmyzsh (shell) has been cloned to /workspace/repo": {
+        "candidates": 636,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository ollama/ollama (go) has been cloned to /workspace/repo": {
+        "candidates": 296,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository openclaw/openclaw (typescript) has been cloned to /workspace/repo": {
+        "candidates": 622,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository public-apis/public-apis (python) has been cloned to /workspace/repo": {
+        "candidates": 540,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository rust-lang/rust (rust) has been cloned to /workspace/repo": {
+        "candidates": 618,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository shadcn-ui/ui (typescript) has been cloned to /workspace/repo": {
+        "candidates": 316,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository snailclimb/javaguide (java) has been cloned to /workspace/repo": {
+        "candidates": 776,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository tauri-apps/tauri (rust) has been cloned to /workspace/repo": {
+        "candidates": 737,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository tensorflow/tensorflow (c++) has been cloned to /workspace/repo": {
+        "candidates": 475,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository thealgorithms/python (python) has been cloned to /workspace/repo": {
+        "candidates": 791,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository vercel/next": {
+        "candidates": 606,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "the repository yt-dlp/yt-dlp (python) has been cloned to /workspace/repo": {
+        "candidates": 659,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "update my user profile to note that i focus on ml infrastructure": {
+        "candidates": 59,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "update my user profile to note that i prefer dark mode terminals": {
+        "candidates": 34,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "update my user profile to note that i primarily use python and rust": {
+        "candidates": 63,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "update my user profile to note that i work on a mac with m3 chip": {
+        "candidates": 37,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use mixture of agents to get multiple perspectives on the best approach for real-time data synchr...": {
+        "candidates": 15,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use mixture of agents to get multiple perspectives on the trade-offs between different caching st...": {
+        "candidates": 18,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use mixture of agents to get multiple perspectives on whether to use a managed database or self-h...": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use sub-agents to simultaneously: <num>) research the latest framework updates, <num>) set up the develop...": {
+        "candidates": 668,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the arxiv skill to find recent papers about ai agent architectures": {
+        "candidates": 70,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the arxiv skill to find recent papers about distillation techniques for large models": {
+        "candidates": 46,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the arxiv skill to find recent papers about efficient fine-tuning methods": {
+        "candidates": 41,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the arxiv skill to find recent papers about mixture of experts scaling": {
+        "candidates": 42,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the arxiv skill to find recent papers about multimodal language models": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the arxiv skill to find recent papers about reasoning in language models": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the arxiv skill to find recent papers about reinforcement learning from human feedback": {
+        "candidates": 78,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the axolotl skill to configure fine-tuning for domain-specific fine-tuning for medical text": {
+        "candidates": 134,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the axolotl skill to configure fine-tuning for instruction-following on a custom dataset": {
+        "candidates": 134,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the axolotl skill to configure fine-tuning for multi-task learning with mixed datasets": {
+        "candidates": 66,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the blogwatcher skill to monitor ai safety and alignment for new posts": {
+        "candidates": 83,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the blogwatcher skill to monitor developer productivity tools for new posts": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the blogwatcher skill to monitor llm inference optimization for new posts": {
+        "candidates": 76,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the blogwatcher skill to monitor mlops best practices for new posts": {
+        "candidates": 61,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the blogwatcher skill to monitor open-source sustainability for new posts": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the blogwatcher skill to monitor system design at scale for new posts": {
+        "candidates": 65,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the code review skill to analyze the api rate limiting middleware for potential issues": {
+        "candidates": 91,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the code review skill to analyze the data pipeline ingestion step for potential issues": {
+        "candidates": 56,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the code review skill to analyze the payment processing logic for potential issues": {
+        "candidates": 57,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the code review skill to analyze the user authentication module for potential issues": {
+        "candidates": 40,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the codebase inspection skill to understand the architecture of the current project": {
+        "candidates": 211,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the docker/modal skill to set up a cloud environment for distributed hyperparameter search": {
+        "candidates": 88,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the docker/modal skill to set up a cloud environment for gpu-accelerated model training": {
+        "candidates": 58,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the docker/modal skill to set up a cloud environment for large-scale data processing": {
+        "candidates": 119,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the domain intel skill to research a competitor's technical stack and report findings": {
+        "candidates": 56,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the domain intel skill to research example": {
+        "candidates": 52,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the domain intel skill to research open-source project health metrics and report findings": {
+        "candidates": 185,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the duckduckgo search skill to find information about best practices for llm deployment witho...": {
+        "candidates": 17,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the duckduckgo search skill to find information about comparison of inference frameworks with...": {
+        "candidates": 47,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the duckduckgo search skill to find information about recent advances in code generation with...": {
+        "candidates": 36,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the github pr workflow skill to review the changes in this diff: a refactoring of the authent...": {
+        "candidates": 32,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the github pr workflow skill to review the changes in this diff: adding pagination to the api...": {
+        "candidates": 23,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the github pr workflow skill to review the changes in this diff: fixing a sql injection vulne...": {
+        "candidates": 11,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the github pr workflow skill to review the changes in this diff: migrating from callbacks to ...": {
+        "candidates": 41,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the huggingface hub skill to find and download a model for code generation": {
+        "candidates": 103,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the huggingface hub skill to find and download a model for image segmentation": {
+        "candidates": 46,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the huggingface hub skill to find and download a model for named entity recognition": {
+        "candidates": 64,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the huggingface hub skill to find and download a model for question answering": {
+        "candidates": 83,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the huggingface hub skill to find and download a model for summarization": {
+        "candidates": 104,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the huggingface hub skill to find and download a model for text classification": {
+        "candidates": 48,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the jupyter live kernel skill to run an interactive analysis of the best approach for real-ti...": {
+        "candidates": 104,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the jupyter live kernel skill to run an interactive analysis of the trade-offs between differ...": {
+        "candidates": 59,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the jupyter live kernel skill to run an interactive analysis of whether to use a managed data...": {
+        "candidates": 64,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the obsidian skill to create a knowledge base entry about database optimization techniques": {
+        "candidates": 48,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the obsidian skill to create a knowledge base entry about distributed systems patterns": {
+        "candidates": 55,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the obsidian skill to create a knowledge base entry about transformer architecture internals": {
+        "candidates": 86,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the ocr and documents skill to extract text from a scanned pdf research paper": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the ocr and documents skill to extract text from a whiteboard diagram photo": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the parallel cli skill to run building frontend, backend, and documentation simultaneously an...": {
+        "candidates": 118,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the parallel cli skill to run fetching data from <num> different apis simultaneously and collect ...": {
+        "candidates": 122,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the parallel cli skill to run linting, type-checking, and test running simultaneously and col...": {
+        "candidates": 221,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the peft skill to add lora adapters to a 7b parameter language model": {
+        "candidates": 82,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the peft skill to add lora adapters to a code generation model": {
+        "candidates": 138,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the peft skill to add lora adapters to a vision-language model": {
+        "candidates": 103,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the plan skill to create an implementation plan for a distributed task queue system": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the plan skill to create an implementation plan for a model serving infrastructure with a/b t...": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the plan skill to create an implementation plan for a multi-tenant saas application": {
+        "candidates": 8,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the plan skill to create an implementation plan for a real-time data streaming pipeline": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the plan skill to create an implementation plan for an ai-powered code review tool": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the systematic debugging skill to diagnose why api responses are intermittently slow (>5s)": {
+        "candidates": 113,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the systematic debugging skill to diagnose why memory usage grows linearly over time (potenti...": {
+        "candidates": 136,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the systematic debugging skill to diagnose why tests pass locally but fail in ci": {
+        "candidates": 90,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the systematic debugging skill to diagnose why the server crashes under high concurrent load": {
+        "candidates": 167,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the test-driven development skill to write tests first, then implement a caching layer with i...": {
+        "candidates": 100,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the test-driven development skill to write tests first, then implement a pagination system fo...": {
+        "candidates": 88,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the test-driven development skill to write tests first, then implement a webhook delivery sys...": {
+        "candidates": 103,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the test-driven development skill to write tests first, then implement an authentication midd...": {
+        "candidates": 136,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the vllm skill to set up inference for hermes <num>": {
+        "candidates": 84,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the vllm skill to set up inference for llama <num>": {
+        "candidates": 97,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the vllm skill to set up inference for mistral": {
+        "candidates": 46,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the vllm skill to set up inference for qwen <num>": {
+        "candidates": 73,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the weights and biases skill to set up experiment tracking for a hyperparameter sweep for lea...": {
+        "candidates": 80,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the weights and biases skill to set up experiment tracking for ablation study on data augment...": {
+        "candidates": 143,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "use the weights and biases skill to set up experiment tracking for comparing different model arch...": {
+        "candidates": 131,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "what's the best way to implement rbac in a rest api given that we need to support <num> different pyt...": {
+        "candidates": 1,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a c program that creates a simple load balancer simulation": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a c program that implements a basic web scraper": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a c program that implements a binary search tree with balancing": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a c program that implements a linked list with insert, delete, and search operations": {
+        "candidates": 6,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a c program that solves the n-queens problem using backtracking": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a concurrent python script using asyncio that fetches data from multiple apis simultaneously": {
+        "candidates": 71,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a concurrent python script using asyncio that monitors multiple log files concurrently": {
+        "candidates": 62,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a concurrent python script using asyncio that processes a queue of tasks with rate limiting": {
+        "candidates": 60,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a concurrent python script using asyncio that runs parallel web scraping with connection po...": {
+        "candidates": 74,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a data pipeline script that fetches data from an api, enriches it, and generates a report": {
+        "candidates": 62,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a data pipeline script that processes log files, extracts metrics, and creates visualizations": {
+        "candidates": 197,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a data pipeline script that reads from multiple csv sources, transforms, and loads into sqlite": {
+        "candidates": 64,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a data pipeline script that streams data, applies windowed aggregations, and writes results": {
+        "candidates": 67,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a dockerfile template for creating new microservice scaffolding": {
+        "candidates": 8,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a dockerfile template for generating api endpoint boilerplate": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a dockerfile template for producing test file templates": {
+        "candidates": 47,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a go program that creates a simple chat server and client": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a go program that creates a simple load balancer simulation": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a go program that implements a basic web scraper": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a go program that implements a binary search tree with balancing": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a go program that implements a command-line calculator with history": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a java program that creates a simple chat server and client": {
+        "candidates": 27,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a java program that creates a simple file encryption/decryption tool": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a java program that creates a simple load balancer simulation": {
+        "candidates": 22,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a java program that implements a basic web scraper": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a java program that implements a command-line calculator with history": {
+        "candidates": 25,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a java program that solves the n-queens problem using backtracking": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a javascript program that creates a simple file encryption/decryption tool": {
+        "candidates": 6,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a javascript program that creates a simple load balancer simulation": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a javascript program that implements a basic web scraper": {
+        "candidates": 11,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a javascript program that implements a binary search tree with balancing": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a javascript program that implements a command-line calculator with history": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a javascript program that solves the n-queens problem using backtracking": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a jinja2 template for creating new microservice scaffolding": {
+        "candidates": 23,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a jinja2 template for generating api endpoint boilerplate": {
+        "candidates": 134,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a jinja2 template for producing test file templates": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a browser extension project with build, test, and clean targets": {
+        "candidates": 17,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a cli tool project with build, test, and clean targets": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a data processing etl project with build, test, and clean targets": {
+        "candidates": 8,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a fastapi backend project with build, test, and clean targets": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a go microservice project with build, test, and clean targets": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a ml training pipeline project with build, test, and clean targets": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a python library project with build, test, and clean targets": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a react app project with build, test, and clean targets": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a rust cli tool project with build, test, and clean targets": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile for a vs code extension project with build, test, and clean targets": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile template for creating new microservice scaffolding": {
+        "candidates": 8,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile template for generating api endpoint boilerplate": {
+        "candidates": 23,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a makefile template for producing test file templates": {
+        "candidates": 20,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a migration script that converts a python <num> codebase to python <num>": {
+        "candidates": 103,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a migration script that converts javascript to typescript": {
+        "candidates": 99,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a migration script that migrates from sqlite to postgresql": {
+        "candidates": 88,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a migration script that migrates from unittest to pytest": {
+        "candidates": 221,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python decorator that caches function results with a ttl": {
+        "candidates": 43,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python decorator that logs function entry, exit, and execution time": {
+        "candidates": 45,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python decorator that retries failed function calls with exponential backoff": {
+        "candidates": 63,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python decorator that validates function arguments against type hints": {
+        "candidates": 47,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python program that creates a simple file encryption/decryption tool": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python program that implements a basic web scraper": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python program that implements a binary search tree with balancing": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python program that solves the n-queens problem using backtracking": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that benchmarks different sorting algorithms on various input sizes": {
+        "candidates": 6,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that calculates fibonacci numbers iteratively and recursively, comparing pe...": {
+        "candidates": 6,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that compresses and decompresses files using gzip": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that converts between different file formats (json, yaml, toml, csv)": {
+        "candidates": 15,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that creates a simple command-line todo app with sqlite backend": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that generates a maze and solves it using bfs": {
+        "candidates": 6,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that generates random test data for a given schema": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that implements a basic graph data structure with dfs and bfs": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that implements a basic lru cache": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that implements a basic task queue with worker threads": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that implements a simple bloom filter": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that implements a simple http server that serves static files": {
+        "candidates": 26,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that implements a simple key-value store with persistence": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that implements a simple pub/sub message system": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that monitors a directory for file changes and logs them": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that parses and evaluates mathematical expressions": {
+        "candidates": 20,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that parses command-line arguments and processes a directory of files": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that reads a csv file, cleans the data by removing duplicates and fixing fo...": {
+        "candidates": 71,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that reads a csv file, filters rows based on a condition and calculates sum...": {
+        "candidates": 51,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that reads a csv file, groups data by category and generates charts, and ou...": {
+        "candidates": 100,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that reads a csv file, joins with another csv file and produces a report, a...": {
+        "candidates": 66,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that reads a json config file and validates its schema": {
+        "candidates": 25,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that uses subprocess to captures and processes real-time output from a command": {
+        "candidates": 55,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that uses subprocess to chains together several cli tools with piping": {
+        "candidates": 57,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that uses subprocess to manages long-running processes with timeouts": {
+        "candidates": 50,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a python script that uses subprocess to runs multiple commands in parallel and collects out...": {
+        "candidates": 43,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a redis caching layer for api responses with configurable ttl": {
+        "candidates": 89,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a redis caching layer for computed aggregations for a dashboard": {
+        "candidates": 100,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a redis caching layer for database query results": {
+        "candidates": 106,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a redis caching layer for session data for a web application": {
+        "candidates": 70,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a rust program that creates a simple chat server and client": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a rust program that implements a basic web scraper": {
+        "candidates": 11,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a rust program that implements a binary search tree with balancing": {
+        "candidates": 45,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a rust program that implements a command-line calculator with history": {
+        "candidates": 25,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a rust program that implements a linked list with insert, delete, and search operations": {
+        "candidates": 18,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a rust program that solves the n-queens problem using backtracking": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that automates deploying a python app to a vps": {
+        "candidates": 44,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that automates generating release notes from git history": {
+        "candidates": 145,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that automates running end-to-end tests and reporting results": {
+        "candidates": 107,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that automates setting up a new development machine": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors cpu usage and alerts when errors spike above normal": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors cpu usage and alerts when it becomes unreachable": {
+        "candidates": 10,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors cpu usage and alerts when response time exceeds <num> seconds": {
+        "candidates": 12,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors cpu usage and alerts when usage exceeds <num>%": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors disk i/o and alerts when errors spike above normal": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors disk i/o and alerts when it becomes unreachable": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors disk i/o and alerts when response time exceeds <num> seconds": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors disk i/o and alerts when usage exceeds <num>%": {
+        "candidates": 24,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors http endpoint health and alerts when errors spike above normal": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors http endpoint health and alerts when it becomes unreachable": {
+        "candidates": 16,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors http endpoint health and alerts when response time exceeds <num> seconds": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors http endpoint health and alerts when usage exceeds <num>%": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors memory consumption and alerts when it becomes unreachable": {
+        "candidates": 8,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors memory consumption and alerts when response time exceeds <num> seconds": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors memory consumption and alerts when usage exceeds <num>%": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors network traffic and alerts when errors spike above normal": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors network traffic and alerts when response time exceeds <num> seconds": {
+        "candidates": 11,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors network traffic and alerts when usage exceeds <num>%": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors process count and alerts when errors spike above normal": {
+        "candidates": 2,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors process count and alerts when it becomes unreachable": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors process count and alerts when response time exceeds <num> seconds": {
+        "candidates": 11,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that monitors process count and alerts when usage exceeds <num>%": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses git log output and extracts configuration values": {
+        "candidates": 49,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses git log output and extracts error patterns and frequencies": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses git log output and extracts key metrics and statistics": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses html tables and extracts configuration values": {
+        "candidates": 25,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses html tables and extracts error patterns and frequencies": {
+        "candidates": 18,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses html tables and extracts key metrics and statistics": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses html tables and extracts structured data into a database": {
+        "candidates": 53,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses json api responses and extracts configuration values": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses json api responses and extracts key metrics and statistics": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses json api responses and extracts structured data into a database": {
+        "candidates": 18,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses nginx access logs and extracts configuration values": {
+        "candidates": 47,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses nginx access logs and extracts error patterns and frequencies": {
+        "candidates": 11,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses nginx access logs and extracts key metrics and statistics": {
+        "candidates": 13,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses nginx access logs and extracts structured data into a database": {
+        "candidates": 16,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses python tracebacks and extracts configuration values": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses python tracebacks and extracts error patterns and frequencies": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses python tracebacks and extracts key metrics and statistics": {
+        "candidates": 45,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses python tracebacks and extracts structured data into a database": {
+        "candidates": 9,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses yaml configuration files and extracts error patterns and frequencies": {
+        "candidates": 24,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses yaml configuration files and extracts key metrics and statistics": {
+        "candidates": 21,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a script that parses yaml configuration files and extracts structured data into a database": {
+        "candidates": 17,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a systemd service file that manages a background worker process": {
+        "candidates": 18,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a systemd service file that monitors a log file and restarts on crash": {
+        "candidates": 20,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a systemd service file that runs a python web server on boot": {
+        "candidates": 27,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a systemd service file that runs periodic cleanup tasks": {
+        "candidates": 30,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a typescript program that creates a simple chat server and client": {
+        "candidates": 28,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a typescript program that creates a simple file encryption/decryption tool": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a typescript program that creates a simple load balancer simulation": {
+        "candidates": 33,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a typescript program that implements a basic web scraper": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a typescript program that implements a binary search tree with balancing": {
+        "candidates": 4,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a typescript program that implements a command-line calculator with history": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a typescript program that implements a linked list with insert, delete, and search operations": {
+        "candidates": 14,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a typescript program that solves the n-queens problem using backtracking": {
+        "candidates": 3,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a yaml template for creating new microservice scaffolding": {
+        "candidates": 11,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a yaml template for generating api endpoint boilerplate": {
+        "candidates": 7,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write a yaml template for producing test file templates": {
+        "candidates": 5,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write unit tests for a python function that calculates shipping costs": {
+        "candidates": 83,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write unit tests for a python function that implements pagination logic": {
+        "candidates": 98,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write unit tests for a python function that manages user authentication tokens": {
+        "candidates": 76,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write unit tests for a python function that parses date strings in various formats": {
+        "candidates": 58,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "write unit tests for a python function that validates email addresses": {
+        "candidates": 11,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      }
+    },
+    "by_split": {
+      "calibration": {
+        "candidates": 5603,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "development": {
+        "candidates": 5987,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "test": {
+        "candidates": 6071,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      },
+      "train": {
+        "candidates": 45547,
+        "over_budget": 0,
+        "over_budget_rate": 0.0
+      }
+    },
+    "label_absolute_rate_differences": {
+      "patch": 0.0,
+      "process": 0.0,
+      "read_file": 0.0,
+      "search_files": 0.0,
+      "terminal": 0.0,
+      "write_file": 0.0
+    },
+    "split_max_absolute_rate_difference": 0.0
+  },
+  "source": {
+    "path": "data/hermes_audit/kimi-b92885e4f0161d4b2536512710e004d4892cac6e.parquet",
+    "rows": 7646,
+    "sha256": "d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02"
+  },
+  "split": {
+    "calibration": {
+      "budget_eligible_candidates": 5603,
+      "over_budget": 0,
+      "over_budget_rate": 0.0,
+      "retained_proxy_groups": 60,
+      "retained_rows": 5557,
+      "retained_trajectories": 498
+    },
+    "development": {
+      "budget_eligible_candidates": 5987,
+      "over_budget": 0,
+      "over_budget_rate": 0.0,
+      "retained_proxy_groups": 67,
+      "retained_rows": 5934,
+      "retained_trajectories": 562
+    },
+    "test": {
+      "budget_eligible_candidates": 6071,
+      "over_budget": 0,
+      "over_budget_rate": 0.0,
+      "retained_proxy_groups": 73,
+      "retained_rows": 6049,
+      "retained_trajectories": 586
+    },
+    "train": {
+      "budget_eligible_candidates": 45547,
+      "over_budget": 0,
+      "over_budget_rate": 0.0,
+      "retained_proxy_groups": 482,
+      "retained_rows": 44948,
+      "retained_trajectories": 4407
+    }
+  },
+  "stop_gates": {
+    "complete_adjacent_linkage": true,
+    "exact_token_state_unique": true,
+    "label_over_budget_difference_lte_20pp": true,
+    "minimum_positive_trajectory_support": true,
+    "no_truncation_and_max_512": true,
+    "source_checksum": true,
+    "split_isolation": true,
+    "split_over_budget_difference_lte_10pp": true,
+    "target_and_metadata_canary_invariance": false,
+    "valid_retained_labels": true,
+    "zero_residual_reasoning_markers": true
+  },
+  "tokenizer": {
+    "path": "data/cache/huggingface/hub/models--convaiinnovations--laya/snapshots/1c5edc17a7acd8701df6fc341c0d179f1c62c982/tokenizer",
+    "revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982"
+  }
+}

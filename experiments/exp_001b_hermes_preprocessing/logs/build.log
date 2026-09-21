@@ -1,0 +1,8 @@
+command=.venv/bin/python experiments/exp_001b_hermes_preprocessing/scripts/build_dataset.py
+network=disabled_by_local_files_only
+model_loading=none
+inference=none
+training=none
+source_sha256=d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02
+disposition=FAIL
+failed_gates=["target_and_metadata_canary_invariance"]
