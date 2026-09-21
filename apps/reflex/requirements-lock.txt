@@ -1,0 +1,6 @@
+# Tested environment lock for the offline checkpoint example (Linux, Python 3.14).
+torch==2.11.0
+transformers==5.17.0
+safetensors==0.8.0
+huggingface-hub==1.32.0
+numpy==2.5.3

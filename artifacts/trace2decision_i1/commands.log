@@ -1,0 +1,30 @@
+2026-09-21 live discovery and pin
+  Hugging Face Hub search: query "GLM-5"
+  git ls-remote https://huggingface.co/datasets/11-47/glm-5.2-coding-and-debugging-traces HEAD
+  observed: 1371ed38f8890d0520a53bc7ad850308eb4d7a22
+  git ls-remote https://huggingface.co/datasets/lambda/hermes-agent-reasoning-traces HEAD
+  observed: b92885e4f0161d4b2536512710e004d4892cac6e
+
+Pinned downloads (curl --fail --location --retry 3)
+  https://huggingface.co/datasets/11-47/glm-5.2-coding-and-debugging-traces/resolve/1371ed38f8890d0520a53bc7ad850308eb4d7a22/traces.jsonl
+  https://huggingface.co/datasets/11-47/glm-5.2-coding-and-debugging-traces/resolve/1371ed38f8890d0520a53bc7ad850308eb4d7a22/README.md
+  https://huggingface.co/datasets/11-47/glm-5.2-coding-and-debugging-traces/resolve/1371ed38f8890d0520a53bc7ad850308eb4d7a22/dataset-manifest.json
+
+Conversion
+  python3 pipelines/trace2decision/convert.py --source artifacts/trace2decision_i1/source/traces.jsonl --output-dir artifacts/trace2decision_i1/output
+  observed: 1,544 rows; train 1,235; dev 159; test 150
+
+Tests
+  python3 -m unittest discover -s pipelines/trace2decision -p 'test_*.py' -v
+  observed: 3 tests passed
+
+Independent validation and deterministic rerun
+  python3 pipelines/trace2decision/verify.py --source artifacts/trace2decision_i1/source/traces.jsonl --expected-dir artifacts/trace2decision_i1/output --rerun-dir artifacts/trace2decision_i1/rerun --evidence artifacts/trace2decision_i1/rerun_verification.json
+  first invocation after shared-validator integration failed before reading data because the script directory did not expose the repository root on Python sys.path; verifier import path was repaired and the command was rerun
+  final observed: PASS; shared and independent validation accepted 1,544/1,544 records; report equal; all four output hashes equal
+
+Checksum verification
+  sha256sum -c artifacts/trace2decision_i1/checksums.sha256
+  observed: all 12 listed files OK
+
+No training, model inference, paid API, cloud compute, task replay, or Iteration 2 work was performed.

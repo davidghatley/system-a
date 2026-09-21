@@ -1,0 +1,13 @@
+{
+  "status": "verified_preliminary_run",
+  "note": "Run before reference_evaluation was added; model answers and warning matched the final run.",
+  "device": "cuda:0",
+  "warmup": 3,
+  "samples": 10,
+  "milliseconds": {
+    "min": 40.181,
+    "median": 40.736,
+    "p95_nearest_rank": 41.612,
+    "max": 41.612
+  }
+}

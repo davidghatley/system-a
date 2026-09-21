@@ -1,0 +1,10 @@
+{
+  "action_head_unchanged": true,
+  "data_cursor": 65,
+  "finite_gradients": true,
+  "intended_parameter_changed": true,
+  "loss": 0.6966724395751953,
+  "resumed_step": 33,
+  "source_step": 32,
+  "status": "verified"
+}

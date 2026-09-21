@@ -1,0 +1,19 @@
+{
+  "dataset": "11-47/glm-5.2-coding-and-debugging-traces",
+  "revision": "1371ed38f8890d0520a53bc7ad850308eb4d7a22",
+  "retrieved_utc_date": "2026-09-21",
+  "license_metadata": "cc-by-4.0",
+  "files": {
+    "source/README.source.md": {
+      "sha256": "c4c15b9a067d478f9a4f23a8078c58755dff04b01af0878e2b55037542dc333b"
+    },
+    "source/dataset-manifest.source.json": {
+      "sha256": "b080293bdf629d292f4eaad24fa89946587a3fc798eb52280dc4ff5d3c83f1b1"
+    },
+    "source/traces.jsonl": {
+      "bytes": 35242691,
+      "sha256": "4e6b11f5b60976368f2a76c252808eb766af2ddcf5958d93f25160e45737d3aa"
+    }
+  },
+  "url": "https://huggingface.co/datasets/11-47/glm-5.2-coding-and-debugging-traces"
+}

@@ -1,0 +1,848 @@
+{
+  "choice_accuracy": 0.275,
+  "choice_correct": 11,
+  "choice_total": 40,
+  "gold_nll": 1.2102497225999833,
+  "predictions": [
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.3801943063735962,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000000",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6906663179397583,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000000",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.1626263856887817,
+      "prediction": 3,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000000",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.1929035186767578,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000000",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.293022632598877,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000000",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 2,
+      "gold_label": 2,
+      "nll": 1.3709256649017334,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000001",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6897525787353516,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000001",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.2155821323394775,
+      "prediction": 3,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000001",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.2127859592437744,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000001",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.3208723068237305,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000001",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.3713651895523071,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000002",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6918067932128906,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000002",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 2,
+      "gold_label": 2,
+      "nll": 1.231633186340332,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000002",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.223355770111084,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000002",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.3704724311828613,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000002",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 1,
+      "nll": 1.3737332820892334,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000003",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6917091608047485,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000003",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 2,
+      "gold_label": 2,
+      "nll": 1.2264549732208252,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000003",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.2454888820648193,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000003",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.3381880521774292,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000003",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.3704936504364014,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000004",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.689670205116272,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000004",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.2726545333862305,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000004",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.1685731410980225,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000004",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.2855372428894043,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000004",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.3709629774093628,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000005",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6883854269981384,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000005",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.22032630443573,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000005",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.2960759401321411,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000005",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.3473875522613525,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000005",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.389958143234253,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000006",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 0.697851836681366,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000006",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 2,
+      "gold_label": 2,
+      "nll": 1.4812606573104858,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000006",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 2,
+      "nll": 1.489274024963379,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000006",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 3,
+      "nll": 1.4239598512649536,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000006",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 2,
+      "gold_label": 2,
+      "nll": 1.368927240371704,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000007",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 0.6935415267944336,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000007",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 2,
+      "gold_label": 2,
+      "nll": 1.2139806747436523,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000007",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.2213873863220215,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000007",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.3819363117218018,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000007",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.3833355903625488,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000008",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 0.694748044013977,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000008",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.5838260650634766,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000008",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 3,
+      "nll": 1.5538383722305298,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000008",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 3,
+      "nll": 1.428926706314087,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000008",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.3900068998336792,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000009",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 0.6966139078140259,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000009",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.6809628009796143,
+      "prediction": 3,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000009",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 3,
+      "nll": 1.52152419090271,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000009",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 2,
+      "nll": 1.4267165660858154,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000009",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.3769102096557617,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000010",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6884768009185791,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000010",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.1928409337997437,
+      "prediction": 3,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000010",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.1886218786239624,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000010",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.3076804876327515,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000010",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.3712795972824097,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000011",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6897433400154114,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000011",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.1931605339050293,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000011",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.1718593835830688,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000011",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.3028682470321655,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000011",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 2,
+      "gold_label": 2,
+      "nll": 1.370383620262146,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000012",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6885721683502197,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000012",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.2279486656188965,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000012",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 2,
+      "nll": 1.3329390287399292,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000012",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 2,
+      "nll": 1.3713409900665283,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000012",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.3746161460876465,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000013",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6897819638252258,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000013",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 2,
+      "gold_label": 2,
+      "nll": 1.2418204545974731,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000013",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.2258200645446777,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000013",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.327883005142212,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000013",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.3706691265106201,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000014",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6896883249282837,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000014",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.1931374073028564,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000014",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.2773308753967285,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000014",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.3291914463043213,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000014",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.3896465301513672,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000015",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 0.6975784301757812,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000015",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.6057093143463135,
+      "prediction": 3,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000015",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 3,
+      "nll": 1.5294487476348877,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000015",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 2,
+      "nll": 1.4294195175170898,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000015",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.3813645839691162,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000016",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 0.6946964263916016,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000016",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.7070119380950928,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000016",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 3,
+      "nll": 1.5478332042694092,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000016",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 3,
+      "nll": 1.4244023561477661,
+      "prediction": 1,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000016",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 1,
+      "gold_label": 1,
+      "nll": 1.3706166744232178,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000017",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 0.6933361291885376,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000017",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.2224071025848389,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000017",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 2,
+      "nll": 1.3899106979370117,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000017",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 2,
+      "nll": 1.4177863597869873,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000017",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.362691879272461,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000018",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6798491477966309,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000018",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.2264739274978638,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000018",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.1950328350067139,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000018",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.3034722805023193,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000018",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "gold_label": 0,
+      "nll": 1.3599538803100586,
+      "prediction": 2,
+      "question_id": "action",
+      "record_id": "agent_trace_observability_000019",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 0.6818682551383972,
+      "prediction": 0,
+      "question_id": "needs_review",
+      "record_id": "agent_trace_observability_000019",
+      "type": "noul"
+    },
+    {
+      "gold_argmax": 3,
+      "gold_label": 3,
+      "nll": 1.2142856121063232,
+      "prediction": 2,
+      "question_id": "outcome",
+      "record_id": "agent_trace_observability_000019",
+      "type": "choice"
+    },
+    {
+      "gold_argmax": 1,
+      "nll": 1.2731788158416748,
+      "prediction": 0,
+      "question_id": "risk",
+      "record_id": "agent_trace_observability_000019",
+      "type": "score"
+    },
+    {
+      "gold_argmax": 0,
+      "nll": 1.3062496185302734,
+      "prediction": 0,
+      "question_id": "urgency",
+      "record_id": "agent_trace_observability_000019",
+      "type": "score"
+    }
+  ]
+}

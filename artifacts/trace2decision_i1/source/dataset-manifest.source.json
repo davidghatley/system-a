@@ -1,0 +1,418 @@
+{
+  "active_shards": [
+    "data/train-00021.parquet",
+    "data/train-00022.parquet",
+    "data/train-00023.parquet",
+    "data/train-00024.parquet",
+    "data/train-00025.parquet",
+    "data/train-00026.parquet",
+    "data/train-00027.parquet",
+    "data/train-00028.parquet",
+    "data/train-00029.parquet",
+    "data/train-00030.parquet",
+    "data/train-00031.parquet",
+    "data/train-00032.parquet",
+    "data/train-00033.parquet",
+    "data/train-00034.parquet",
+    "data/train-00035.parquet",
+    "data/train-00036.parquet",
+    "data/train-00041.parquet",
+    "data/train-00046.parquet",
+    "data/train-00047.parquet",
+    "data/train-00048.parquet",
+    "data/train-00049.parquet",
+    "data/train-00050.parquet"
+  ],
+  "arrow_schema": "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",
+  "bytes": 1916333,
+  "format": "moonshiner-parquet-shards-v1",
+  "next_sequence": 51,
+  "row_count": 1821,
+  "schema_version": 1,
+  "shards": [
+    {
+      "bytes": 87995,
+      "path": "data/train-00021.parquet",
+      "row_count": 111,
+      "tasks": [
+        "bash-argfwd",
+        "bash-dotlink",
+        "bash-dureport",
+        "bash-fixedw",
+        "bash-flockq",
+        "bash-inventory",
+        "bash-jobpool",
+        "bash-offload",
+        "bash-pathfind",
+        "bash-relgate"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 100232,
+      "path": "data/train-00022.parquet",
+      "row_count": 102,
+      "tasks": [
+        "bash-retryrun",
+        "bash-sedbatch",
+        "bash-seqrename",
+        "bash-subcmd",
+        "bash-tsvjoin",
+        "c-bitvec",
+        "c-confpool",
+        "c-csvrow",
+        "c-dynarray",
+        "c-hashslot"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 87985,
+      "path": "data/train-00023.parquet",
+      "row_count": 80,
+      "tasks": [
+        "c-iniscan",
+        "c-lrulink",
+        "c-recfile",
+        "cpp-clinicqueue",
+        "cpp-exprvisit",
+        "cpp-filterview",
+        "cpp-raiiguard",
+        "cpp-shopreport",
+        "go-batch-flush",
+        "go-burst-runner"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 104713,
+      "path": "data/train-00024.parquet",
+      "row_count": 98,
+      "tasks": [
+        "go-calibcli",
+        "go-checkpoint",
+        "go-cidrkit",
+        "go-circuit-breaker",
+        "go-csv-decode",
+        "go-dirwatch",
+        "go-dlpool",
+        "go-dupfinder",
+        "go-eventbus",
+        "go-fair-semaphore"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 85332,
+      "path": "data/train-00025.parquet",
+      "row_count": 86,
+      "tasks": [
+        "go-flagbind",
+        "go-flagengine",
+        "go-framebuf",
+        "go-globmatch",
+        "go-group-runner",
+        "go-hashring",
+        "go-idxplan",
+        "go-indexpq",
+        "go-job-drain",
+        "go-jobargs"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 95218,
+      "path": "data/train-00026.parquet",
+      "row_count": 109,
+      "tasks": [
+        "go-jobflow",
+        "go-kvlog",
+        "go-kvwal",
+        "go-layered-config",
+        "go-ledger-apply",
+        "go-logrotate",
+        "go-logtail",
+        "go-lru-cache",
+        "go-lzrle",
+        "go-manifest-load"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 105798,
+      "path": "data/train-00027.parquet",
+      "row_count": 102,
+      "tasks": [
+        "go-migrunner",
+        "go-modcycles",
+        "go-orderfsm",
+        "go-outbox",
+        "go-protoseq",
+        "go-pubsub",
+        "go-record-import",
+        "go-reldrift",
+        "go-shardplan",
+        "go-shiplog"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 100745,
+      "path": "data/train-00028.parquet",
+      "row_count": 107,
+      "tasks": [
+        "go-snapprune",
+        "go-spanoverlap",
+        "go-stockroom",
+        "go-streamdiff",
+        "go-switchcase",
+        "go-text-preview",
+        "go-textindex",
+        "go-timeout-fetch",
+        "go-txnredo",
+        "go-word-tally"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 87935,
+      "path": "data/train-00029.parquet",
+      "row_count": 99,
+      "tasks": [
+        "go-worker-pool",
+        "go-xmlenvelope",
+        "java-bakeplan",
+        "java-boxseat",
+        "java-dupsight",
+        "java-farerules",
+        "java-forgebill",
+        "java-leasepool",
+        "java-liftcsv",
+        "java-recordval"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 86701,
+      "path": "data/train-00030.parquet",
+      "row_count": 85,
+      "tasks": [
+        "java-rxrefill",
+        "java-swipelog",
+        "java-tollstmt",
+        "js-rolloutgate",
+        "py-flowplan",
+        "rb-chorewheel",
+        "rb-fleetdesk",
+        "rb-kilncfg",
+        "rb-pdfjobs",
+        "rb-printopts"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 94157,
+      "path": "data/train-00031.parquet",
+      "row_count": 84,
+      "tasks": [
+        "rb-rainspark",
+        "rb-routeq",
+        "rs-cfgparse",
+        "rs-charslice",
+        "rs-cuesheet",
+        "rs-intervalset",
+        "rs-iteradapt",
+        "rs-mapreport",
+        "rs-mpscpipe",
+        "rs-rcweaktree"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 101274,
+      "path": "data/train-00032.parquet",
+      "row_count": 82,
+      "tasks": [
+        "rs-ropelite",
+        "rs-scopedproc",
+        "rs-sizecast",
+        "rs-swapremove",
+        "rs-textstats",
+        "rs-tomlite",
+        "rs-varint",
+        "rs-weighbridge",
+        "rs-weightavg",
+        "ts-apierrs"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 83793,
+      "path": "data/train-00033.parquet",
+      "row_count": 75,
+      "tasks": [
+        "ts-approval-flow",
+        "ts-async-pipe",
+        "ts-batch-loader",
+        "ts-bulkship",
+        "ts-callstitch",
+        "ts-cart-total",
+        "ts-checkout-session",
+        "ts-color-utils",
+        "ts-datagrid",
+        "ts-form-validator"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 65756,
+      "path": "data/train-00034.parquet",
+      "row_count": 69,
+      "tasks": [
+        "ts-geo-client",
+        "ts-hookslite",
+        "ts-i18n-catalog",
+        "ts-invoice-render",
+        "ts-line-splitter",
+        "ts-mailroster",
+        "ts-mention-scan",
+        "ts-notification-center",
+        "ts-pagination",
+        "ts-quiz-standings"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 76964,
+      "path": "data/train-00035.parquet",
+      "row_count": 80,
+      "tasks": [
+        "ts-report-columns",
+        "ts-reportcard",
+        "ts-session-sweep",
+        "ts-sitepress",
+        "ts-stock-ledger",
+        "ts-stream-response",
+        "ts-survey-drafts",
+        "ts-tallysheet",
+        "ts-ticket-triage",
+        "ts-tile-cache"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 84707,
+      "path": "data/train-00036.parquet",
+      "row_count": 87,
+      "tasks": [
+        "ts-virtual-scheduler",
+        "zsh-arrlib",
+        "zsh-cronsplit",
+        "go-bloomset",
+        "go-wordfreq",
+        "java-bloomroute",
+        "java-ledyield",
+        "java-printspec",
+        "rb-hivelog",
+        "rb-tilerack"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 38534,
+      "path": "data/train-00041.parquet",
+      "row_count": 49,
+      "tasks": [
+        "bash-it-dnscache",
+        "bash-it-filesystemcheck",
+        "bash-it-linuxenroll",
+        "bash-it-packageaudit",
+        "bash-it-runbooksmoke",
+        "bash-it-journalwindow"
+      ],
+      "trajectory_count": 6
+    },
+    {
+      "bytes": 36543,
+      "path": "data/train-00046.parquet",
+      "row_count": 71,
+      "tasks": [
+        "behavior-dependency-planning-0166",
+        "behavior-dependency-planning-0018",
+        "behavior-dependency-planning-0046",
+        "behavior-dependency-planning-0080",
+        "behavior-dependency-planning-0124",
+        "behavior-dependency-planning-0126",
+        "behavior-dependency-planning-0129",
+        "behavior-dependency-planning-0130",
+        "behavior-dependency-planning-0131",
+        "behavior-dependency-planning-0132"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 111906,
+      "path": "data/train-00047.parquet",
+      "row_count": 77,
+      "tasks": [
+        "rs-nansort",
+        "ts-healthgate",
+        "ts-rate-limiter",
+        "ts-relative-time",
+        "ts-tabskit",
+        "zsh-backupsel",
+        "c-dusweep",
+        "c-reportfix",
+        "c-ringbuf",
+        "c-toksplit"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 115735,
+      "path": "data/train-00048.parquet",
+      "row_count": 77,
+      "tasks": [
+        "csharp-ferryhub",
+        "csharp-gearrepo",
+        "go-backoff",
+        "go-cmdline",
+        "go-csv-report",
+        "go-dashfeed",
+        "bash-it-systemdrepair",
+        "bash-ledgersnap",
+        "behavior-dependency-planning-0001",
+        "behavior-dependency-planning-0165"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 104173,
+      "path": "data/train-00049.parquet",
+      "row_count": 82,
+      "tasks": [
+        "asm-c-abi-stack-align",
+        "bash-build-entrypoint",
+        "bash-it-runbookverify",
+        "bash-it-tempjanitor",
+        "bash-lostcount",
+        "bash-microtap",
+        "bash-strlib",
+        "bash-teetrap",
+        "behavior-dependency-planning-0111",
+        "go-hit-stats"
+      ],
+      "trajectory_count": 10
+    },
+    {
+      "bytes": 60137,
+      "path": "data/train-00050.parquet",
+      "row_count": 9,
+      "tasks": [
+        "bash-logtop"
+      ],
+      "trajectory_count": 1
+    }
+  ],
+  "trajectory_count": 207
+}

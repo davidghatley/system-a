@@ -1,0 +1,175 @@
+{
+  "contract": {
+    "future_derived_tools_used_included": false,
+    "gold_semantics": "one-hot observed behavior; behavioral cloning, not optimality",
+    "parallel_call_rule": "first serialized tool call determines the single next_action label",
+    "question": {
+      "criteria": {
+        "edit": "Create or modify files or structured content.",
+        "execute": "Execute a shell command, program, test, or process.",
+        "other_tool": "Call another tool not covered by the named action types.",
+        "read": "Read a known file or resource.",
+        "respond_or_finish": "Respond without an executable tool call or finish the task.",
+        "search": "Search or list files, symbols, or resources."
+      },
+      "instructions": "Choose the next observable agent action type.",
+      "type": "choice"
+    },
+    "reasoning_content_included": false,
+    "top_level_fields": [
+      "state",
+      "questions",
+      "gold"
+    ]
+  },
+  "conversion": {
+    "duplicate_states_with_conflicting_labels": 0,
+    "eligible_rows_after_complete_prior_linkage": 1544,
+    "exact_rendered_state_duplicates_removed": 0,
+    "final_target_call_ids_without_result": 0,
+    "malformed_examples": [],
+    "malformed_rows": 0,
+    "orphan_tool_results": 0,
+    "parallel_call_targets": 216,
+    "prior_call_ids_without_result": 395,
+    "retained_rows": 1544,
+    "rows_with_prior_tool_result": 1337,
+    "rows_with_unresolved_prior_call_ids": 277,
+    "source_tool_names": {
+      "bash": 726,
+      "edit": 108,
+      "find": 7,
+      "grep": 7,
+      "ls": 180,
+      "read": 525,
+      "write": 168
+    },
+    "structurally_valid_source_rows": 1821,
+    "target_mutation_failures": 0,
+    "task_prompt_groups": 207,
+    "tool_results_linked_to_prior_call_id": 1668,
+    "trajectories": 207,
+    "unique_source_calls": 2063,
+    "unique_source_tool_results": 1668
+  },
+  "distribution": {
+    "history_messages_omitted": {
+      "max": 32,
+      "mean": 1.65,
+      "min": 0,
+      "p50": 0,
+      "p95": 9
+    },
+    "labels": {
+      "edit": 237,
+      "execute": 670,
+      "read": 289,
+      "respond_or_finish": 166,
+      "search": 182
+    },
+    "labels_by_split": {
+      "dev": {
+        "edit": 27,
+        "execute": 70,
+        "read": 27,
+        "respond_or_finish": 16,
+        "search": 19
+      },
+      "test": {
+        "edit": 32,
+        "execute": 60,
+        "read": 21,
+        "respond_or_finish": 17,
+        "search": 20
+      },
+      "train": {
+        "edit": 178,
+        "execute": 540,
+        "read": 241,
+        "respond_or_finish": 133,
+        "search": 143
+      }
+    },
+    "rows_per_trajectory": {
+      "max": 29,
+      "mean": 7.46,
+      "min": 1,
+      "p50": 8,
+      "p95": 14
+    },
+    "state_chars": {
+      "max": 19164,
+      "mean": 10445.35,
+      "min": 283,
+      "p50": 11628,
+      "p95": 17204
+    }
+  },
+  "files": {
+    "dev.jsonl": {
+      "bytes": 2064962,
+      "rows": 159,
+      "sha256": "202338e20b5a02cc98938b13332da3484d34137c32a4ac5ecf8f20f72b297e8f"
+    },
+    "samples.jsonl": {
+      "bytes": 121717,
+      "rows": 12,
+      "sha256": "7f4bf7528993c68dd34a3f68dccb9a5e7afed07a97a96d146f1122ad6de97af1"
+    },
+    "test.jsonl": {
+      "bytes": 1737453,
+      "rows": 150,
+      "sha256": "616d97e562b04723e8566028cb1a9117868580c94680db31d1f270ac334aa5b4"
+    },
+    "train.jsonl": {
+      "bytes": 14422700,
+      "rows": 1235,
+      "sha256": "d1441e6184d5ef843192f19ed10adaf6c2065fb4971ace478de50d4084240818"
+    }
+  },
+  "schema_version": "trace2decision-i1-v1",
+  "source": {
+    "dataset": "11-47/glm-5.2-coding-and-debugging-traces",
+    "file": "artifacts/trace2decision_i1/source/traces.jsonl",
+    "revision": "1371ed38f8890d0520a53bc7ad850308eb4d7a22",
+    "rows": 1821,
+    "sha256": "4e6b11f5b60976368f2a76c252808eb766af2ddcf5958d93f25160e45737d3aa",
+    "source_split_rows": {
+      "train": 1702,
+      "val": 119
+    }
+  },
+  "split": {
+    "algorithm": "sha256(seed + newline + group), first 64 bits modulo 10000; 0-7999 train, 8000-8999 dev, 9000-9999 test",
+    "exact_complete_trajectory_duplicate_groups": 0,
+    "group": "sha256(normalized initial user task text)",
+    "groups": {
+      "dev": 20,
+      "test": 23,
+      "train": 164
+    },
+    "normalized_task_duplicate_groups": 0,
+    "rows": {
+      "dev": 159,
+      "test": 150,
+      "train": 1235
+    },
+    "seed": "trace2decision-i1-20260921",
+    "state_hash_crossings": 0,
+    "task_group_crossings": 0,
+    "trajectories": {
+      "dev": 20,
+      "test": 23,
+      "train": 164
+    },
+    "trajectory_crossings": 0
+  },
+  "truncation": {
+    "field_policy": "head and tail with explicit marker",
+    "history_chars": 14000,
+    "history_policy": "newest complete rendered messages that fit; older messages omitted explicitly",
+    "per_message_chars": 4000,
+    "system_chars": 2500,
+    "task_chars": 6000
+  }
+}

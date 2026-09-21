@@ -1,0 +1,22 @@
+{
+  "baseline": {
+    "choice_accuracy": 0.475,
+    "choice_correct": 19,
+    "choice_total": 40
+  },
+  "frozen_dev_items": 40,
+  "metric": "native gold.label hard-label exact choice accuracy",
+  "post_training": {
+    "choice_accuracy": 0.275,
+    "choice_correct": 11,
+    "choice_total": 40
+  },
+  "status": "reconstructed_without_training",
+  "tie_case": {
+    "native_gold_index": 1,
+    "native_gold_label": "human_review",
+    "probability_argmax_index": 0,
+    "question_id": "action",
+    "record_id": "agent_trace_observability_000003"
+  }
+}

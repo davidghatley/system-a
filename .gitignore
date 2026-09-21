@@ -8,3 +8,10 @@ data/
 
 # Large binary run outputs should be ignored individually if introduced.
 # Small logs, profiles, manifests, and measurements under artifacts/ are tracked.
+artifacts/train_i1/run/checkpoint/
+artifacts/train_i1/resume_smoke/checkpoint/
+
+# Keep one shareable derivative; local source data and duplicate verification runs stay local.
+artifacts/trace2decision_i1/rerun/
+artifacts/trace2decision_i1/rerun2/
+artifacts/trace2decision_i1/test_output/
