@@ -1,0 +1,93 @@
+{
+  "protocol_version": "0.2.0",
+  "experiment_id": "exp_001b",
+  "title": "Hermes six-tool deterministic preprocessing prototype",
+  "status": "FROZEN_FOR_PREPROCESSING_ONLY",
+  "frozen_date": "2026-09-20",
+  "predecessor": "v0.1.0 (protocol.json; preserved unchanged)",
+  "reason": "preprocessing implementation correction",
+  "prior_run": {"commit": "f2e1666eaa1e367d9ce1722d49466be98ce4704d", "classification": "INVALIDATED — implementation error", "evidence": "Neither supports nor rejects Hermes; silent truncation, incorrect canaries, unamended representation"},
+  "pre_amendment_observation": "No model-training results or official evaluation results were observed before this amendment.",
+  "scope_note": "This statement concerns exp_001b; the earlier synthetic Phase 1 optimizer smoke remains recorded.",
+  "training_authorized": false,
+  "official_evaluation_authorized": false,
+  "source": {
+    "repo": "lambda/hermes-agent-reasoning-traces",
+    "revision": "b92885e4f0161d4b2536512710e004d4892cac6e",
+    "shard_sha256": "d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02",
+    "attribution": "publisher-attributed Kimi-K2.5/Hermes execution; not externally authenticated"
+  },
+  "subset": {
+    "exact_available_tools": ["patch", "process", "read_file", "search_files", "terminal", "write_file"],
+    "requires_adjacent_complete_call_result_pair": true,
+    "reject_trajectory_on_malformed_or_nested_reasoning_tags": true,
+    "reject_unknown_or_malformed_target_calls": true,
+    "max_tokens_including_questions": 512,
+    "truncation": "none",
+    "deduplication": "Global exact ordered tuple of six (token-ID tuple, option-marker tuple) pairs in frozen tool order; retain first sorted (trajectory_id, message_index); SHA-256 of canonical JSON representation for audit only"
+  },
+  "representation": {
+    "source_revision": "d113dca2512fb3eaca313534bc54c7162d87c1d4",
+    "tokenizer_revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
+    "constructor": "Import laya.common.build_sequence from verified repository-local pinned checkout; no local reimplementation",
+    "question": {"t": "noul", "ins": "Does the next assistant turn call the {tool} tool?", "crit": null},
+    "head_max_len": 192,
+    "state_allowlist": ["task", "reasoning-stripped immediately previous assistant call value", "reasoning-stripped adjacent tool response value", "fixed six availability names and section headings"],
+    "fit_precheck": "Tokenize complete upstream serialize_state(state).replace(tokenizer.mask_token, ' ') with add_special_tokens=False and truncation=False. For EVERY question require state length <= 512 - len(upstream empty-state sequence). Only then call upstream on full state and assert IDs == empty[:-1] + full_state_ids + final_separator and markers unchanged.",
+    "mask_sanitization": "Upstream literal mask replacement is canonical; no additional lossy content truncation"
+  },
+  "target": {
+    "primitive": "six independent noul questions",
+    "options": ["no", "yes"],
+    "upstream_options": "Canonical noul false/true descriptions from render_options; index order false then true",
+    "bundle": "six-bit exact called-tool set",
+    "control_mode": "derived from bundle emptiness",
+    "same_tool_multiplicity": "collapsed",
+    "unknown_call": "exclude"
+  },
+  "split": {
+    "seed": 20260920,
+    "group_proxy": "lowercase whitespace-normalized task with numeric and quoted literals replaced",
+    "allocation": {"train": 0.7, "development": 0.1, "calibration": 0.1, "test": 0.1},
+    "claim_limit": "template-proxy-disjoint within-corpus only; not authenticated task-family or repository isolation"
+  },
+  "canaries": {
+    "coverage": "Every representable candidate before dedup; bytes and all six actual upstream inputs compared by deterministic assertions",
+    "target": "Mutate source target turn content, calls, arguments, labels and auxiliary target fields, then project identical observable pre-target input",
+    "metadata": "Mutate every excluded top-level field and add ID/category/subcategory/teacher/harness/split/provenance/row/shard/labels sentinels; retain task, tools eligibility and conversations; project through explicit allowlist",
+    "reasoning": "Two source variants differ only inside a balanced think span in the previous call; both pass real structural stripping; rendered bytes and sequences must match each other and baseline",
+    "positive_control": "Small fixture mutates observable prior response and must change bytes and tokens",
+    "malformed": "Unmatched/nested reasoning rejects whole trajectory; zero residual markers required in retained states"
+  },
+  "fail_closed": "New immutable execution directory; refuse reuse; write RUNNING status before checks, diagnostics on failure, PASS manifest only after all outputs/checksums complete. No model-ready split files on failed gates. Diagnostic retained-row manifest may include identity, labels and input hashes but no model inputs.",
+  "required_outputs": [
+    "model-ready candidate rows without sealed-test model access (PASS only)",
+    "row-level exclusion ledger",
+    "trajectory and proxy-group split manifests",
+    "source and output checksums",
+    "target and excluded-metadata canary results",
+    "reasoning-marker scan",
+    "call-result linkage assertions",
+    "token and state-hash assertions",
+    "selection-bias tables by split, proxy group, category, and label",
+    "positive-row and positive-trajectory support by tool and split"
+  ],
+  "stop_gates": [
+    "source checksum mismatch",
+    "any residual reasoning marker",
+    "any target or excluded-metadata canary reaches rendered tokens",
+    "any incomplete, nonadjacent, unparsable, count-mismatched, or name-mismatched retained call-result pair",
+    "any unavailable or malformed retained target label",
+    "any retained state exceeds 512 tokens or loses required content",
+    "any duplicate retained tokenized state",
+    "any trajectory or proxy group crosses splits",
+    "any split has fewer than 10 positive trajectories for a retained tool",
+    "over-budget exclusion-rate absolute difference exceeds 10 percentage points between any two splits",
+    "over-budget exclusion-rate absolute difference exceeds 20 percentage points between positive and negative examples for any retained tool"
+  ],
+  "interpretation": {
+    "pass": "converter and candidate subset are technically viable for subsequent protocol review",
+    "fail": "Hermes candidate is rejected or the subset/protocol must become a new explicit revision",
+    "not_established": ["successful behavior", "authenticated physical execution", "semantic task-family generalization", "embedded-content rights", "model learnability"]
+  }
+}

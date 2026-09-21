@@ -4,7 +4,7 @@ Updated: 2026-09-20
 
 ## Current Phase
 
-Phase 1 substrate smoke is complete. Phase 2 is selecting and validating an observation-bearing trace source. Phase 3 remains protocol design only; no serious training run is authorized.
+Phase 1 Laya single-sequence optimizer smoke passed on RTX 3060. The bounded exp_001b preprocessing correction is complete and independently verified. No training or official evaluation is authorized.
 
 ## Current Hypothesis
 
@@ -13,7 +13,8 @@ A 421M Laya model can learn task-conditioned next-control decisions from verifie
 ## Active Work
 
 - `exp_001` Kimi K3: stopped before training because the pinned corpus contains no authentic tool-result observations.
-- `exp_001b` Hermes preprocessing prototype: authorized for deterministic conversion and integrity checks only.
+- `f2e1666` exp_001b: **INVALIDATED — implementation error** (silent truncation, incorrect canaries, unamended representation). Its FAIL neither supports nor rejects Hermes.
+- Corrected `exp_001b` v0.2.0: **FAIL**. It retained 28,930 rows from 5,322 trajectories and 643 proxy groups after 33,610 over-budget and 639 duplicate exclusions. Gates failed on 29 malformed linkage candidates and a 20.7136-point `read_file` positive/negative over-budget-rate difference (limit 20 points). Fail-closed behavior wrote no model-ready splits. Independent review found no implementation defect.
 - Proposed prototype target: six binary tool decisions over one fixed toolset; control mode is derived from the set.
 - Main training, calibration, and official evaluation remain prohibited.
 
@@ -35,7 +36,7 @@ A 421M Laya model can learn task-conditioned next-control decisions from verifie
 - A guarded single optimizer step at 512 positions completed locally with FP16 scale 1.0, 6.56 GiB peak reserved VRAM, finite gradients, encoder/scorer updates, and unchanged action head.
 - Default FP16 GradScaler initialization overflowed on the same step; scale 1.0 is required for the measured recipe and longer-run stability remains unknown.
 - The pinned Kimi K3 release has 582 trajectories and 3,956 rows, but independent audits found zero authentic tool-result messages.
-- A reconciled Hermes six-tool subset can yield 28,220 unique representable targets from 5,300 trajectories for preprocessing research, but provenance, semantic task identity, rights, and selection bias remain unresolved.
+- Corrected upstream-Laya preprocessing found 63,179 structurally/target-valid candidates, 33,610 over-budget exclusions, 29,569 representable candidates, 639 duplicates, and 28,930 retained diagnostic rows. This is a valid preprocessing FAIL, not evidence that Hermes is intrinsically unsuitable.
 
 ## Rejected Or Superseded
 
@@ -46,7 +47,7 @@ A 421M Laya model can learn task-conditioned next-control decisions from verifie
 
 ## Unresolved Questions
 
-- Can the Hermes preprocessing prototype satisfy all canary, exclusion-ledger, split, support, and selection-bias gates?
+- Whether a new protocol should study the 29 malformed linkage records or accept the measured `read_file` selection distortion; no revision is authorized by this result.
 - Is template-proxy-disjoint within-corpus imitation scientifically useful enough to justify training without repository/task identities?
 - Can embedded-content rights and publisher-attributed execution provenance support the intended private research use?
 - Is FP16 scale-1 training stable beyond one optimizer step?
@@ -54,8 +55,6 @@ A 421M Laya model can learn task-conditioned next-control decisions from verifie
 
 ## Next Actions
 
-1. Implement the bounded Hermes converter, exclusion ledger, manifests, and canary tests without model execution.
-2. Quantify 512-token selection bias by split, proxy group, source category, and label.
-3. Decide whether the narrowed within-corpus claim has enough value and power to justify a new training protocol.
-4. Resolve statistical review blockers and baseline definitions before any protocol freeze.
-5. Run no training until a new immutable protocol explicitly passes every gate.
+1. Stop this repair. Preserve v0.2.0 FAIL evidence and the independent verification.
+2. Do not design training: corrected preprocessing did not pass every gate.
+3. Any later remediation requires an explicit new preprocessing protocol; criteria must not be relaxed post hoc.

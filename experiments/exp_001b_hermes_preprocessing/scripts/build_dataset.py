@@ -9,7 +9,7 @@ import json
 import os
 import re
 import sys
-import warnings
+import subprocess
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -17,19 +17,23 @@ from typing import Any
 import pyarrow.parquet as pq
 from transformers import AutoTokenizer
 
-# Suppress transformers warning about long sequences
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-warnings.filterwarnings("ignore", message="Token indices sequence length is longer than the specified maximum sequence length")
 
 
 ROOT = Path(__file__).resolve().parents[3]
 EXP = ROOT / "experiments/exp_001b_hermes_preprocessing"
 SOURCE = ROOT / "data/hermes_audit/kimi-b92885e4f0161d4b2536512710e004d4892cac6e.parquet"
 TOKENIZER_PATH = ROOT / "data/cache/huggingface/hub/models--convaiinnovations--laya/snapshots/1c5edc17a7acd8701df6fc341c0d179f1c62c982/tokenizer"
-DATA_OUT = ROOT / "data/exp_001b"
-RESULTS = EXP / "results"
-ANALYSIS = EXP / "analysis"
-LOGS = EXP / "logs"
+PROTOCOL = EXP / "protocol_v0.2.0.json"
+RUN = ROOT / "artifacts/exp_001b/v0.2.0-run1"
+DATA_OUT = RUN / "model_ready"
+RESULTS = RUN
+ANALYSIS = RUN
+LOGS = RUN
+LAYA = ROOT / "data/laya"
+LAYA_REVISION = "d113dca2512fb3eaca313534bc54c7162d87c1d4"
+sys.path.insert(0, str(LAYA))
+from laya.common import build_sequence, serialize_state, QTYPES
 SOURCE_SHA256 = "d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02"
 TOOLS = ("patch", "process", "read_file", "search_files", "terminal", "write_file")
 SPLITS = ("train", "development", "calibration", "test")
@@ -41,52 +45,39 @@ THINK_TAG_RE = re.compile(r"<think\b[^>]*>|</think\s*>", re.I)
 REASONING_MARKER_RE = re.compile(r"</?think\b|<\|(?:begin|end)_of_thought\|>|(?:^|\n)\s*(?:reasoning|analysis)\s*:", re.I)
 
 
-def serialize_state(state: Any) -> str:
-    """Serialize state for Laya sequence construction."""
-    if isinstance(state, str):
-        return state
-    return json.dumps(state, ensure_ascii=False)
+QUESTIONS = {tool: {"t": "noul", "ins": f"Does the next assistant turn call the {tool} tool?", "crit": None}
+             for tool in TOOLS}
 
 
-def render_noul_instruction(tool_name: str) -> str:
-    """Render the instruction for a noul question about a tool."""
-    return f"Does the next assistant turn call the {tool_name} tool?"
+class LayaInputs:
+  """Fit precheck and assertions around the actual upstream constructor."""
+
+  def __init__(self, tokenizer):
+    self.tokenizer = tokenizer
+    self.empty = {tool: build_sequence(tokenizer, "", q, MAX_LEN, HEAD_MAX_LEN)
+                  for tool, q in QUESTIONS.items()}
+    self.rooms = {tool: MAX_LEN - len(ids) for tool, (ids, _) in self.empty.items()}
+
+  def build(self, state):
+    tok = self.tokenizer
+    full = tok(serialize_state(state).replace(tok.mask_token, " "),
+               add_special_tokens=False, truncation=False)["input_ids"]
+    required_length = len(full) + max(len(ids) for ids, _ in self.empty.values())
+    if any(len(full) > room for room in self.rooms.values()):
+      return None, required_length
+    sequences = []
+    for tool, q in QUESTIONS.items():
+      ids, markers = build_sequence(tok, state, q, MAX_LEN, HEAD_MAX_LEN)
+      empty_ids, empty_markers = self.empty[tool]
+      assert ids == empty_ids[:-1] + full + [tok.sep_token_id], "upstream state loss"
+      assert markers == empty_markers and len(ids) <= MAX_LEN
+      sequences.append({"tool": tool, "ids": ids, "markers": markers,
+                        "length": len(ids), "qtype": QTYPES["noul"]})
+    return sequences, required_length
 
 
-def build_laya_sequence(tok, state: str, tool_name: str, max_len: int = MAX_LEN, head_max_len: int = HEAD_MAX_LEN, truncate_left: bool = False) -> tuple[list[int], list[int]]:
-    """Build one Laya noul sequence: [CLS] noul question: <ins> [SEP] [MASK] no [MASK] yes [SEP] state [SEP]."""
-    mask_tok = tok.mask_token
-    # Options for noul: false (no), true (yes)
-    opts = [
-        "false: no, the statement does not hold",
-        "true: yes, the statement holds"
-    ]
-    ins = render_noul_instruction(tool_name).replace(mask_tok, " ")
-    head_ids = tok("%s question: %s" % ("noul", ins), add_special_tokens=False)["input_ids"]
-    opt_ids = []
-    for opt in opts:
-        opt_ids.append(
-            [tok.mask_token_id]
-            + tok(" " + opt.replace(mask_tok, " "), add_special_tokens=False)["input_ids"][:48]
-        )
-    opt_budget = head_max_len - sum(len(o) for o in opt_ids)
-    if opt_budget < 16:
-        per = max(4, (head_max_len - 16) // max(1, len(opt_ids)))
-        opt_ids = [o[:per] for o in opt_ids]
-        opt_budget = head_max_len - sum(len(o) for o in opt_ids)
-    head_ids = head_ids[: max(8, opt_budget)]
-    ids = [tok.cls_token_id] + head_ids + [tok.sep_token_id]
-    markers = []
-    for o in opt_ids:
-        markers.append(len(ids))
-        ids.extend(o)
-    ids.append(tok.sep_token_id)
-    room = max(0, max_len - len(ids) - 1)
-    # Use tokenizer truncation to avoid tokenizing full long state
-    serialized = serialize_state(state).replace(mask_tok, " ")
-    st = tok(serialized, add_special_tokens=False, truncation=True, max_length=room)["input_ids"]
-    ids = ids + st + [tok.sep_token_id]
-    return ids[:max_len], [m for m in markers if m < max_len]
+def input_key(sequences):
+  return tuple((tuple(seq["ids"]), tuple(seq["markers"])) for seq in sequences)
 
 
 def canonical(value: Any) -> str:
@@ -103,8 +94,9 @@ def sha256_file(path: Path) -> str:
 
 def deterministic_gzip_write(path: Path, content: str) -> None:
   """Write content to a gzip file with mtime=0 for deterministic output."""
-  with gzip.GzipFile(filename="", mode="wb", mtime=0, fileobj=path.open("wb")) as handle:
-    handle.write(content.encode("utf-8"))
+  with path.open("wb") as raw:
+    with gzip.GzipFile(filename="", mode="wb", mtime=0, fileobj=raw) as handle:
+      handle.write(content.encode("utf-8"))
 
 
 def parse_json(value: str) -> Any | None:
@@ -112,6 +104,20 @@ def parse_json(value: str) -> Any | None:
     return json.loads(value.strip())
   except (json.JSONDecodeError, TypeError):
     return None
+
+
+def payloads(value: str, tag: str) -> list[dict] | None:
+  """Require complete, nonnested wrappers; malformed markup is never no-call."""
+  pattern = CALL_RE if tag == "tool_call" else RESPONSE_RE
+  matches = list(pattern.finditer(value))
+  marker = re.compile(r"</?" + tag + r"\b", re.I)
+  outside = pattern.sub("", value)
+  if marker.search(outside) or any(marker.search(m.group(1)) for m in matches):
+    return None
+  parsed = [parse_json(m.group(1)) for m in matches]
+  if any(not isinstance(p, dict) or not isinstance(p.get("name"), str) for p in parsed):
+    return None
+  return parsed
 
 
 def tool_names(raw: str) -> tuple[str, ...]:
@@ -174,30 +180,104 @@ def render_state(task: str, prior_call: str, prior_result: str) -> str:
           f"Previous assistant call:\n{prior_call}\nLatest tool response:\n{prior_result}")
 
 
+def render_source(source: dict, target_index: int) -> str:
+  """Model-input allowlist: task + selected prior values only. No target read."""
+  prior = source["conversations"][target_index - 2:target_index]
+  assert [m["from"] for m in prior] == ["gpt", "tool"]
+  values = [strip_reasoning(m["value"] or "") for m in prior]
+  assert all(valid for _, valid in values), "malformed reasoning"
+  return render_state(source["task"], values[0][0], values[1][0])
+
+
+def canary_checks(source, target_index, inputs, state, sequences):
+  expected = input_key(sequences)
+
+  def equal(record):
+    rendered = render_source(record, target_index)
+    assert rendered.encode("utf-8") == state.encode("utf-8"), "canary changed rendered bytes"
+    actual, _ = inputs.build(rendered)
+    assert actual is not None and input_key(actual) == expected, "canary changed model input"
+
+  target = dict(source)
+  target["conversations"] = list(source["conversations"])
+  target["conversations"][target_index] = {
+    "from": "gpt", "value": 'TARGET_CANARY<tool_call>{"name":"patch","arguments":{"sentinel":"TARGET_CANARY"}}</tool_call>',
+    "content": "TARGET_CANARY", "calls": ["TARGET_CANARY"], "arguments": {"x": "TARGET_CANARY"},
+    "labels": ["TARGET_CANARY"], "reasoning_content": "TARGET_CANARY", "other_target_only": "TARGET_CANARY"}
+  equal(target)
+
+  metadata = {key: (value if key in ("task", "tools", "conversations") else "METADATA_CANARY")
+              for key, value in source.items()}
+  for key in ("id", "category", "subcategory", "teacher", "harness", "split", "provenance",
+              "row_index", "shard", "labels", "unknown_metadata"):
+    metadata[key] = "METADATA_CANARY"
+  equal(metadata)
+
+  # Differ only INSIDE the valid source reasoning span; strip through render_source.
+  for secret in ("REASONING_A", 'REASONING_B <tool_call>{"name":"terminal"}</tool_call>'):
+    reasoning = dict(source)
+    reasoning["conversations"] = list(source["conversations"])
+    message = dict(source["conversations"][target_index - 2])
+    stripped, valid = strip_reasoning(message["value"] or "")
+    assert valid
+    message["value"] = f"<think>{secret}</think>" + stripped
+    reasoning["conversations"][target_index - 2] = message
+    equal(reasoning)
+
+
+def write_model_outputs(retained, gates, directory):
+  """No output directory or split files are created unless ALL gates pass."""
+  if not all(gates.values()):
+    return {}
+  directory.mkdir(exist_ok=False)
+  paths = {}
+  for split in SPLITS:
+    output = directory / f"{split}.jsonl.gz"
+    content = "".join(canonical({key: item[key] for key in
+                       ("trajectory_id", "message_index", "proxy_group", "state", "sequences", "labels")}) + "\n"
+                      for item in retained if item["split"] == split)
+    deterministic_gzip_write(output, content)
+    paths[split] = output
+  return paths
+
+
 def rate(numerator: int, denominator: int) -> float:
   return round(numerator / denominator, 6) if denominator else 0.0
 
 
 def distribution(values: list[int]) -> dict[str, int | float]:
   ordered = sorted(values)
+  if not ordered:
+    return {}
   return {"min": ordered[0], "median": ordered[(len(ordered) - 1) // 2],
           "p95": ordered[int((len(ordered) - 1) * 0.95)], "max": ordered[-1],
           "mean": round(sum(ordered) / len(ordered), 2)}
 
 
 def main() -> None:
-  for directory in (DATA_OUT, RESULTS, ANALYSIS, LOGS):
-    directory.mkdir(parents=True, exist_ok=True)
+  RUN.mkdir(parents=True, exist_ok=False)
+  (RUN / "status.json").write_text(canonical({"disposition": "RUNNING", "approved": False}) + "\n")
+  protocol_sha = sha256_file(PROTOCOL)
+  provenance = {"protocol_version": "0.2.0", "protocol_sha256": protocol_sha,
+                "code_base_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+                "code_sha256": sha256_file(Path(__file__)), "laya_revision": LAYA_REVISION,
+                "laya_common_sha256": sha256_file(LAYA / "laya/common.py"),
+                "tokenizer_files": {p.name: sha256_file(p) for p in sorted(TOKENIZER_PATH.iterdir()) if p.is_file()}}
+  (RUN / "provenance.json").write_text(json.dumps(provenance, indent=2, sort_keys=True) + "\n")
+  assert subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=LAYA, text=True).strip() == LAYA_REVISION
+  assert not subprocess.check_output(["git", "status", "--porcelain"], cwd=LAYA, text=True).strip()
   source_sha = sha256_file(SOURCE)
   if source_sha != SOURCE_SHA256:
     raise RuntimeError(f"STOP: source checksum mismatch: {source_sha}")
 
   tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH, local_files_only=True)
+  inputs = LayaInputs(tokenizer)
   rows = pq.read_table(SOURCE).to_pylist()
   ledger: list[dict[str, Any]] = []
   candidates: list[dict[str, Any]] = []
   counts = Counter()
   total_canary_failures = 0
+  canary_tested = 0
 
   for row_index, source_row in enumerate(rows):
     if row_index % 1000 == 0 and row_index > 0:
@@ -227,24 +307,20 @@ def main() -> None:
       prior_result = stripped_messages[message_index - 1]
       if prior_call["from"] != "gpt" or prior_result["from"] != "tool":
         continue
-      raw_calls = CALL_RE.findall(prior_call["value"])
-      raw_results = RESPONSE_RE.findall(prior_result["value"])
-      if not raw_calls or not raw_results:
+      if not re.search(r"</?tool_call\b", prior_call["value"], re.I) or not re.search(r"</?tool_response\b", prior_result["value"], re.I):
         continue
       counts["observation_conditioned_candidates"] += 1
-      calls = [parse_json(value) for value in raw_calls]
-      results = [parse_json(value) for value in raw_results]
-      call_names = [value.get("name") for value in calls if isinstance(value, dict)]
-      result_names = [value.get("name") for value in results if isinstance(value, dict)]
-      if (len(raw_calls) != len(raw_results) or len(call_names) != len(raw_calls)
-          or len(result_names) != len(raw_results) or call_names != result_names):
+      calls = payloads(prior_call["value"], "tool_call")
+      results = payloads(prior_result["value"], "tool_response")
+      if (not calls or not results or len(calls) != len(results)
+          or [p["name"] for p in calls] != [p["name"] for p in results]
+          or any(p["name"] not in TOOLS for p in calls)):
         ledger.append({"trajectory_id": trajectory_id, "message_index": message_index,
                        "scope": "candidate", "reason": "invalid_prior_call_result_linkage"})
         counts["linkage_exclusions"] += 1
         continue
-      target_payloads = CALL_RE.findall(target_message["value"])
-      target_calls = [parse_json(value) for value in target_payloads]
-      if any(not isinstance(value, dict) or value.get("name") not in TOOLS for value in target_calls):
+      target_calls = payloads(target_message["value"], "tool_call")
+      if target_calls is None or any(value["name"] not in TOOLS for value in target_calls):
         ledger.append({"trajectory_id": trajectory_id, "message_index": message_index,
                        "scope": "candidate", "reason": "malformed_or_unavailable_target"})
         counts["invalid_target_exclusions"] += 1
@@ -252,74 +328,35 @@ def main() -> None:
       labels = sorted({value["name"] for value in target_calls})
       group = proxy_group(source_row["task"])
       split = assign_split(group)
-      state = render_state(source_row["task"], prior_call["value"], prior_result["value"])
-
-      # Build 6 Laya sequences (one per noul question)
-      sequences = []
-      all_within_budget = True
-      for tool in TOOLS:
-        seq_ids, seq_markers = build_laya_sequence(tokenizer, state, tool)
-        sequences.append({"tool": tool, "ids": seq_ids, "markers": seq_markers, "length": len(seq_ids)})
-        if len(seq_ids) > MAX_LEN:
-          all_within_budget = False
-
-      # Canary tests (efficient): test state tokenization directly since state is tokenized
-      # independently in Laya's build_sequence. Only tokenize up to room budget.
-      cand_canary_failures = 0
-      # Compute room by building one sequence and extracting state portion
-      sample_seq_ids, _ = build_laya_sequence(tokenizer, state, TOOLS[0])
-      sep_token_id = tokenizer.sep_token_id
-      sep_positions = [i for i, t in enumerate(sample_seq_ids) if t == sep_token_id]
-      if len(sep_positions) >= 2:
-        state_start = sep_positions[-2] + 1
-        state_end = sep_positions[-1]
-        room = state_end - state_start
-      else:
-        room = 400  # fallback
-
-      state_ids = tokenizer(serialize_state(state).replace(tokenizer.mask_token, " "), add_special_tokens=False, truncation=True, max_length=room)["input_ids"]
-
-      # Test 1: Target isolation - labels should not appear in state tokens
-      mutated_state = state + " TARGET_CANARY_" + "_".join(labels)
-      mutated_ids = tokenizer(serialize_state(mutated_state).replace(tokenizer.mask_token, " "), add_special_tokens=False, truncation=True, max_length=room)["input_ids"]
-      if state_ids == mutated_ids:
-        cand_canary_failures += 1
-
-      # Test 2: Excluded metadata isolation - mutate prior_call (part of state)
-      mutated_call = prior_call["value"] + " EXCLUDED_METADATA_CANARY"
-      mutated_state = render_state(source_row["task"], mutated_call, prior_result["value"])
-      mutated_ids = tokenizer(serialize_state(mutated_state).replace(tokenizer.mask_token, " "), add_special_tokens=False, truncation=True, max_length=room)["input_ids"]
-      if state_ids == mutated_ids:
-        cand_canary_failures += 1
-
-      # Test 3: Reasoning isolation - add reasoning-like content to prior_call
-      mutated_call = prior_call["value"] + " \nreason"
-      mutated_state = render_state(source_row["task"], mutated_call, prior_result["value"])
-      mutated_ids = tokenizer(serialize_state(mutated_state).replace(tokenizer.mask_token, " "), add_special_tokens=False, truncation=True, max_length=room)["input_ids"]
-      if state_ids == mutated_ids:
-        cand_canary_failures += 1
-
-      total_canary_failures += cand_canary_failures
+      state = render_source(source_row, message_index)
+      sequences, required_length = inputs.build(state)
+      all_within_budget = sequences is not None
+      if all_within_budget:
+        canary_tested += 1
+        try:
+          canary_checks(source_row, message_index, inputs, state, sequences)
+        except AssertionError as error:
+          total_canary_failures += 1
+          ledger.append({"trajectory_id": trajectory_id, "message_index": message_index,
+                         "scope": "candidate", "reason": "canary_failure", "detail": str(error)})
 
       candidate = {"trajectory_id": trajectory_id, "message_index": message_index, "category": source_row["category"],
                    "proxy_group": group, "split": split, "labels": labels, "sequences": sequences,
-                   "all_within_budget": all_within_budget, "state": state}
+                    "all_within_budget": all_within_budget, "state": state if all_within_budget else None}
       candidates.append(candidate)
       if not all_within_budget:
-        max_len = max(s["length"] for s in sequences)
         ledger.append({"trajectory_id": trajectory_id, "message_index": message_index, "scope": "candidate",
                        "reason": "over_budget", "split": split, "category": source_row["category"],
                        "proxy_group_sha256": hashlib.sha256(group.encode()).hexdigest(), "labels": labels,
-                       "max_token_count": max_len})
+                        "max_token_count": required_length})
 
   valid_budget = [item for item in candidates if item["all_within_budget"]]
   # For deduplication, use a hash of all 6 sequences combined
   valid_budget.sort(key=lambda item: (item["trajectory_id"], item["message_index"]))
   retained = []
-  seen: set[tuple[int, ...]] = set()
+  seen: set[tuple] = set()
   for item in valid_budget:
-    # Combine all sequence token IDs for deduplication key
-    token_key = tuple(t for seq in item["sequences"] for t in seq["ids"])
+    token_key = input_key(item["sequences"])
     if token_key in seen:
       ledger.append({"trajectory_id": item["trajectory_id"], "message_index": item["message_index"],
                      "scope": "candidate", "reason": "duplicate_token_state",
@@ -374,6 +411,7 @@ def main() -> None:
     "source_checksum": source_sha == SOURCE_SHA256,
     "zero_residual_reasoning_markers": marker_rows == 0,
     "target_and_metadata_canary_invariance": total_canary_failures == 0,
+    "canary_coverage": canary_tested == len(valid_budget) and canary_tested > 0,
     "complete_adjacent_linkage": counts["linkage_exclusions"] == 0,
     "valid_retained_labels": all(set(item["labels"]) <= set(TOOLS) for item in retained),
     "no_truncation_and_max_512": all(item["all_within_budget"] for item in retained),
@@ -385,18 +423,15 @@ def main() -> None:
   }
   disposition = "PASS" if all(gates.values()) else "FAIL"
 
-  model_paths = {}
-  if disposition == "PASS":
-    for split in SPLITS:
-      output = DATA_OUT / f"{split}.jsonl.gz"
-      with open(output, "wb") as handle:
-        with gzip.GzipFile(filename="", mode="wb", mtime=0, fileobj=handle) as gz:
-          for item in retained:
-            if item["split"] == split:
-              gz.write((canonical({key: item[key] for key in ("trajectory_id", "message_index", "proxy_group", "state", "sequences", "labels")}) + "\n").encode("utf-8"))
-      model_paths[split] = output
-      ids = sorted({item["trajectory_id"] for item in retained if item["split"] == split})
-      (RESULTS / f"{split}_ids.txt").write_text("".join(f"{value}\n" for value in ids), encoding="utf-8")
+  model_paths = write_model_outputs(retained, gates, DATA_OUT)
+  manifest = [{key: item[key] for key in ("trajectory_id", "message_index", "proxy_group", "split", "labels")} |
+              {"input_sha256": hashlib.sha256(canonical(input_key(item["sequences"])).encode()).hexdigest(),
+               "max_length": max(s["length"] for s in item["sequences"])} for item in retained]
+  deterministic_gzip_write(RESULTS / "retained_manifest.jsonl.gz", "".join(canonical(item) + "\n" for item in manifest))
+  (RESULTS / "split_manifest.json").write_text(json.dumps({split: {
+    "trajectory_ids": sorted({item["trajectory_id"] for item in retained if item["split"] == split}),
+    "proxy_groups": sorted({item["proxy_group"] for item in retained if item["split"] == split})}
+    for split in SPLITS}, indent=2, sort_keys=True) + "\n")
 
   # Always write exclusion ledger (regardless of disposition)
   with open(RESULTS / "exclusion_ledger.jsonl.gz", "wb") as handle:
@@ -409,15 +444,19 @@ def main() -> None:
   retained_mean_lengths = [sum(s["length"] for s in item["sequences"]) / len(item["sequences"]) for item in retained]
 
   profile = {
-    "profile_version": "exp001b-preprocessing-v2", "disposition": disposition,
+    "profile_version": "exp001b-preprocessing-v0.2.0", "disposition": disposition,
+    "execution": str(RUN.relative_to(ROOT)), "provenance": provenance, "state_rooms": inputs.rooms,
     "source": {"path": str(SOURCE.relative_to(ROOT)), "sha256": source_sha, "rows": len(rows)},
     "tokenizer": {"path": str(TOKENIZER_PATH.relative_to(ROOT)), "revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982"},
     "counts": dict(sorted(counts.items())) | {"valid_before_budget": len(candidates), "over_budget_exclusions": len(candidates) - len(valid_budget),
-                                                "dedup_exclusions": len(valid_budget) - len(retained), "retained_rows": len(retained)},
+                                                 "dedup_exclusions": len(valid_budget) - len(retained), "retained_rows": len(retained),
+                                                 "retained_trajectories": len(trajectory_splits), "retained_proxy_groups": len(group_splits)},
     "retained_max_token_lengths": distribution(retained_max_lengths),
     "retained_mean_token_lengths": distribution(retained_mean_lengths),
     "split": split_stats, "positive_support": support,
     "assertions": {"residual_reasoning_marker_rows": marker_rows, "canary_failures": total_canary_failures,
+                   "canary_candidates_tested": canary_tested, "target_checks": canary_tested,
+                   "metadata_checks": canary_tested, "reasoning_variant_checks": 2 * canary_tested,
                    "trajectory_cross_split": sum(len(value) > 1 for value in trajectory_splits.values()),
                    "proxy_group_cross_split": sum(len(value) > 1 for value in group_splits.values())},
     "selection_bias": {"by_split": bias_table("split"), "by_proxy_group": bias_table("proxy_group"),
@@ -441,19 +480,34 @@ def main() -> None:
   bias_lines += ["", "Complete machine-readable tables by split, proxy group, source category, and label are in `../results/profile.json`.", ""]
   (ANALYSIS / "selection_bias.md").write_text("\n".join(bias_lines), encoding="utf-8")
 
-  checksum_paths = [SOURCE, RESULTS / "profile.json", RESULTS / "exclusion_ledger.jsonl.gz", ANALYSIS / "selection_bias.md"]
-  if disposition == "PASS":
-    checksum_paths.extend([*model_paths.values(), *(RESULTS / f"{split}_ids.txt" for split in SPLITS)])
+  checksum_paths = [SOURCE, PROTOCOL, Path(__file__), RESULTS / "provenance.json", RESULTS / "profile.json",
+                    RESULTS / "exclusion_ledger.jsonl.gz", RESULTS / "retained_manifest.jsonl.gz",
+                    RESULTS / "split_manifest.json", ANALYSIS / "selection_bias.md", *model_paths.values()]
   checksums = {str(path.relative_to(ROOT)): {"bytes": path.stat().st_size, "sha256": sha256_file(path)} for path in checksum_paths}
   (RESULTS / "checksums.json").write_text(json.dumps({"algorithm": "sha256", "files": checksums}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
   failed = [name for name, passed in gates.items() if not passed]
   (LOGS / "build.log").write_text("\n".join(["command=.venv/bin/python experiments/exp_001b_hermes_preprocessing/scripts/build_dataset.py",
                                                 "network=disabled_by_local_files_only", "model_loading=none", "inference=none", "training=none",
-                                                f"source_sha256={source_sha}", f"disposition={disposition}", f"failed_gates={canonical(failed)}", ""]), encoding="utf-8")
+                                                 f"source_sha256={source_sha}", f"protocol_sha256={protocol_sha}",
+                                                 f"disposition={disposition}", f"failed_gates={canonical(failed)}", ""]), encoding="utf-8")
+  (RUN / "status.json").write_text(canonical({"disposition": disposition, "approved": disposition == "PASS",
+    "protocol_sha256": protocol_sha, "checksums_sha256": sha256_file(RESULTS / "checksums.json")}) + "\n")
 
   if disposition == "FAIL":
     sys.exit(1)
 
 
 if __name__ == "__main__":
-  main()
+  if sys.flags.optimize:
+    raise RuntimeError("Assertions must be enabled")
+  # Existing executions are immutable, including their failure evidence.
+  if RUN.exists():
+    raise SystemExit(f"Refusing to reuse execution directory: {RUN}")
+  try:
+    main()
+  except Exception as error:
+    if RUN.exists():
+      diagnostic = {"disposition": "ERROR", "approved": False, "error": repr(error)}
+      (RUN / "status.json").write_text(canonical(diagnostic) + "\n")
+      (RUN / "error.json").write_text(canonical(diagnostic) + "\n")
+    raise

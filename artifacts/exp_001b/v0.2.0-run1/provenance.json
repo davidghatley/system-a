@@ -1,0 +1,12 @@
+{
+  "code_base_commit": "f2e1666eaa1e367d9ce1722d49466be98ce4704d",
+  "code_sha256": "6e0671712ea8a23755fdb3d397272694823e6f7ebd9b277d4c830ec0cda5f6c2",
+  "laya_common_sha256": "f948ee606abe2ed2463f830c051f1a60dccc1b9f5ca1fdc15635cfcbe0cff7b2",
+  "laya_revision": "d113dca2512fb3eaca313534bc54c7162d87c1d4",
+  "protocol_sha256": "59a35040cb1518c4781d432a8864bc13b8deb770c163fcb028fdc49b2db07e59",
+  "protocol_version": "0.2.0",
+  "tokenizer_files": {
+    "tokenizer.json": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
+    "tokenizer_config.json": "50044de60daaa73df97d262e15a40d4faf0160e7d742df64b377877a1320dd12"
+  }
+}

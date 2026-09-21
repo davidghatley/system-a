@@ -2,7 +2,19 @@
 
 Date: 2026-09-20
 
-## Decision
+## Current decision (supersedes historical plan below)
+
+- **Phase 1:** Laya single-sequence optimizer smoke passed on RTX 3060 (6.56 GiB peak reserved; FP16 scale 1.0). Longer training stability remains unknown.
+- **exp_001 / Kimi:** stopped because authentic tool-result observations were absent; no training or official scoring occurred.
+- **f2e1666 exp_001b:** **INVALIDATED — implementation error**. Silent state truncation, incorrect canary semantics, and unamended representation invalidate its FAIL; it neither supports nor rejects Hermes.
+- **Corrected exp_001b:** **FAIL**, independently verified with no implementation defect. It retained 28,930 rows / 5,322 trajectories / 643 proxy groups and excluded 33,610 over-budget candidates. Failed gates were zero-tolerance malformed linkage (29 candidates) and `read_file` label-conditioned over-budget distortion (20.7136 points versus 20 allowed). Fail-closed output produced no model-ready splits.
+- **Training:** not eligible for protocol design because corrected preprocessing failed. No new experiment, architecture, or criterion change is authorized by this repair.
+
+## Historical pre-audit synthesis (inactive)
+
+The remainder records the original proposal, not current execution instructions. Its Kimi selection and unmeasured hardware assumptions were superseded by the Phase 1 and data-audit milestones in `RESEARCH_LEDGER.md`.
+
+### Original decision
 
 Proceed to a **local feasibility and data-preflight phase**, not a main training run.
 

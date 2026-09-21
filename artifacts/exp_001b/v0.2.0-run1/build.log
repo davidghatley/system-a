@@ -1,0 +1,9 @@
+command=.venv/bin/python experiments/exp_001b_hermes_preprocessing/scripts/build_dataset.py
+network=disabled_by_local_files_only
+model_loading=none
+inference=none
+training=none
+source_sha256=d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02
+protocol_sha256=59a35040cb1518c4781d432a8864bc13b8deb770c163fcb028fdc49b2db07e59
+disposition=FAIL
+failed_gates=["complete_adjacent_linkage","label_over_budget_difference_lte_20pp"]
