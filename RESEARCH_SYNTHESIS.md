@@ -8,7 +8,9 @@ Date: 2026-09-20
 - **exp_001 / Kimi:** stopped because authentic tool-result observations were absent; no training or official scoring occurred.
 - **f2e1666 exp_001b:** **INVALIDATED — implementation error**. Silent state truncation, incorrect canary semantics, and unamended representation invalidate its FAIL; it neither supports nor rejects Hermes.
 - **Corrected exp_001b:** **FAIL**, independently verified with no implementation defect. It retained 28,930 rows / 5,322 trajectories / 643 proxy groups and excluded 33,610 over-budget candidates. Failed gates were zero-tolerance malformed linkage (29 candidates) and `read_file` label-conditioned over-budget distortion (20.7136 points versus 20 allowed). Fail-closed output produced no model-ready splits.
-- **Training:** not eligible for protocol design because corrected preprocessing failed. No new experiment, architecture, or criterion change is authorized by this repair.
+- **Linkage clarification:** v0.2.0's implementation was stricter than its written retained-linkage rule; correctly excluded malformed source candidates should not fail retained integrity. Its `read_file` bias failure independently preserves the historical FAIL.
+- **exp_001c context budget:** **FAIL for remediation**, independently verified. Train/development-only retention rose from 47.00% at 512 to 63.26% at 1024, and worst train tool bias fell to 18.2408%. Development bias still exceeded 20 points for `process` (30.6040%) and `write_file` (24.9624%) at 1024. No eligible budget passed, so no GPU smoke ran.
+- **Training:** not eligible for protocol design. Context expansion through 1024 did not satisfy every frozen preprocessing gate.
 
 ## Historical pre-audit synthesis (inactive)
 

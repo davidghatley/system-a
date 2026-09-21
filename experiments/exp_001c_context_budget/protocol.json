@@ -1,0 +1,96 @@
+{
+  "protocol_version": "1.0.0",
+  "experiment_id": "exp_001c_context_budget",
+  "title": "Complete-state Laya representation-budget sweep",
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "frozen_date": "2026-09-20",
+  "scope": "Preprocessing representation experiment followed, only if a budget is selected, by one bounded local optimizer smoke; no policy training or evaluation",
+  "hypothesis": "Increasing the complete-state Laya representation budget reduces label-conditioned representability bias enough to satisfy the frozen 20-percentage-point criterion without lossy truncation.",
+  "source": {
+    "repo": "lambda/hermes-agent-reasoning-traces",
+    "revision": "b92885e4f0161d4b2536512710e004d4892cac6e",
+    "local_path": "data/hermes_audit/kimi-b92885e4f0161d4b2536512710e004d4892cac6e.parquet",
+    "shard_sha256": "d4a53d84935d0bffe7054b12c0591c34fe31fc96115602394b3f517b4631dd02",
+    "attribution": "publisher-attributed Kimi-K2.5/Hermes execution; not externally authenticated"
+  },
+  "representation": {
+    "laya_repo": "NandhaKishorM/laya",
+    "laya_revision": "d113dca2512fb3eaca313534bc54c7162d87c1d4",
+    "model_and_tokenizer": "convaiinnovations/laya",
+    "model_and_tokenizer_revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
+    "constructor": "actual laya.common.build_sequence imported from the pinned repository-local checkout",
+    "head_max_len": 192,
+    "candidate_total_lengths": [512, 640, 768, 1024],
+    "eligible_total_lengths": [640, 768, 1024],
+    "reference_only_total_lengths": [512],
+    "questions": ["patch", "process", "read_file", "search_files", "terminal", "write_file"],
+    "question_template": {"t": "noul", "ins": "Does the next assistant turn call the {tool} tool?", "crit": null},
+    "complete_state_rule": "For each budget and all six questions, derive room from the actual upstream empty-state sequence; tokenize complete serialize_state(state), with upstream mask sanitization, truncation=false; reject unless it fits every question; then build all actual upstream sequences and assert exact IDs equal empty-prefix plus every complete state token plus final separator.",
+    "truncation": "none",
+    "state_allowlist": ["task", "reasoning-stripped immediately previous assistant call value", "reasoning-stripped adjacent tool response value", "fixed six availability names and section headings"],
+    "deduplication": "For each budget independently, global exact ordered tuple of six (token-ID tuple, option-marker tuple) pairs in frozen tool order; retain first sorted (trajectory_id, message_index)."
+  },
+  "fixed_preprocessing": {
+    "basis": "exp_001b v0.2.0 corrected methodology",
+    "imported_v0.2_code_sha256": "6e0671712ea8a23755fdb3d397272694823e6f7ebd9b277d4c830ec0cda5f6c2",
+    "laya_common_sha256": "f948ee606abe2ed2463f830c051f1a60dccc1b9f5ca1fdc15635cfcbe0cff7b2",
+    "tokenizer_file_sha256": {
+      "tokenizer.json": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
+      "tokenizer_config.json": "50044de60daaa73df97d262e15a40d4faf0160e7d742df64b377877a1320dd12"
+    },
+    "exact_available_tools": ["patch", "process", "read_file", "search_files", "terminal", "write_file"],
+    "reasoning_stripping": "unchanged from exp_001b v0.2.0; reject whole trajectory on malformed or nested think tags",
+    "target_semantics": "six-bit exact called-tool set; same-tool multiplicity collapsed; unavailable or malformed calls excluded",
+    "proxy_group": "lowercase whitespace-normalized task with numeric and quoted literals replaced",
+    "split_seed": 20260920,
+    "split_allocation": {"train": 0.7, "development": 0.1, "calibration": 0.1, "test": 0.1}
+  },
+  "protected_data": {
+    "budget_selection_splits": ["train", "development"],
+    "protected_splits": ["calibration", "test"],
+    "rule": "Compute proxy group and deterministic split from task text before inspecting tools or conversations. If calibration or test, skip the row before parsing reasoning, prior linkage, or target action. Emit no label-conditioned statistics for protected splits and run no model inference on them.",
+    "prior_exposure_limitation": "exp_001b v0.2.0 previously emitted aggregate calibration/test statistics; exp_001c does not compound that exposure."
+  },
+  "linkage_clarification": {
+    "rule": "For an adjacent gpt/tool pair, the presence of either a tool_call wrapper in the gpt value or a tool_response wrapper in the tool value makes it an observation-conditioned candidate. Malformed, incomplete, unparsable, count-mismatched, name-mismatched, or unavailable prior call/result candidates are excluded and counted. The integrity gate requires zero such linkage defects in retained examples; correctly excluded malformed source candidates do not fail the gate.",
+    "historical_interpretation": "exp_001b v0.2.0 remains FAIL because its independent read_file selection-bias failure exceeded the frozen limit; this clarification does not rewrite that result."
+  },
+  "metrics_per_budget": {
+    "overall_train_and_development": ["valid pre-budget candidates", "representable candidates", "over-budget exclusions", "representable fraction", "duplicate exclusions", "retained rows", "retained trajectories", "retained proxy groups"],
+    "by_split": ["candidate count", "over-budget count", "over-budget rate"],
+    "by_tool_and_split": ["positive candidates", "negative candidates", "positive over-budget rate", "negative over-budget rate", "absolute rate difference", "positive retained trajectories"],
+    "pooled": "train+development values are descriptive only and cannot override a split failure"
+  },
+  "data_gates": {
+    "integrity": ["source checksum passes", "zero residual reasoning markers in retained rows", "all canaries pass", "zero malformed linkage in retained rows", "all retained labels use only frozen tools", "no retained sequence truncation", "final exact representations unique after deterministic dedup", "no trajectory crosses train/development allocation", "no proxy group crosses train/development allocation"],
+    "support": "Every tool has at least 10 positive retained trajectories independently in train and development.",
+    "split_balance": "Absolute train-versus-development over-budget-rate difference is <= 0.10.",
+    "label_bias": "For every tool independently in train and independently in development, absolute positive-versus-negative over-budget-rate difference is <= 0.20."
+  },
+  "promotion_rule": "Select the smallest budget in [640, 768, 1024] passing every frozen data gate. 512 is reference-only and never promotion-eligible. Do not prefer a larger passing budget. If none passes, select NONE and stop without GPU work.",
+  "hardware_smoke": {
+    "authorization": "Only the selected budget may be tested, after data selection.",
+    "device": "local RTX 3060 12 GB only",
+    "data": "synthetic maximum-length noul sequence; no calibration/test data",
+    "precision": "FP16 autocast with GradScaler initial scale 1.0 and FP32 master parameters",
+    "optimizer": "same corrected Phase 1 partition: encoder and scorer optimized; action head excluded",
+    "bounded_work": "exactly one maximum-length sequence forward, backward, and optimizer step; no sustained training",
+    "record": ["actual sequence length", "forward/backward/optimizer counts", "FP16 scale", "loss finiteness", "gradient finiteness", "peak allocated and reserved VRAM", "wall time", "encoder/scorer updates", "action head unchanged"],
+    "pass": "No OOM; finite losses and gradients; encoder and scorer update; action head unchanged; peak reserved VRAM <= 11.5 GiB.",
+    "failure_rule": "Classify as HARDWARE FEASIBILITY FAILURE and stop. Do not lower context or promote a different budget."
+  },
+  "stop_conditions": [
+    "source, Laya source, or tokenizer revision/checksum mismatch",
+    "any assertion or integrity failure",
+    "no eligible budget passes: record preprocessing remediation FAIL and do not run GPU",
+    "selected budget fails hardware: record HARDWARE FEASIBILITY FAILURE and stop",
+    "do not train, evaluate, add budgets, change criteria, or begin another experiment"
+  ],
+  "execution": {
+    "cpu_sweep_runs": 1,
+    "model_loading_during_sweep": false,
+    "inference_during_sweep": false,
+    "training_authorized": false,
+    "official_evaluation_authorized": false
+  }
+}

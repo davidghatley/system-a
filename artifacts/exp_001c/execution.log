@@ -1,0 +1,15 @@
+experiment=exp_001c_context_budget
+protocol_sha256=7b7642f9f2f3942d559db6a25e79cb8b5c90b52050cc642be57a8659d39d8e32
+preexecution_test_command=/home/davidhatley/Projects/research/system_a/.venv/bin/python test_sweep.py
+preexecution_test_working_directory=experiments/exp_001c_context_budget/scripts
+preexecution_test_result=PASS
+sweep_command=.venv/bin/python experiments/exp_001c_context_budget/scripts/sweep_budgets.py
+sweep_working_directory=repository_root
+sweep_runs=1
+sweep_result=PREPROCESSING_REMEDIATION_FAIL
+selected_budget=NONE
+gpu_smoke=NOT_RUN_NO_SELECTED_BUDGET
+model_loading=none
+inference=none
+training=none
+wall_seconds=2466.805316062004

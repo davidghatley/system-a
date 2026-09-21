@@ -1,0 +1,21 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "artifacts/exp_001c/budget_sweep.json": {
+      "bytes": 39812,
+      "sha256": "4fad23f4dabeebb2b8a4b77df4219ec555cf0101a0594c610e7d0326168ea9bd"
+    },
+    "artifacts/exp_001c/budget_sweep.md": {
+      "bytes": 5765,
+      "sha256": "4c2674f05db90782a23700552c940500efad502967d6bb3ae57307677729b792"
+    },
+    "experiments/exp_001c_context_budget/protocol.json": {
+      "bytes": 8326,
+      "sha256": "7b7642f9f2f3942d559db6a25e79cb8b5c90b52050cc642be57a8659d39d8e32"
+    },
+    "experiments/exp_001c_context_budget/scripts/sweep_budgets.py": {
+      "bytes": 21113,
+      "sha256": "698ce03c0bf6536330ccf74b205108da9a535655728c890ceac6c65a7165a1d0"
+    }
+  }
+}

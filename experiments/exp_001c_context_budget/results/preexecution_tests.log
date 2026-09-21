@@ -1,0 +1,7 @@
+protocol_sha256=7b7642f9f2f3942d559db6a25e79cb8b5c90b52050cc642be57a8659d39d8e32
+command=/home/davidhatley/Projects/research/system_a/.venv/bin/python test_sweep.py
+working_directory=experiments/exp_001c_context_budget/scripts
+attempt_1=ERROR: fixture numeric suffix was normalized by the frozen proxy function, preventing split-fixture generation; test fixture corrected, no protocol or sweep logic changed
+attempt_2=ERROR: linkage fixture lacked positive examples for all tools, triggering the intended nonzero-denominator assertion; test fixture corrected, no protocol or sweep logic changed
+attempt_3=PASS
+output=PASS: cross-budget semantics, 512/640 boundary, no truncation, upstream constructor, canaries, linkage exclusion semantics, protected-target isolation
