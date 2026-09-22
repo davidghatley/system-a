@@ -49,6 +49,5 @@ Iteration 2 criteria are frozen in `research/27_iteration_2_acceptance.md`.
 
 ## Next Proposed Actions
 
-1. Review the accepted Iteration 2 evidence and working-tree changes.
-2. Decide whether to commit/push Iteration 2; no commit was created automatically.
-3. Keep Trace2Decision training and Iteration 3 blocked until explicit user authorization.
+1. Review accepted Iteration 2 deliverables and evidence in commit `7d2caf6`.
+2. Keep Trace2Decision training and Iteration 3 blocked until explicit user authorization.

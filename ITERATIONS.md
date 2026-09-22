@@ -17,5 +17,5 @@
 - **Accepted deliverables:** Reflex specialist path; shared typed-decision contract with native string-state and metadata support; public positive-control evaluator; accepted B2 checkpoint and evidence; deterministic 1,544-row Trace2Decision v2 derivative; reusable parent integration verifier.
 - **Failed criteria:** None. The first parent integration execution exposed rounded-probability and native-string/provenance boundary defects; these were repaired within the one allowed cross-track cycle and the unchanged row then passed. Both models missed that row's action label, which is an accuracy limitation rather than an interoperability criterion.
 - **Important measurements:** B1 specialist/base choice 68.0%/35.5%; B2 choice 36.0% to 70.5% (+34.5 points), all-question 38.8% to 73.0%, native-gold NLL 1.5310 to 0.6894, 80 updates, 8.670 GiB peak reserved, 772.8 s total; Trace2Decision v2 1,544 rows with zero split crossings and max 512 tokens; specialist benchmark median/p95 40.150/40.977 ms.
-- **Commit SHA:** Pending integration.
-- **Next options:** User review and optional commit/push. Trace2Decision training and Iteration 3 remain unauthorized.
+- **Commit SHA:** `7d2caf6` (deliverables and evidence).
+- **Next options:** User review. Trace2Decision training and Iteration 3 remain unauthorized.
