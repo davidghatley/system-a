@@ -1,0 +1,29 @@
+{
+  "schema_version": "laya-trace-i3-manifest-v1",
+  "status": "pending",
+  "acceptance": null,
+  "dataset": {
+    "id": null,
+    "revision": null,
+    "source_sha256": null,
+    "scope": "corrected observed-next-action derivative; final provenance pending independent acceptance"
+  },
+  "renderer": {
+    "schema_version": null,
+    "implementation_path": null,
+    "implementation_sha256": null
+  },
+  "labels": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "other_tool",
+    "respond_or_finish"
+  ],
+  "splits": {
+    "train": {"path": null, "sha256": null, "rows": null, "trajectories": null, "task_groups": null},
+    "dev": {"path": null, "sha256": null, "rows": null, "trajectories": null, "task_groups": null},
+    "test": {"path": null, "sha256": null, "rows": null, "trajectories": null, "task_groups": null}
+  }
+}

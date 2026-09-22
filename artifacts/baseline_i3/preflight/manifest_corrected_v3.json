@@ -1,0 +1,63 @@
+{
+  "bootstrap": {
+    "replicates": 2000,
+    "seed": 314159
+  },
+  "data": {
+    "dev": "artifacts/trace2decision_i3/output/dev.jsonl",
+    "train": "artifacts/trace2decision_i3/output/train.jsonl"
+  },
+  "labels": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "other_tool",
+    "respond_or_finish"
+  ],
+  "logistic_candidates": [
+    {
+      "C": 0.5,
+      "epochs": 20,
+      "id": "word1-c0.5",
+      "learning_rate": 0.15,
+      "max_features": 4000,
+      "min_df": 2,
+      "ngram_range": [1, 1]
+    },
+    {
+      "C": 2.0,
+      "epochs": 20,
+      "id": "word1-c2",
+      "learning_rate": 0.15,
+      "max_features": 4000,
+      "min_df": 2,
+      "ngram_range": [1, 1]
+    },
+    {
+      "C": 0.5,
+      "epochs": 20,
+      "id": "word12-c0.5",
+      "learning_rate": 0.15,
+      "max_features": 8000,
+      "min_df": 2,
+      "ngram_range": [1, 2]
+    },
+    {
+      "C": 2.0,
+      "epochs": 20,
+      "id": "word12-c2",
+      "learning_rate": 0.15,
+      "max_features": 8000,
+      "min_df": 2,
+      "ngram_range": [1, 2]
+    }
+  ],
+  "output_dir": "artifacts/baseline_i3/preflight/corrected_v3",
+  "primary_metric": "macro_f1",
+  "probability_smoothing_alpha": 1.0,
+  "question_id": "next_action",
+  "schema_version": "trace-action-baseline-manifest-v1",
+  "seed": 271828,
+  "selection_tie_break": "candidate_id_ascending"
+}

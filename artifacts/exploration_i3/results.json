@@ -1,0 +1,437 @@
+{
+  "inputs": {
+    "dev": {
+      "path": "artifacts/trace2decision_i2/output/dev.jsonl",
+      "rows": 159,
+      "sha256": "eed09d564f1ae17cabb2ef47bec8ae94aaa08c41ccd6da692149f14b0b47a540"
+    },
+    "test_read": false,
+    "train": {
+      "path": "artifacts/trace2decision_i2/output/train.jsonl",
+      "rows": 1235,
+      "sha256": "79255bd82a26c663845ff8c82a97e3d912b0e19a7231cc8cec2e480e837b5e27"
+    }
+  },
+  "label_support": {
+    "dev": {
+      "edit": 27,
+      "execute": 70,
+      "read": 27,
+      "respond_or_finish": 16,
+      "search": 19
+    },
+    "train": {
+      "edit": 178,
+      "execute": 540,
+      "read": 241,
+      "respond_or_finish": 133,
+      "search": 143
+    }
+  },
+  "probe_1_workflow": {
+    "dev_contiguous_predecessor": {
+      "fraction": 0.8742138364779874,
+      "rows": 139
+    },
+    "methods": {
+      "exact_step": {
+        "metrics": {
+          "accuracy": 0.5849056603773585,
+          "macro_f1": 0.3493125232255667,
+          "per_label": {
+            "edit": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 27
+            },
+            "execute": {
+              "f1": 0.6666666666666666,
+              "recall": 0.9,
+              "support": 70
+            },
+            "other_tool": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "read": {
+              "f1": 0.6086956521739131,
+              "recall": 0.5185185185185185,
+              "support": 27
+            },
+            "respond_or_finish": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 16
+            },
+            "search": {
+              "f1": 0.8205128205128205,
+              "recall": 0.8421052631578947,
+              "support": 19
+            }
+          },
+          "rows": 159
+        },
+        "paired_vs_majority": {
+          "accuracy": {
+            "difference": 0.14465408805031443,
+            "percentile_95": [
+              0.07567567567567568,
+              0.20547945205479456
+            ]
+          },
+          "groups": 20,
+          "macro_f1": {
+            "difference": 0.24742023792716789,
+            "percentile_95": [
+              0.19970460756977615,
+              0.29715731186319416
+            ]
+          },
+          "replicates": 5000,
+          "seed": 20260922
+        }
+      },
+      "majority": {
+        "metrics": {
+          "accuracy": 0.44025157232704404,
+          "macro_f1": 0.10189228529839883,
+          "per_label": {
+            "edit": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 27
+            },
+            "execute": {
+              "f1": 0.611353711790393,
+              "recall": 1.0,
+              "support": 70
+            },
+            "other_tool": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "read": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 27
+            },
+            "respond_or_finish": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 16
+            },
+            "search": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 19
+            }
+          },
+          "rows": 159
+        }
+      },
+      "position_bin": {
+        "metrics": {
+          "accuracy": 0.6037735849056604,
+          "macro_f1": 0.3592689058407819,
+          "per_label": {
+            "edit": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 27
+            },
+            "execute": {
+              "f1": 0.6839378238341969,
+              "recall": 0.9428571428571428,
+              "support": 70
+            },
+            "other_tool": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "read": {
+              "f1": 0.6511627906976745,
+              "recall": 0.5185185185185185,
+              "support": 27
+            },
+            "respond_or_finish": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 16
+            },
+            "search": {
+              "f1": 0.8205128205128205,
+              "recall": 0.8421052631578947,
+              "support": 19
+            }
+          },
+          "rows": 159
+        },
+        "paired_vs_majority": {
+          "accuracy": {
+            "difference": 0.16352201257861632,
+            "percentile_95": [
+              0.11538461538461536,
+              0.20714285714285718
+            ]
+          },
+          "groups": 20,
+          "macro_f1": {
+            "difference": 0.2573766205423831,
+            "percentile_95": [
+              0.21387032851586096,
+              0.2992030492030492
+            ]
+          },
+          "replicates": 5000,
+          "seed": 20260922
+        }
+      },
+      "position_plus_previous": {
+        "metrics": {
+          "accuracy": 0.6226415094339622,
+          "macro_f1": 0.4261415779228743,
+          "per_label": {
+            "edit": {
+              "f1": 0.45454545454545453,
+              "recall": 0.37037037037037035,
+              "support": 27
+            },
+            "execute": {
+              "f1": 0.686046511627907,
+              "recall": 0.8428571428571429,
+              "support": 70
+            },
+            "other_tool": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "read": {
+              "f1": 0.5957446808510638,
+              "recall": 0.5185185185185185,
+              "support": 27
+            },
+            "respond_or_finish": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 16
+            },
+            "search": {
+              "f1": 0.8205128205128205,
+              "recall": 0.8421052631578947,
+              "support": 19
+            }
+          },
+          "rows": 159
+        },
+        "paired_vs_majority": {
+          "accuracy": {
+            "difference": 0.1823899371069182,
+            "percentile_95": [
+              0.10457516339869277,
+              0.2568807339449541
+            ]
+          },
+          "groups": 20,
+          "macro_f1": {
+            "difference": 0.3242492926244755,
+            "percentile_95": [
+              0.2508137974036283,
+              0.40402961100635515
+            ]
+          },
+          "replicates": 5000,
+          "seed": 20260922
+        }
+      },
+      "previous_action": {
+        "metrics": {
+          "accuracy": 0.5974842767295597,
+          "macro_f1": 0.3522364998337539,
+          "per_label": {
+            "edit": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 27
+            },
+            "execute": {
+              "f1": 0.6842105263157895,
+              "recall": 0.9285714285714286,
+              "support": 70
+            },
+            "other_tool": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "read": {
+              "f1": 0.6086956521739131,
+              "recall": 0.5185185185185185,
+              "support": 27
+            },
+            "respond_or_finish": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 16
+            },
+            "search": {
+              "f1": 0.8205128205128205,
+              "recall": 0.8421052631578947,
+              "support": 19
+            }
+          },
+          "rows": 159
+        },
+        "paired_vs_majority": {
+          "accuracy": {
+            "difference": 0.1572327044025157,
+            "percentile_95": [
+              0.10326086956521735,
+              0.2054794520547945
+            ]
+          },
+          "groups": 20,
+          "macro_f1": {
+            "difference": 0.25034421453535505,
+            "percentile_95": [
+              0.2058213810069589,
+              0.2948976027846321
+            ]
+          },
+          "replicates": 5000,
+          "seed": 20260922
+        }
+      }
+    },
+    "predecessor_definition": "previous retained label only when source_step is contiguous; otherwise START",
+    "train_contiguous_predecessor": {
+      "fraction": 0.8672064777327935,
+      "rows": 1071
+    }
+  },
+  "probe_2_latest_observation": {
+    "methods": {
+      "task": {
+        "metrics": {
+          "accuracy": 0.42138364779874216,
+          "brier": 1.1493953979837686,
+          "macro_f1": 0.10907132083602672,
+          "nll": 10.490751955049712,
+          "per_label": {
+            "edit": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 27
+            },
+            "execute": {
+              "f1": 0.5972850678733032,
+              "recall": 0.9428571428571428,
+              "support": 70
+            },
+            "other_tool": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "read": {
+              "f1": 0.05714285714285714,
+              "recall": 0.037037037037037035,
+              "support": 27
+            },
+            "respond_or_finish": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 16
+            },
+            "search": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 19
+            }
+          },
+          "rows": 159
+        },
+        "vocabulary_size": 19124
+      },
+      "task_plus_latest_observation": {
+        "metrics": {
+          "accuracy": 0.46540880503144655,
+          "brier": 1.0373065293524086,
+          "macro_f1": 0.21431600418690785,
+          "nll": 9.622927074769411,
+          "per_label": {
+            "edit": {
+              "f1": 0.2,
+              "recall": 0.1111111111111111,
+              "support": 27
+            },
+            "execute": {
+              "f1": 0.6132075471698113,
+              "recall": 0.9285714285714286,
+              "support": 70
+            },
+            "other_tool": {
+              "f1": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "read": {
+              "f1": 0.16216216216216217,
+              "recall": 0.1111111111111111,
+              "support": 27
+            },
+            "respond_or_finish": {
+              "f1": 0.21052631578947367,
+              "recall": 0.125,
+              "support": 16
+            },
+            "search": {
+              "f1": 0.1,
+              "recall": 0.05263157894736842,
+              "support": 19
+            }
+          },
+          "rows": 159
+        },
+        "vocabulary_size": 21919
+      }
+    },
+    "settings": {
+      "alpha": 1.0,
+      "features": "lowercase word unigrams+bigrams",
+      "min_train_document_frequency": 2,
+      "model": "multinomial_naive_bayes"
+    },
+    "task_plus_observation_vs_task": {
+      "accuracy": {
+        "difference": 0.04402515723270439,
+        "percentile_95": [
+          0.014925373134328346,
+          0.08163265306122452
+        ]
+      },
+      "groups": 20,
+      "macro_f1": {
+        "difference": 0.10524468335088114,
+        "percentile_95": [
+          0.05099987455218831,
+          0.16485149320553155
+        ]
+      },
+      "replicates": 5000,
+      "seed": 20260922
+    }
+  },
+  "resource_use": {
+    "configured_threads": 1,
+    "cpu_seconds": 24.520856845999997,
+    "max_rss_kib": 5328572,
+    "wall_seconds": 24.662660851026885
+  },
+  "starting_commit": "2d4408de85587a046c3f14fec1835dd9e69940c9",
+  "status": "exploratory",
+  "warning": "V2 labels may be affected by the known first-tool-call target bug; mixed-category targets were not excluded."
+}

@@ -1,0 +1,25 @@
+{
+  "config_path": "training/laya_trace_i3/config.json",
+  "config_sha256": "4b76e74e9393cab4d882e5a078275caf2738531b5455b6e1fb40d37445a2c0ad",
+  "cuda_visible_devices": "",
+  "default_seeds": [
+    42,
+    314159
+  ],
+  "fixed_labels": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "other_tool",
+    "respond_or_finish"
+  ],
+  "manifest_path": "artifacts/experiment_i3/preflight/data_manifest.pending.json",
+  "manifest_sha256": "7a552dc1ff8c17393e543d8cb2065d4ae465d1aed76aba7b7708370f33d2ac53",
+  "manifest_status": "pending",
+  "model_loaded": false,
+  "single_seed_fallback_rule": "before any main run, use measured smoke timing to project both complete seeds; use only seed 42 iff the recorded conservative projection exceeds 7200 aggregate GPU-seconds",
+  "status": "blocked_pending_data_acceptance",
+  "test_opened": false,
+  "torch_imported": false
+}

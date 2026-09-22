@@ -1,0 +1,9 @@
+{
+  "acquired_unix_seconds": 1790111064.8877459,
+  "command": "unit-lock-probe",
+  "config_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "manifest_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "pid": 3009297,
+  "seed": 42,
+  "state": "held"
+}

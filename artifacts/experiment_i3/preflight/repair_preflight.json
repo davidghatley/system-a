@@ -1,0 +1,84 @@
+{
+  "choice_option_order": [
+    "edit",
+    "execute",
+    "other_tool",
+    "read",
+    "respond_or_finish",
+    "search"
+  ],
+  "config_sha256": "748b960d470977b250c115ff195f3d4e6dae844474be3cc604cbc14e20dfb3ae",
+  "group_bootstrap_proof": {
+    "dev": {
+      "bootstrap_unit": "task_group",
+      "rows": 140,
+      "sorted_group_ids_sha256": "b39e95709e9cc664ae902134516853debfe574d353001c9544eb8545f2001328",
+      "task_groups": 20,
+      "trajectories": 20
+    },
+    "train": {
+      "bootstrap_unit": "task_group",
+      "rows": 1051,
+      "sorted_group_ids_sha256": "0771d0473bc0c5c4429f80f40592fcc199c05360e2fee9ec7555cf8153a08ac6",
+      "task_groups": 163,
+      "trajectories": 163
+    }
+  },
+  "label_to_choice_index": {
+    "edit": 0,
+    "execute": 1,
+    "other_tool": 2,
+    "read": 3,
+    "respond_or_finish": 4,
+    "search": 5
+  },
+  "manifest_sha256": "158b6fa3a1a491312b377cf46b6da212e554f811a6431eece19232fcd50d5ed2",
+  "model_loaded": false,
+  "objective_proof": {
+    "edit": {
+      "gold_choice_index": 0,
+      "gradient_l1": 9.720769570763833,
+      "loss": -1.2381147093404052,
+      "loss_rlcd": -2.904371386433133,
+      "rlcd_gradient_l1": 8.607847058449295
+    },
+    "execute": {
+      "gold_choice_index": 1,
+      "gradient_l1": 8.62701180466515,
+      "loss": 0.4326272235071811,
+      "loss_rlcd": -1.5336294535855464,
+      "rlcd_gradient_l1": 7.514089292350613
+    },
+    "other_tool": {
+      "gold_choice_index": 2,
+      "gradient_l1": 6.527574337514477,
+      "loss": 1.3839236703103308,
+      "loss_rlcd": -0.08233300678239656,
+      "rlcd_gradient_l1": 5.596267658997617
+    },
+    "read": {
+      "gold_choice_index": 3,
+      "gradient_l1": 9.886303241522544,
+      "loss": 4.640071720701618,
+      "loss_rlcd": 2.77381504360889,
+      "rlcd_gradient_l1": 8.999225753837083
+    },
+    "respond_or_finish": {
+      "gold_choice_index": 4,
+      "gradient_l1": 9.415884809016774,
+      "loss": -0.7672645943352343,
+      "loss_rlcd": -2.9335212714279617,
+      "rlcd_gradient_l1": 8.302962296702235
+    },
+    "search": {
+      "gold_choice_index": 5,
+      "gradient_l1": 8.253751021015857,
+      "loss": 2.9328116988888038,
+      "loss_rlcd": 1.166555021796076,
+      "rlcd_gradient_l1": 7.185057699532718
+    }
+  },
+  "status": "repair_preflight_passed",
+  "test_opened": false,
+  "torch_imported": false
+}

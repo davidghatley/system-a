@@ -1,0 +1,35 @@
+{
+  "schema_version": "reflex-replay-suite-v1",
+  "frozen_at": "2026-09-22",
+  "starting_commit": "2d4408d",
+  "selection_record": "apps/reflex_replay/SUITE_FREEZE.md",
+  "cases": [
+    {
+      "name": "accepted-integration",
+      "record_id": "t2d-i2-4bba28e1b18498c2d153a95a223fc411",
+      "source": "artifacts/trace2decision_i2/output/dev.jsonl",
+      "source_line": 1,
+      "source_line_sha256": "87cb076da3a9233363d94d9007c2fe2a17b3eb20c04bef3b9cacd460bc75aa68",
+      "observed_label": "search",
+      "tags": ["known-specialist-failure", "low-margin"]
+    },
+    {
+      "name": "majority-success",
+      "record_id": "t2d-i2-1ea82a027c0f8bb26a6dadd308748d7a",
+      "source": "artifacts/trace2decision_i2/output/dev.jsonl",
+      "source_line": 3,
+      "source_line_sha256": "70dae1e9317e012f5d2c860e460b7ddd632c219a99b8e0974c637798c30a0da3",
+      "observed_label": "execute",
+      "tags": ["ordinary", "simple-rule-success"]
+    },
+    {
+      "name": "majority-failure",
+      "record_id": "t2d-i2-23900e0db0295335a7f2487b0acdcf96",
+      "source": "artifacts/trace2decision_i2/output/dev.jsonl",
+      "source_line": 4,
+      "source_line_sha256": "05579767eea81be9f4956b61fb8c013b2ff6add8475de03fdf6da221cf31881c",
+      "observed_label": "edit",
+      "tags": ["simple-rule-failure", "omitted-history-context"]
+    }
+  ]
+}

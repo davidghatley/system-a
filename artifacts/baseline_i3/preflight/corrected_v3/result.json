@@ -1,0 +1,932 @@
+{
+  "artifacts": {
+    "predictions": "dev_predictions.jsonl",
+    "selected_config": "selected_config.json",
+    "selected_model": "selected_model.json.gz"
+  },
+  "bootstrap": {
+    "tfidf_logistic_minus_majority": {
+      "independent_groups": 20,
+      "interval_percentile_95": [
+        0.10069824919141737,
+        0.2709021616093252
+      ],
+      "metric": "macro_f1_difference_a_minus_b",
+      "observed": 0.18162501407182258,
+      "replicates": 2000,
+      "resampling_unit": "trajectory_id",
+      "seed": 314159
+    },
+    "tfidf_logistic_minus_transition": {
+      "independent_groups": 20,
+      "interval_percentile_95": [
+        0.036599285233526624,
+        0.16408260273806488
+      ],
+      "metric": "macro_f1_difference_a_minus_b",
+      "observed": 0.09498837743518593,
+      "replicates": 2000,
+      "resampling_unit": "trajectory_id",
+      "seed": 314159
+    }
+  },
+  "data": {
+    "dev": {
+      "path": "artifacts/trace2decision_i3/output/dev.jsonl",
+      "rows": 140,
+      "sha256": "ade8262625a46eef78dcb2b11b42eaced444e1604bab1af5423412a67ae92783",
+      "trajectories": 20
+    },
+    "train": {
+      "path": "artifacts/trace2decision_i3/output/train.jsonl",
+      "rows": 1051,
+      "sha256": "86442271b3ddb74ce517ee335f6d89fbc80f94441ff1198250da5bf9ab4dda3c",
+      "trajectories": 163
+    }
+  },
+  "labels": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "other_tool",
+    "respond_or_finish"
+  ],
+  "limitations": [
+    "corrected v3 result is train/dev evidence only; no held-out split was read",
+    "candidate selection used dev macro-F1 and is subject to dev-selection optimism",
+    "transition marks rows without recoverable previous action invalid and uses only the declared training-majority fallback"
+  ],
+  "logistic_candidates": [
+    {
+      "config": {
+        "C": 0.5,
+        "epochs": 20,
+        "id": "word1-c0.5",
+        "learning_rate": 0.15,
+        "max_features": 4000,
+        "min_df": 2,
+        "ngram_range": [
+          1,
+          1
+        ],
+        "optimizer": "deterministic shuffled SGD",
+        "seed": 271828,
+        "updates": 21020,
+        "vocabulary_size": 4000
+      },
+      "fit_and_dev_seconds": 3.285880781011656,
+      "id": "word1-c0.5",
+      "metrics": {
+        "accuracy": 0.5428571428571428,
+        "brier": 0.5988972835033959,
+        "confusion": {
+          "labels": [
+            "read",
+            "search",
+            "edit",
+            "execute",
+            "other_tool",
+            "respond_or_finish"
+          ],
+          "matrix": [
+            [
+              4,
+              0,
+              0,
+              23,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              15,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              2,
+              25,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              70,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "macro_f1": 0.1795977011494253,
+        "nll": 1.1069414641846314,
+        "per_class": {
+          "edit": {
+            "f1": 0.13793103448275862,
+            "precision": 1.0,
+            "recall": 0.07407407407407407,
+            "support": 27
+          },
+          "execute": {
+            "f1": 0.6896551724137931,
+            "precision": 0.5263157894736842,
+            "recall": 1.0,
+            "support": 70
+          },
+          "other_tool": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "read": {
+            "f1": 0.25,
+            "precision": 0.8,
+            "recall": 0.14814814814814814,
+            "support": 27
+          },
+          "respond_or_finish": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "search": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 16
+          }
+        },
+        "rows": 140
+      }
+    },
+    {
+      "config": {
+        "C": 2.0,
+        "epochs": 20,
+        "id": "word1-c2",
+        "learning_rate": 0.15,
+        "max_features": 4000,
+        "min_df": 2,
+        "ngram_range": [
+          1,
+          1
+        ],
+        "optimizer": "deterministic shuffled SGD",
+        "seed": 271828,
+        "updates": 21020,
+        "vocabulary_size": 4000
+      },
+      "fit_and_dev_seconds": 3.411505535012111,
+      "id": "word1-c2",
+      "metrics": {
+        "accuracy": 0.5857142857142857,
+        "brier": 0.5630552687777869,
+        "confusion": {
+          "labels": [
+            "read",
+            "search",
+            "edit",
+            "execute",
+            "other_tool",
+            "respond_or_finish"
+          ],
+          "matrix": [
+            [
+              11,
+              0,
+              0,
+              16,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0,
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              3,
+              24,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0,
+              68,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "macro_f1": 0.2372782986322497,
+        "nll": 1.041863460387975,
+        "per_class": {
+          "edit": {
+            "f1": 0.19999999999999998,
+            "precision": 1.0,
+            "recall": 0.1111111111111111,
+            "support": 27
+          },
+          "execute": {
+            "f1": 0.712041884816754,
+            "precision": 0.5619834710743802,
+            "recall": 0.9714285714285714,
+            "support": 70
+          },
+          "other_tool": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "read": {
+            "f1": 0.5116279069767441,
+            "precision": 0.6875,
+            "recall": 0.4074074074074074,
+            "support": 27
+          },
+          "respond_or_finish": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "search": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 16
+          }
+        },
+        "rows": 140
+      }
+    },
+    {
+      "config": {
+        "C": 0.5,
+        "epochs": 20,
+        "id": "word12-c0.5",
+        "learning_rate": 0.15,
+        "max_features": 8000,
+        "min_df": 2,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "optimizer": "deterministic shuffled SGD",
+        "seed": 271828,
+        "updates": 21020,
+        "vocabulary_size": 8000
+      },
+      "fit_and_dev_seconds": 6.522875381982885,
+      "id": "word12-c0.5",
+      "metrics": {
+        "accuracy": 0.5785714285714286,
+        "brier": 0.5678382634668713,
+        "confusion": {
+          "labels": [
+            "read",
+            "search",
+            "edit",
+            "execute",
+            "other_tool",
+            "respond_or_finish"
+          ],
+          "matrix": [
+            [
+              9,
+              0,
+              0,
+              18,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0,
+              14,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              2,
+              25,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              70,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "macro_f1": 0.2203791905810386,
+        "nll": 1.0449235541643,
+        "per_class": {
+          "edit": {
+            "f1": 0.13793103448275862,
+            "precision": 1.0,
+            "recall": 0.07407407407407407,
+            "support": 27
+          },
+          "execute": {
+            "f1": 0.7106598984771574,
+            "precision": 0.5511811023622047,
+            "recall": 1.0,
+            "support": 70
+          },
+          "other_tool": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "read": {
+            "f1": 0.4736842105263157,
+            "precision": 0.8181818181818182,
+            "recall": 0.3333333333333333,
+            "support": 27
+          },
+          "respond_or_finish": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "search": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 16
+          }
+        },
+        "rows": 140
+      }
+    },
+    {
+      "config": {
+        "C": 2.0,
+        "epochs": 20,
+        "id": "word12-c2",
+        "learning_rate": 0.15,
+        "max_features": 8000,
+        "min_df": 2,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "optimizer": "deterministic shuffled SGD",
+        "seed": 271828,
+        "updates": 21020,
+        "vocabulary_size": 8000
+      },
+      "fit_and_dev_seconds": 6.203833498992026,
+      "id": "word12-c2",
+      "metrics": {
+        "accuracy": 0.6071428571428571,
+        "brier": 0.5149799498866513,
+        "confusion": {
+          "labels": [
+            "read",
+            "search",
+            "edit",
+            "execute",
+            "other_tool",
+            "respond_or_finish"
+          ],
+          "matrix": [
+            [
+              12,
+              0,
+              0,
+              15,
+              0,
+              0
+            ],
+            [
+              1,
+              2,
+              0,
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              4,
+              23,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              67,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "macro_f1": 0.2927361251829337,
+        "nll": 0.9518856046173836,
+        "per_class": {
+          "edit": {
+            "f1": 0.25,
+            "precision": 0.8,
+            "recall": 0.14814814814814814,
+            "support": 27
+          },
+          "execute": {
+            "f1": 0.7127659574468086,
+            "precision": 0.5677966101694916,
+            "recall": 0.9571428571428572,
+            "support": 70
+          },
+          "other_tool": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "read": {
+            "f1": 0.5714285714285714,
+            "precision": 0.8,
+            "recall": 0.4444444444444444,
+            "support": 27
+          },
+          "respond_or_finish": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "search": {
+            "f1": 0.2222222222222222,
+            "precision": 1.0,
+            "recall": 0.125,
+            "support": 16
+          }
+        },
+        "rows": 140
+      }
+    }
+  ],
+  "manifest": "artifacts/baseline_i3/preflight/manifest_corrected_v3.json",
+  "methods": {
+    "majority": {
+      "config": {
+        "smoothing_alpha": 1.0,
+        "tie_break": "first in fixed label list"
+      },
+      "metrics": {
+        "accuracy": 0.5,
+        "brier": 0.6638127221416166,
+        "confusion": {
+          "labels": [
+            "read",
+            "search",
+            "edit",
+            "execute",
+            "other_tool",
+            "respond_or_finish"
+          ],
+          "matrix": [
+            [
+              0,
+              0,
+              0,
+              27,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              16,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              27,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              70,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "macro_f1": 0.1111111111111111,
+        "nll": 1.2345504587025693,
+        "per_class": {
+          "edit": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 27
+          },
+          "execute": {
+            "f1": 0.6666666666666666,
+            "precision": 0.5,
+            "recall": 1.0,
+            "support": 70
+          },
+          "other_tool": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "read": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 27
+          },
+          "respond_or_finish": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "search": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 16
+          }
+        },
+        "rows": 140
+      }
+    },
+    "tfidf_logistic": {
+      "config": {
+        "C": 2.0,
+        "epochs": 20,
+        "id": "word12-c2",
+        "learning_rate": 0.15,
+        "max_features": 8000,
+        "min_df": 2,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "optimizer": "deterministic shuffled SGD",
+        "seed": 271828,
+        "updates": 21020,
+        "vocabulary_size": 8000
+      },
+      "metrics": {
+        "accuracy": 0.6071428571428571,
+        "brier": 0.5149799498866513,
+        "confusion": {
+          "labels": [
+            "read",
+            "search",
+            "edit",
+            "execute",
+            "other_tool",
+            "respond_or_finish"
+          ],
+          "matrix": [
+            [
+              12,
+              0,
+              0,
+              15,
+              0,
+              0
+            ],
+            [
+              1,
+              2,
+              0,
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              4,
+              23,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              67,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "macro_f1": 0.2927361251829337,
+        "nll": 0.9518856046173836,
+        "per_class": {
+          "edit": {
+            "f1": 0.25,
+            "precision": 0.8,
+            "recall": 0.14814814814814814,
+            "support": 27
+          },
+          "execute": {
+            "f1": 0.7127659574468086,
+            "precision": 0.5677966101694916,
+            "recall": 0.9571428571428572,
+            "support": 70
+          },
+          "other_tool": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "read": {
+            "f1": 0.5714285714285714,
+            "precision": 0.8,
+            "recall": 0.4444444444444444,
+            "support": 27
+          },
+          "respond_or_finish": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "search": {
+            "f1": 0.2222222222222222,
+            "precision": 1.0,
+            "recall": 0.125,
+            "support": 16
+          }
+        },
+        "rows": 140
+      },
+      "selection": {
+        "candidate_budget": 4,
+        "metric": "dev_macro_f1",
+        "selected_id": "word12-c2",
+        "tie_break": "candidate id ascending"
+      }
+    },
+    "transition": {
+      "config": {
+        "dev_evidence_rows": 30,
+        "dev_fallback_rows": 110,
+        "dev_previous_action_invalid_rows": 110,
+        "fallback": "training-majority distribution when compact state has no mapped previous action",
+        "fit_trajectories": 163,
+        "fit_transitions": 883,
+        "skipped_step_gaps": 5,
+        "smoothing_alpha": 1.0,
+        "state_evidence": "mapped tool name in RECENT HISTORY or LATEST RELEVANT OBSERVATION"
+      },
+      "metrics": {
+        "accuracy": 0.5642857142857143,
+        "brier": 0.6141603252738598,
+        "confusion": {
+          "labels": [
+            "read",
+            "search",
+            "edit",
+            "execute",
+            "other_tool",
+            "respond_or_finish"
+          ],
+          "matrix": [
+            [
+              9,
+              0,
+              0,
+              18,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              15,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              27,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              70,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "macro_f1": 0.19774774774774775,
+        "nll": 1.1674230430150803,
+        "per_class": {
+          "edit": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 27
+          },
+          "execute": {
+            "f1": 0.7000000000000001,
+            "precision": 0.5384615384615384,
+            "recall": 1.0,
+            "support": 70
+          },
+          "other_tool": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "read": {
+            "f1": 0.48648648648648646,
+            "precision": 0.9,
+            "recall": 0.3333333333333333,
+            "support": 27
+          },
+          "respond_or_finish": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "search": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 16
+          }
+        },
+        "rows": 140
+      }
+    }
+  },
+  "primary_metric": "macro_f1",
+  "probability_metrics": {
+    "brier": "mean multiclass sum of squared probability errors",
+    "count_smoothing": "symmetric additive alpha=1.0; logistic softmax needs no smoothing",
+    "nll": "mean negative log probability of gold label"
+  },
+  "schema_version": "trace-action-baseline-result-v1",
+  "starting_commit": "2d4408d",
+  "status": "corrected_v3_dev_only"
+}

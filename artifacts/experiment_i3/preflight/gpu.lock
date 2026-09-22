@@ -1,0 +1,9 @@
+{
+  "acquired_unix_seconds": 1790101004.3754392,
+  "command": "train",
+  "config_sha256": "748b960d470977b250c115ff195f3d4e6dae844474be3cc604cbc14e20dfb3ae",
+  "manifest_sha256": "158b6fa3a1a491312b377cf46b6da212e554f811a6431eece19232fcd50d5ed2",
+  "pid": 2899341,
+  "seed": 42,
+  "state": "held"
+}

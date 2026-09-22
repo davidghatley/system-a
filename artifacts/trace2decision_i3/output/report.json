@@ -1,0 +1,3109 @@
+{
+  "category_semantics": "Categories describe observed tool interfaces, not inferred intent or optimal action.",
+  "classification_order": [
+    "target_structure",
+    "whole_target_turn",
+    "no_call_positive_completion",
+    "prefix_linkage",
+    "state_construction"
+  ],
+  "conversion": {
+    "excluded_rows": 508,
+    "exclusion_reasons": {
+      "mixed_target_categories": 76,
+      "no_call_without_positive_completion": 208,
+      "unresolved_prefix_tool_call": 224
+    },
+    "exclusions_by_category_reason": {
+      "edit": {
+        "unresolved_prefix_tool_call": 34
+      },
+      "execute": {
+        "unresolved_prefix_tool_call": 147
+      },
+      "execute+read": {
+        "mixed_target_categories": 27
+      },
+      "execute+search": {
+        "mixed_target_categories": 15
+      },
+      "read": {
+        "unresolved_prefix_tool_call": 43
+      },
+      "read+search": {
+        "mixed_target_categories": 34
+      },
+      "respond_or_finish": {
+        "no_call_without_positive_completion": 208
+      }
+    },
+    "exclusions_by_split_reason": {
+      "dev": {
+        "mixed_target_categories": 3,
+        "no_call_without_positive_completion": 20,
+        "unresolved_prefix_tool_call": 20
+      },
+      "test": {
+        "mixed_target_categories": 11,
+        "no_call_without_positive_completion": 23,
+        "unresolved_prefix_tool_call": 36
+      },
+      "train": {
+        "mixed_target_categories": 62,
+        "no_call_without_positive_completion": 165,
+        "unresolved_prefix_tool_call": 168
+      }
+    },
+    "mixed_category_turns": {
+      "combinations_by_split": {
+        "dev": {
+          "execute+search": 2,
+          "read+search": 1
+        },
+        "test": {
+          "execute+read": 4,
+          "read+search": 7
+        },
+        "train": {
+          "execute+read": 23,
+          "execute+search": 13,
+          "read+search": 26
+        }
+      },
+      "total": 76
+    },
+    "no_call_audit": {
+      "all_excluded": true,
+      "counts": {
+        "ambiguous": 0,
+        "content_empty_or_missing": 0,
+        "content_present": 208,
+        "final_step": 207,
+        "finish_field_absent": 208,
+        "finish_field_present": 0,
+        "malformed": 0,
+        "non_final_step": 1,
+        "reasoning_absent": 192,
+        "reasoning_present": 16,
+        "total": 208
+      },
+      "interpretation": "No-call records are audited for finality, reasoning, content, finish fields, malformed, and ambiguous structure; none are retained.",
+      "policy": "no_call_without_positive_completion"
+    },
+    "retained_by_split_category": {
+      "dev": {
+        "edit": 27,
+        "execute": 70,
+        "read": 27,
+        "search": 16
+      },
+      "test": {
+        "edit": 32,
+        "execute": 59,
+        "read": 17,
+        "search": 14
+      },
+      "train": {
+        "edit": 178,
+        "execute": 537,
+        "read": 227,
+        "search": 109
+      }
+    },
+    "retained_rows": 1313,
+    "source_rows": 1821,
+    "trajectory_audit": {
+      "00680cb899433322c921c1a8f3653bd6c7173723ae8199a71e434a2e3109af8c": {
+        "excluded": 8,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 7
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "0127b42ba47f25239b73a7d39625cb62b47b8f0cdb7439db83d6117c87abba77": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 6,
+          "read": 1,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "01c6d6a99770eea23751eeb6586bab8f2cb11813b2f9dfbae30ba788d2adc960": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 4,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1
+        },
+        "split": "test"
+      },
+      "03a67a11b276abe1a087e6a76d27f61786df415203fcd9983584120452733210": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "04b55ddc423b52715fcb56f5661385aaa42237471653a3bff3cfd491dd1ed5d2": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 3,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "0522c114a9f3f522a61147b1007133d91e7407cf7656c6523bcf5de548ed5ac8": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 16,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 10,
+          "read": 2,
+          "search": 2
+        },
+        "split": "train"
+      },
+      "0573ae5d5ac11170024ee78c68650979133369de22d44a3dfbaf907a4df5f2fa": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "05d44bd9a77dda60a57125d5f669108af46251aa436f508a4f2cc3b9e36babdf": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 7,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "0634f90422dea8b8415c6e021d1390161c39aec8bbd298c5587e17ac1753cc73": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "07e2b15f7a85d026e21904400918438d18f53546fe89f42dc9d9f166332128e7": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "0beab6ed677c25c7505e3300bc0aaa9f3020690a32833a6999bec8ab080a662e": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 4
+        },
+        "retained": 0,
+        "retained_by_category": {},
+        "split": "train"
+      },
+      "0ca6b628c024ccdea41c744461865f0899904aea762c7281561b30d220855422": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 3,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "100e8161d641c36daa1f079cbbdd49b9acdd9220c43f48d4e0210e89b5132c70": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "1401795581fe5a3f8359dc083ac2193468ff75970179014ffa0c282258804de8": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "151a906986fb31e80bb9f3f6e40f5200b6c299ac4b3072623a8282c562d0a3ef": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "test"
+      },
+      "17265358bd7385130ba683e16f5c5581d55d69fa26d06141e2c9318843fc4b13": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "17b415eee0c7f1dace26f74e42a6498a3962dbc21816860db8411c7654614522": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 2,
+          "read": 2
+        },
+        "split": "train"
+      },
+      "194bf3ccfa51243c0c367e3c2648de0d7245d231e04be8ee5a8ee00034862a18": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 6,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "1b684978c565eb709c140fa871f52018f48f29288ade52c4f048126bfaac6f6a": {
+        "excluded": 4,
+        "excluded_by_reason": {
+          "mixed_target_categories": 3,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 2,
+        "retained_by_category": {
+          "edit": 1,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "1b81fdf152063692059eca3b63a3ee798a7260fd3a0f9a37c7ec010ad530bd52": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 6,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "1c4a98692d5ded93fa843d3cf505d1cbade9389013b686daea193edac41883d1": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "1fce8c977a50b73fd438484f244b75fa47ad6d0a1cf3df754d1e5bd1c66e5d0f": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "21423b7c6917ded682483562755e47a21b1df2b60c59a8e6406d114019ae85cf": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 6,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "22bdaadac5b856b5813951a7b56524293c16350cfdf4109c816874887ef72d5c": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 14,
+        "retained_by_category": {
+          "edit": 3,
+          "execute": 7,
+          "read": 3,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "2376cf189ead3678019f54a5e4aee49fb580de3ad4620d189d221bd81d204089": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 12,
+        "retained_by_category": {
+          "edit": 3,
+          "execute": 5,
+          "read": 3,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "23844250a63278f007b75a6395d01bde03a6ca2c870b0ff751b13d9fc5edaff7": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "2470b2bbb6d172b1da06ec85fbc889d57fa3fb28196442be60f38953249165ff": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 4
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "read": 1
+        },
+        "split": "train"
+      },
+      "24c504eec953939dacecaae0afb93a3de4a75b27046e7cda830cc9d3bbf270a0": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "24d98a7d7d2a96ed2d001feaf00aca5a9e7f1ad4c2af1a96c882fca3a7aa1fc3": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 2,
+        "retained_by_category": {
+          "edit": 1,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "267928ae011ccbf979e39dd397406a647e403e37f5e7a7ee770f07b0de04913f": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "26819a3ac3bb43b3384505b8c623429909e4406472531e21427d6c1cb6fa7252": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "26b52368eb6aff0e3a9b0b707d5bdcb5a2d746944faf6220a6300e6afa35d767": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 4,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "26f5f96760289b37010559cf8614a62f29bde87fe6509c0b303223a3c7629f01": {
+        "excluded": 5,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 4
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "2757558bb9c604920c15b35e1b52cc11bf05d63b7496eaf7f3b0521111016739": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "2760d0a5fe1a6941b0d364151d45bcf00097c4d2fa8433a10f83e8dbd40fe91a": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "28fb8801347761866cacff6041b50f0fbd5b6f873b682a840a1f27747d13baa5": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 28,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 7,
+          "read": 18,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "2b388fd90dc075d20da9fead84ff5951e3df49f0ad7317fe10e5adc171efb6cd": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "2ba027c5d0d5410961792c3f02bcf670a7be52a32fd329dffe8b5f3e38b29199": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "2c0ac73829327b31cf5c3b6dd79507b657cb138f35f41191689e86414c1a1ec4": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "2d0a65a76940fa98d27e051f10536ae73df6e7fda5ac6697069bd44d1788df78": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 3,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2
+        },
+        "split": "test"
+      },
+      "2df78c97274e378656c21ce4f946750426b62e331203b3dfc191910e4757f392": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 3,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2
+        },
+        "split": "train"
+      },
+      "2f27e18df58a9a3fcb3c9e934626d72d8b40591b17c000d4c5537d3704752b91": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "2f417271f725d1b4af1227fcaaf4504da601b5ff33ffd6a6472851a833497b4e": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "2f7044263b294263496bad484bea7c9c16e919f7a4306ed172dc12dd62bf8f0f": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "2fd5f5f06ff087164f5a86fb0660f81a40f88bf6c613009a3b4a94db3abdfabb": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "302e9ca81bd386a386de9909c3468ef4e1441838302dc0e00a5ce0b18f4c3a54": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 3,
+          "search": 2
+        },
+        "split": "train"
+      },
+      "308ecfab29a62506c1f303c019fbacaee20c81ed125aff2e4fa3118612843937": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "310784d8e614c2c0025782e1f215b363674e58621b85999355820d20ecdaa3a2": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "336bd3981f710ede0984063d479de9ca73493813408f7243fea66d388f3d29fb": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 6,
+          "read": 1,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "33bd94b79524c951ea95cdc71f0d04bb6cc2633184e68450db0bd6fdbd228939": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 4,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "355ccd327f2fc2550437e72205e5189448eda6edffcc1d8198af30c01a4d9ee3": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 11,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 6,
+          "read": 2,
+          "search": 2
+        },
+        "split": "train"
+      },
+      "356afa10c1d021af22a90522f428fbe7aed76f5b87ade3e8254e0f65c371f39f": {
+        "excluded": 5,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 4
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "3795414c768319e70f846a24754be49b22a2d627367c8a8562cbc221d7a7c50e": {
+        "excluded": 8,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 7
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "test"
+      },
+      "3881ce7c9130f008707fecc0d4817d0f506f045339447dfd1d2055fbfbff7207": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "3a7f3bbc742c10622d5a94b07313e19a3180d98d913443e8f946919fecd55ab9": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "3ad6d410debe5cdd71a7512be42d139916f5bc03b345256a950925ee3f52976a": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 5,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "3d45e45b3eb2c0c142d1b06a4fc7bd4445373f4a803fc82a901b12a9e2c1574c": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "3decae542ae269fa175fc30f60eaa16c216aef838bad8b7a2ad8999262d600de": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 5,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "3fc441654060357c17d0c7136750dec9e8be4222cc0e4a961a038d5a4c1df677": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 13,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 9,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "40f0f5e9c1c2f0b3f34668557fabea3d49aa5c7202715d04e2a99d3b905b0631": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "4160a05a40a90b6094f9dc1884e7951872b87ec43ed070511edfa9a02f177b1e": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "44145dfbd7726b982173e2857875ec8b8e7af782acb6fa22ad64d677f4c2a015": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 2
+        },
+        "split": "test"
+      },
+      "44adeb93ea8a9737985f7f667114c6116acd2361cd347c62e3154daf67288c0c": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "44b8071be12b59a5084591bcc5c599f2d9574f560fd1911af28a293c01fe651f": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 11,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 6,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "452a37f40e1bf01aac51445a24e3f14b635a5a403db8f351ae66a8cf5d87a3be": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 12,
+        "retained_by_category": {
+          "edit": 4,
+          "execute": 3,
+          "read": 3,
+          "search": 2
+        },
+        "split": "dev"
+      },
+      "45a576dfb5d4c7fa02cb851fb9e4ea71546964bfb060e7053ab1f7392a3e14a8": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 3
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "4630c49d8c7f024fa1b898ca2bd7ab8fd17436322e26ae5e7d4cc3c96647e5f0": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 16,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 9,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "475ea919bda3b720e27b021052eb619be4a87209b50e9719520eb6b2434485f1": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 8,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "4785e116fbbcc82e24bfaf0f3392838b6391688b579bd79974f405b26f88c72d": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 3,
+          "execute": 3,
+          "read": 3,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "482cfb7e68008eeb26fa5233e7d59c2cf85cfe223a3e937d37968dc99949c1d7": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "48bf0ea3c0581fdc48c1bc9d30ed9f120f383150eca24ede455512e58781ab0b": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 4,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3
+        },
+        "split": "test"
+      },
+      "4a0dad877e0b6ed4469b87333c88e5885cd2f81124f6a83af50840cce55da9ce": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "4e0ecdd1866d503f7f44938755035757b641450bebf9b985b5959546500b4b80": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "4ebdee26a39d69df25078741da41787049859c434d789f5249d41a79b660d59f": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "4ef8e3bd5cb41ff1b962234c5230d9b5907a29d26f016b8f7a5b897ed11ba648": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "5013d8d13e1c09be29e504e5ab8a94a4562be1c9a5b95d5a6b9a76f4332a4055": {
+        "excluded": 5,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 4
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "test"
+      },
+      "50a21bd937075e8311514bcdfd3e6f492c95e921a9796c520da453de922a40a0": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 20,
+        "retained_by_category": {
+          "edit": 8,
+          "execute": 6,
+          "read": 5,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "50df585868904e71229591077f27bf48861c8991acaed9e4ba62a68844b24736": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "522078931ed634a6ecd7662b015cd5f8992515102d4a6e4b87501064708c00ab": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "525da81551118d5a4c107e764aef258c41c05e94668a2c53d17ca2ebbef67db3": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 12,
+        "retained_by_category": {
+          "edit": 3,
+          "execute": 7,
+          "read": 1,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "5377eab49c14bc0791f006930fac3009a4edac815a3673a61cb6ea447f6d0342": {
+        "excluded": 8,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 7
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "test"
+      },
+      "54ce10fd93179a5a9e5a67d8ef52a54830afe3a2ccdbe48b7891768929ec16e3": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 13,
+        "retained_by_category": {
+          "edit": 4,
+          "execute": 4,
+          "read": 4,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "5a1b1d4d7a9c67de48465225ab7a96f01da011f5fa2c853bffd61bff3b6f6d45": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "5beddadc83db1679f712d16a5384e2108fe1843f6d96a271dbe6f462be8d9430": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "5c0730f132c79e8e7756295cf4ea95b78b052501c0d44d80bee48aa659fc0b3f": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 7,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "5da35280aef924727f13294e819e93ab79951c826f41c2e3a7d3d15183ac7f72": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "5da9e1adc9465f5d3f1d55a6832c2ad0bbfd60ede685d1b7c7d44d1c2575b5fb": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 5,
+          "read": 2,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "5e68d9d1aaba16078d05ccbea1d449d467b4279bbd0072370b6233c2e62d9848": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "execute": 7,
+          "read": 3
+        },
+        "split": "train"
+      },
+      "5e80131e86b54caba45bf5f2abb783d4b847ed6c07b5c78c537030ee741aa3a5": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 4,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 1,
+          "read": 1,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "5f821c7ce6b16d5ca5ccde0a0faadfbddf5c97eeb855d6d3cd6f8cd84b959d6e": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "60a5c0d74c2c04e429ae832958912e3aafd3f06833f968e0f7f6bb17983cb8bc": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2
+        },
+        "split": "train"
+      },
+      "60b392e0ffc3e7387daeef509a8693c300b5dcd6c00e077bfa87accb6824b8df": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "dev"
+      },
+      "61abdc24f405b4f540af9dec903c03f69868fce3043cbdcd1f9132ea87061ce2": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "62d8d735863d409a3c67ec995cf9c8075030b576cc1bf4a91a01b0cd4e78dc50": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 2
+        },
+        "split": "train"
+      },
+      "639f864d6a26f4b2d225a28dc94a79de8ec63e717f47de2fb71c925c89fc926b": {
+        "excluded": 9,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 8
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "641b3067d973327d10d035d76912151c938ec153d4c7a4de2977b9be3651c31b": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5
+        },
+        "split": "train"
+      },
+      "6485e45b7b23f589f95621849c7b3a9a2dfc3afe93d2c1c458c23c4712e74623": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "69ab08efa2f14231032669bbf2876eace7651381321e44d3f65f96a452f65f14": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 3,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "6a820f8fc11741c1f818a36150bce246a4044a49166b8a5bf9540ed510fe53e6": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "6bf97887a310b8f598547112d516ef0bf2d1e792c4e7959a7e1f2916ba2604ed": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "6cce3b51a037ffb57e93736339aa7ad02374b367ebd19792f30fe5befa4f3c3d": {
+        "excluded": 5,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 4
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "6eb9077df5cdcd08c520e9e6e62d83d444b0495ec12d0bd3b9fe4505d5d787ef": {
+        "excluded": 4,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 3
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "read": 1
+        },
+        "split": "dev"
+      },
+      "7033f0c5311313fbb271a94ecc9ba4919ee8dc5fa6d2ae69520cc895686c957b": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "70ef68dafa3d8008b21908c936737d34d02c8022a1a80e67651f55a143b91775": {
+        "excluded": 8,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 2,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "726295180b79869dd000ec5ea9351a18c3e081c2ac0220d95e8e113bab67cb7b": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 3
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "7405cff871b98d8d615dc857b320a8a403bcdf027d576c25828362da61464aa9": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 11,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 5,
+          "read": 2,
+          "search": 2
+        },
+        "split": "train"
+      },
+      "74183a1bec7d4fc245d1a3a3195bdb0c026a6e2d795f44ae2e73f80e63d38ed4": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 2
+        },
+        "split": "train"
+      },
+      "777141d5254f4e5b97e448282e1baa4535ff0419d8892a1890324080a0feaf06": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 2,
+          "read": 2,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "789f317cfdfc4896750a7146e213e651a5a560bf1af5a819e2cfe034dc51114d": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 4,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3
+        },
+        "split": "train"
+      },
+      "78dcf3949016cf05b3199aee1c2a9e7a5aec8443f0e1d30d59601ccee59956f3": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 5,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "7958aa7705cedf9fc9741e96fddf6c84d08dbaf25edbdfeeb039279a6bedd757": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 3,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2
+        },
+        "split": "train"
+      },
+      "7bd3a1981b727dba653db8dfa5be4778eaca0088bdeaf8e677750e5b641094b5": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "7c93752b3d9f4d773dc63c26817073c7ad645daeb9758cbb749276707c4c80db": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 1,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "7ee433c00f5ec6deefa7aefac68d211eb07a2920679969c17cf3bf8d1815f68d": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 4,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 1,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "81b2707569d8a20278743f5574f744588048d81c6d45a5380354c1f150118c49": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 4,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "82c5abb14360532028109339c239d9d791f71c487ff75181b4e04982670880bd": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "82fe8aa142ab880ffff5fa9f4cca362652375da92c9bf4832a6bf68006aab791": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 8
+        },
+        "split": "test"
+      },
+      "87076bbf23f40a34a7d95a57ca2f26a29eaadada08c1e525634e7283af60d589": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "8787bff643e8fd4067fa3a0473b5cac901c17a63b24ef803760cdc1c62526be0": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "88dd1edf19a99a7cd17f4b969b359ffa74c1ccd004cff095450652c683ca319b": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "88e6c20674a6ad5d49ca6a00154bdb89f547086104eba14ac80676ce7a18ab0a": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "8a634cc0046a504b6e6284b279e5f7082bf57a70363db25d0a017623b7e24efb": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 16,
+        "retained_by_category": {
+          "edit": 5,
+          "execute": 7,
+          "read": 3,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "8e80bca1633cc5e82552844c384a18b60867288e250c2cf0576c3cd98a843335": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "91c2716b5e7f60a6c91901dc0ff61398896647cf8bfbc737830267fef400281b": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "9310230ae60dbd06ba8a1fa803411b6f89484edc3d22096e661d2b1327791c94": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "93689be8d6d18c65e63a8688230fb0c167b3d6539f1f006d30e8c39b1d1e7ab1": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "943323871cb4151029eeb4172196546b715a6c1eda09db0abc29de0b8d4d04b4": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 6,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "9647748ab866d07b2bd42b71d3817e5542d14de67cb6434c20ee68d76d167dc3": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "dev"
+      },
+      "96c3ef761609cbecca10afab519fd092f8a63e83885bfe6e80184c11e1e746e8": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 3,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "97d3e0feaaf522664685e5d396e8776b73a558e2d250cac932d24eadd9d1dea5": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 7,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "989d3cb25121b7474574793daf677e022c8bce1f3ed5bbe27cbbfaa2a9d24276": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2
+        },
+        "split": "train"
+      },
+      "98d4848f49e84f0fc4972b2cd4ecf26f2b921020308b9652448d7dcf17806f3f": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 4
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "995346c8a95099bf6f16ada5b8a4f0db138d180f2fc0862f5d5bdeef0fe18cb5": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "99da0c0379c57a8e1603afd57a26b2d6b25aaf73ba16104479682e333fa133c4": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 2
+        },
+        "split": "train"
+      },
+      "9c95f7a147bc782d75fa9c5437ca4248eb416e2b6b65fb66c139038a2adb4246": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "9ca7cf1e5b2cc61e91628ef88a2e2ad797b900a97041ace8918bb3ec97cf2979": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "9cdcf3843b86a20b712c951df83cbe0f2684fb99bb994f115bdb5f582022f45d": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 4,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "9d3121fdfe44a1413201314bb2fba997654e7d955ed6b4ac053f53ff1739cdbc": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 4,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 1,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "a102b8c0d18803a62d9d95df6f37f896651c21cde880d9ab1890a74fecb727f5": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 3,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2
+        },
+        "split": "dev"
+      },
+      "a1dd5630ffda2f7213d34c29d070ddf5df19e5b611d399a693e69ba8b4e4e9db": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 4,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "a4e47c1643043d68fad926bf739d200cbf68da9d0c5063745298b84cbe0dbea7": {
+        "excluded": 9,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 8
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "a7e518a86d782ccf31da561840305c0fc9fc7d1eaeec5f1da6f1c33885b3f9a6": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 4,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "a862eaa14841768d0fb2ee5da9d8e01296191a7157fa3d7b8071dd3fd95e642a": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "a9498a821e4e6ad8c143cea783a66e99ab4e21f1090d8f7d954d6de151652148": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "aad01f5968ece565ee0124aff7cc50232188dc77870697c46d143cec754ce97b": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 7,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "abde290c30b95b90fd61421b52007cf6291a68697b52ecc178cf9a01b87c46af": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 1,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "abde927ab90ad9580452f7a1d3a69dd5595d7089e644490789cf5cf4e1daa67d": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 12,
+        "retained_by_category": {
+          "edit": 7,
+          "execute": 2,
+          "read": 1,
+          "search": 2
+        },
+        "split": "test"
+      },
+      "abf7446970c9709707ac80df541d7cd32f6c5b6ba3d46390382f1464df9a854d": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 15,
+        "retained_by_category": {
+          "edit": 4,
+          "execute": 8,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "ae5fffee92c2e982c5c91c25551ea1aede5c9e5f36ad996b24519a1ee5014e84": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 5,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "b04968a4cfdcd4cf2b45fa2ef46192e80f128565688cc4595d78f1c3179a9e38": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 2
+        },
+        "split": "test"
+      },
+      "b07a7dd2dca1263569a0062f9ee9f05f4f63025bcd28172ccca50d1400a96be0": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 3,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "b1425a447bd6aa564390dd000d86b5078de3490e22186b494e739fd350bc5a83": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "b1521cd80f6de98ff35f936c18754be72c6f388176a7b218b1735465ff686050": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "b17ff4435027f328ca689e17720aa2187f376defa466dabfe6eb5e1c9b38c7fd": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 14,
+        "retained_by_category": {
+          "edit": 4,
+          "execute": 7,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "b35dd3d6a7245d61edf80ce02bf82226a820c5c3c9dfb78d24e8a9be8b403031": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 3,
+          "read": 3,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "b8ed69ecce2e4fe13490e361cb9ac450a4080ca8ae9fc22d1c1681318844d3d7": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "b990a70bb677953b3838a5f66f3e6bef0068c21d0bd90659deab997663bfdedf": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 3,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2
+        },
+        "split": "train"
+      },
+      "baf3cbf5b5a270864239ff54c5b1c48ad65ef632129ff8d57fca89224d203b33": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 3,
+        "retained_by_category": {
+          "edit": 1,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "bccaf56fda9ac6a626b3e750b8e429263d4d2603a9dcb0d4c37ae0f3aae94ce8": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "be08a0610565d713e60b2db7be89ac5e9f9f2e4d7481f18c68bd78960dc1cd60": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 12,
+        "retained_by_category": {
+          "edit": 5,
+          "execute": 6,
+          "read": 1
+        },
+        "split": "train"
+      },
+      "be59ae8623ea365ed991ec0af051a07c9dcc630fa0fad6519c12276c86443670": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "bf687927a611de33a15ddd5e2babd7b3302a61edd2f9b140793aba795559958f": {
+        "excluded": 9,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 8
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "c063f8b58a674245aaf5d57d0815ddad8ced11cd7ab14b94bfcc3e4765f1a10c": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 7,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "c24a74f59b1bf4d83a5bf89343e643bd1e76acd71d9509d59f399c800aaef8b1": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "c47bf7178d22bd1bb0108d40cb838255f3cb9c3413ccb95d0740eee08cf495f2": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "c880e6f02ec4083a27b6ae87dc1d398c4b1160fb39bcc4569321910696372ad1": {
+        "excluded": 11,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 10
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "c89b730a8981d58c317ed35e6668a0c58745515530c9fcd8ccc8bc0117dd5d9a": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "ca32a18d2fcd1ac0be5f93d75653e4c6df3865d6ad8e33a0486bc893faa3a4be": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "cda439092deaa8fe084dc1dd41e11c046fc64b2a61d703e39f0df21c6dae428e": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 2,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "cfa5ea2c423df94c0f792e80a488746c1714446f880ebccd6ea4bffdeeeb387c": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 4,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "d02380683593a4075733276f15eea7158cd0eba8e1afa18bb15029f1bd18ed8c": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 9,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "d44109c53d5947021a3274784dac78b0c3d41288d92078e9897a22b41017cd36": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "d56123280d53b5f784af61ca3465c5b8a88fd2089ed7b85730a2ab6f44d6c8d5": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "d5b7296ab2d96f8d71bb5b2d22a1827c861dcb98263d97fd64c06383db8d90a9": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "d62ac67801a35f7afbd60ae2850559e8982ae9c7fcf3bd8251a39cc0fa5b8fd5": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4
+        },
+        "split": "train"
+      },
+      "d81055f8efbf52a4f390a24a72df523dab79055a5cc97d009d7992af6e557282": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 11,
+        "retained_by_category": {
+          "edit": 4,
+          "execute": 5,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "d839d8667e3fb4fedd12fa9dc6767da294c112516c86016103c9ef758127f708": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "d841c484dda3231de5d7b3d23c4a03ade0749ccce2539af2177e8e6ef030faa3": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "da11fd940752a5a1e2d37eb1e3b5414df04fe96db670df89d92676774d1b964d": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "db587276d888a6180c69ab8353ed6c173ebfd259f9660be35a41d0debaaf28a0": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "dc328938f9f30c7e6a05bad4466ab5bda1be94d50c954415dd9e073ff730994e": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "dev"
+      },
+      "dc85885886e62b5fcb2fda4f5f306b491687f55160b0e7f3f3a9bca796cfb315": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "dd901ccb45a6f01faf43cfb9c8a91a2ca33aa0e89c8fac6b24445090c59a1619": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 2,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "e20ff7edae80d7a7aa0c7cc78e5be4869d19dfd82404e03ac2ee5e2cf73d0bf3": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 5,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "e265d5c56cb8f45080edac334b5cdc8b5659f2e31118885cc0f88c9d52d1bf65": {
+        "excluded": 8,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 7
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "test"
+      },
+      "e33154ea53f3c20986c939a61b57ec4d79bf8968bfcf6435963fe7578286f9cd": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 3,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "e4e6aa73161e1a1b1bb1796d697680713bcaf3c38cea23b708549865ee257393": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "e51eea54213a276260b1849c3748f9234f8edb7542ebc2f447931a597646cdfe": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "e6004ea2fd056c47ef2afcfb9377a7e86251486e8b38184557342f2398d3e36b": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "e6e0a188ddafb0fca9589d9ef3aa5b43b800610521b995e546de99f87a3adddf": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 13,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 8,
+          "read": 2,
+          "search": 2
+        },
+        "split": "dev"
+      },
+      "e966de493279df95b0bbb1942bb49364611da1ccc97cab994cc70711fb0637f4": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "e9c4119901a2178eefe40dacd15a0a59ed9650a74c3146c1773c8a12390da0ce": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 2
+        },
+        "split": "train"
+      },
+      "ea158f4770aabb7fa8d10a80a97b2151c962552c3ea2dad7146520e651b1052e": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 15,
+        "retained_by_category": {
+          "edit": 5,
+          "execute": 7,
+          "read": 2,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "eb5cbd53429d5cfd07a05eb3c2361e1f1b9df175efe5d734ee58fa75ed43c9b4": {
+        "excluded": 6,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "test"
+      },
+      "edbc5f27925b96b09f3f4738739e0bce11e289b51ccd5568d811236173b59883": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "eed8bc83f44430c6ac436d3871971c849ec751ea6385852d363befbc0fe157a3": {
+        "excluded": 3,
+        "excluded_by_reason": {
+          "mixed_target_categories": 2,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 2
+        },
+        "split": "train"
+      },
+      "efc85f676e74e1e284b3bbc96848a750401e9a29e8371d81a4d8078f254d6fac": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 10,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 5,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "f08caa8f3695b16d69e6dc8b39539517f48c4e978b9b19e1dfee5a9b5797bc41": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2
+        },
+        "split": "train"
+      },
+      "f0b5e35168146f9034d4022f59fac58aca00f89ea86d94d0eab60b48230f553d": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "f3cea42647e1258e405cda8035c0ae878de27072460c4210d2d3d36a85af053e": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 6,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 4,
+          "read": 1
+        },
+        "split": "dev"
+      },
+      "f511ec0275bad7664d9cd70112d23455146ae51ce1b6e225cba396674f02ef29": {
+        "excluded": 2,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 5,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 1,
+          "search": 1
+        },
+        "split": "test"
+      },
+      "f821ff108015c3e62fad5d96ce13ef9ca220e577d30832d50976c2b8584167d9": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 2,
+          "execute": 4,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "fc6592c2d13b46c9fd2818f3c82b4a20f931533746f28e02aae8f8d636bda3d4": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 6
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "fdfaefa5364606d3d7344b571474aa80e2d91579e5c9c88f26319b82a0da9bfb": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 7,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 3,
+          "read": 2,
+          "search": 1
+        },
+        "split": "dev"
+      },
+      "fe97a1acc370d6203af53ac8cc0e29666c56a65da3521caef48ab06b6b35d42e": {
+        "excluded": 7,
+        "excluded_by_reason": {
+          "mixed_target_categories": 1,
+          "no_call_without_positive_completion": 1,
+          "unresolved_prefix_tool_call": 5
+        },
+        "retained": 1,
+        "retained_by_category": {
+          "execute": 1
+        },
+        "split": "train"
+      },
+      "fea77aa24ef5c65f97a7cd1ac491eabe04999a815aa6aa8949e110028cd6165e": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 11,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 8,
+          "read": 1,
+          "search": 1
+        },
+        "split": "train"
+      },
+      "feaae9859ccfcc5c39c170eb7b9c172d044a844486c8421c07a5ab483cb841bb": {
+        "excluded": 1,
+        "excluded_by_reason": {
+          "no_call_without_positive_completion": 1
+        },
+        "retained": 8,
+        "retained_by_category": {
+          "edit": 1,
+          "execute": 2,
+          "read": 4,
+          "search": 1
+        },
+        "split": "train"
+      }
+    }
+  },
+  "files": {
+    "dev.jsonl": {
+      "bytes": 489175,
+      "rows": 140,
+      "sha256": "ade8262625a46eef78dcb2b11b42eaced444e1604bab1af5423412a67ae92783"
+    },
+    "exclusions.jsonl": {
+      "bytes": 118731,
+      "rows": 508,
+      "sha256": "0a26fff0a2ee13a6da0e5fe071fc21443a385bf92937e0c14e7b8462b097ef49"
+    },
+    "sample_review.jsonl": {
+      "bytes": 3951,
+      "rows": 8,
+      "sha256": "5c64a88bd132801faeabb9d4bd46569ad93fc01a58adf3793545a08c98afa7ee"
+    },
+    "test.jsonl": {
+      "bytes": 401246,
+      "rows": 122,
+      "sha256": "3a22cfaa044baaf5cc40343fdf983d45ee80a065a2397266afacb157035c6fc8"
+    },
+    "train.jsonl": {
+      "bytes": 3487882,
+      "rows": 1051,
+      "sha256": "86442271b3ddb74ce517ee335f6d89fbc80f94441ff1198250da5bf9ab4dda3c"
+    }
+  },
+  "near_duplicate_audit": {
+    "comparisons": 292442,
+    "flagged_pairs": [
+      {
+        "jaccard": 0.8794,
+        "left_source_line": 1700,
+        "left_split": "dev",
+        "right_source_line": 1707,
+        "right_split": "train"
+      }
+    ],
+    "method": "retained task text; lowercase alphanumeric whitespace normalization; cross-split set-token Jaccard >= 0.85; max 100 recorded pairs",
+    "semantic_leakage": "UNKNOWN"
+  },
+  "ontology": {
+    "absent_classes": [
+      "other_tool",
+      "respond_or_finish"
+    ],
+    "fixed": [
+      "read",
+      "search",
+      "edit",
+      "execute",
+      "other_tool",
+      "respond_or_finish"
+    ],
+    "retained_classes": [
+      "edit",
+      "execute",
+      "read",
+      "search"
+    ]
+  },
+  "order_invariance": {
+    "mixed_permutation_cases": 6,
+    "rule": "sorted set of mapped categories"
+  },
+  "pins": {
+    "head_max_len": 192,
+    "laya_source_revision": "d113dca2512fb3eaca313534bc54c7162d87c1d4",
+    "max_len": 512,
+    "tokenizer_path": "/home/davidhatley/Projects/research/system_a/data/cache/huggingface/hub/models--convaiinnovations--laya/snapshots/1c5edc17a7acd8701df6fc341c0d179f1c62c982/tokenizer",
+    "tokenizer_revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982"
+  },
+  "policy": {
+    "history": "newest complete rendered prefix messages that fit, restored to source chronology",
+    "loss": "optional older prefix history only; target turn, later events, gold, and provenance metadata are never renderer inputs",
+    "no_summaries": true,
+    "protected_order": [
+      "TASK",
+      "SYSTEM CONSTRAINTS",
+      "AVAILABLE ACTIONS",
+      "LATEST RELEVANT OBSERVATION"
+    ]
+  },
+  "sample_review": {
+    "method": "lowest stable id in every populated category for train and dev; direct source-target adjudication",
+    "qualitative_status": "VERIFIED structural label/source agreement; semantic intent remains UNKNOWN",
+    "rows": 8
+  },
+  "schema_version": "trace2decision-i3-v3",
+  "scope": "Completed tool-bearing target turns with a structurally complete prefix and exactly one mapped tool-interface category; every no-call target is excluded because positive completion evidence is unavailable.",
+  "source": {
+    "dataset": "11-47/glm-5.2-coding-and-debugging-traces",
+    "file": "data/trace2decision_i1/source/traces.jsonl",
+    "revision": "1371ed38f8890d0520a53bc7ad850308eb4d7a22",
+    "rows": 1821,
+    "semantic_basis": "README.source.md lines 81-86 and 127-130 describe cumulative targets; no-call targets are excluded because the source exposes no positive completion marker",
+    "sha256": "4e6b11f5b60976368f2a76c252808eb766af2ddcf5958d93f25160e45737d3aa"
+  },
+  "split": {
+    "group": "sha256(normalized initial user task text)",
+    "groups": {
+      "dev": 20,
+      "test": 23,
+      "train": 163
+    },
+    "rows": {
+      "dev": 140,
+      "test": 122,
+      "train": 1051
+    },
+    "seed": "trace2decision-i1-20260921",
+    "trajectories": {
+      "dev": 20,
+      "test": 23,
+      "train": 163
+    },
+    "v2_assignment_changes": [],
+    "v2_retained_subset_rows": 1313
+  },
+  "token_audit": {
+    "actual_tokenizer": "/home/davidhatley/Projects/research/system_a/data/cache/huggingface/hub/models--convaiinnovations--laya/snapshots/1c5edc17a7acd8701df6fc341c0d179f1c62c982/tokenizer",
+    "empty_sequence_512": 97,
+    "history_omitted": {
+      "max": 53,
+      "rows_with_omissions": 1045
+    },
+    "markers": [
+      13,
+      23,
+      36,
+      47,
+      61,
+      77
+    ],
+    "post_policy": {
+      "exceeding": {
+        "1024": {
+          "count": 0,
+          "percentage": 0.0
+        },
+        "512": {
+          "count": 0,
+          "percentage": 0.0
+        },
+        "768": {
+          "count": 0,
+          "percentage": 0.0
+        }
+      },
+      "max": 512,
+      "mean": 473.6,
+      "min": 187
+    },
+    "pre_policy": {
+      "exceeding": {
+        "1024": {
+          "count": 1086,
+          "percentage": 82.71
+        },
+        "512": {
+          "count": 1284,
+          "percentage": 97.79
+        },
+        "768": {
+          "count": 1194,
+          "percentage": 90.94
+        }
+      },
+      "max": 15380,
+      "mean": 4079.1,
+      "min": 187
+    },
+    "state_room_512": 415
+  }
+}

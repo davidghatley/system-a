@@ -1,0 +1,11 @@
+{
+  "cold_load_seconds": 6.082518487004563,
+  "dev_evaluation_seconds": 7.365298995980993,
+  "finite": true,
+  "peak_reserved_gib": 8.767578125,
+  "seed": 42,
+  "status": "actual_model_pilot_measured",
+  "test_opened": false,
+  "training_seconds": 19.15747142105829,
+  "updates": 2
+}

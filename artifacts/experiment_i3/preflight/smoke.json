@@ -1,0 +1,11 @@
+{
+  "cold_load_seconds": 0.0,
+  "dev_evaluation_seconds": 0.0,
+  "finite": true,
+  "peak_reserved_gib": 0.001953125,
+  "seed": 42,
+  "status": "smoke_measured",
+  "test_opened": false,
+  "training_seconds": 2.1139630109537393,
+  "updates": 2
+}

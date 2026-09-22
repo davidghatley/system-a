@@ -1,0 +1,63 @@
+{
+  "expected": {
+    "actual_laya_lengths": {
+      "max": 512,
+      "mean": 473.6,
+      "min": 187
+    },
+    "cross_split_duplicate_states": 0,
+    "duplicate_exact_states": 0,
+    "failures": [],
+    "rows": 1313,
+    "stable_ids": 1313,
+    "task_groups": 206,
+    "trajectories": 206,
+    "unique_target_strings_checked": 2044,
+    "valid": true
+  },
+  "file_comparison": {
+    "dev.jsonl": {
+      "equal": true,
+      "expected": "ade8262625a46eef78dcb2b11b42eaced444e1604bab1af5423412a67ae92783",
+      "rerun": "ade8262625a46eef78dcb2b11b42eaced444e1604bab1af5423412a67ae92783"
+    },
+    "exclusions.jsonl": {
+      "equal": true,
+      "expected": "0a26fff0a2ee13a6da0e5fe071fc21443a385bf92937e0c14e7b8462b097ef49",
+      "rerun": "0a26fff0a2ee13a6da0e5fe071fc21443a385bf92937e0c14e7b8462b097ef49"
+    },
+    "sample_review.jsonl": {
+      "equal": true,
+      "expected": "5c64a88bd132801faeabb9d4bd46569ad93fc01a58adf3793545a08c98afa7ee",
+      "rerun": "5c64a88bd132801faeabb9d4bd46569ad93fc01a58adf3793545a08c98afa7ee"
+    },
+    "test.jsonl": {
+      "equal": true,
+      "expected": "3a22cfaa044baaf5cc40343fdf983d45ee80a065a2397266afacb157035c6fc8",
+      "rerun": "3a22cfaa044baaf5cc40343fdf983d45ee80a065a2397266afacb157035c6fc8"
+    },
+    "train.jsonl": {
+      "equal": true,
+      "expected": "86442271b3ddb74ce517ee335f6d89fbc80f94441ff1198250da5bf9ab4dda3c",
+      "rerun": "86442271b3ddb74ce517ee335f6d89fbc80f94441ff1198250da5bf9ab4dda3c"
+    }
+  },
+  "pass": true,
+  "report_equal": true,
+  "rerun": {
+    "actual_laya_lengths": {
+      "max": 512,
+      "mean": 473.6,
+      "min": 187
+    },
+    "cross_split_duplicate_states": 0,
+    "duplicate_exact_states": 0,
+    "failures": [],
+    "rows": 1313,
+    "stable_ids": 1313,
+    "task_groups": 206,
+    "trajectories": 206,
+    "unique_target_strings_checked": 2044,
+    "valid": true
+  }
+}

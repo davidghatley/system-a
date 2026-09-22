@@ -1,0 +1,53 @@
+{
+  "starting_commit": "2d4408de85587a046c3f14fec1835dd9e69940c9",
+  "source": {
+    "dataset": "11-47/glm-5.2-coding-and-debugging-traces",
+    "revision": "1371ed38f8890d0520a53bc7ad850308eb4d7a22",
+    "path": "artifacts/trace2decision_i1/source/traces.jsonl",
+    "sha256": "4e6b11f5b60976368f2a76c252808eb766af2ddcf5958d93f25160e45737d3aa",
+    "source_readme_sha256": "c4c15b9a067d478f9a4f23a8078c58755dff04b01af0878e2b55037542dc333b"
+  },
+  "renderer": {
+    "implementation": "pipelines/trace2decision/i2_convert.py",
+    "laya_source_revision": "d113dca2512fb3eaca313534bc54c7162d87c1d4",
+    "tokenizer_revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
+    "max_len": 512,
+    "head_max_len": 192,
+    "split_seed": "trace2decision-i1-20260921",
+    "v2_output": "artifacts/trace2decision_i2/output"
+  },
+  "estimand": "Completed tool-bearing target turns with a structurally complete prefix and exactly one mapped tool-interface category; no-call and mixed-category targets are excluded.",
+  "corrected_v3": {
+    "schema_version": "trace2decision-i3-v3",
+    "rows": {
+      "train": 1051,
+      "dev": 140,
+      "test": 122,
+      "retained_total": 1313,
+      "excluded": 508
+    },
+    "outputs": {
+      "train.jsonl": "86442271b3ddb74ce517ee335f6d89fbc80f94441ff1198250da5bf9ab4dda3c",
+      "dev.jsonl": "ade8262625a46eef78dcb2b11b42eaced444e1604bab1af5423412a67ae92783",
+      "test.jsonl": "3a22cfaa044baaf5cc40343fdf983d45ee80a065a2397266afacb157035c6fc8",
+      "exclusions.jsonl": "0a26fff0a2ee13a6da0e5fe071fc21443a385bf92937e0c14e7b8462b097ef49",
+      "sample_review.jsonl": "5c64a88bd132801faeabb9d4bd46569ad93fc01a58adf3793545a08c98afa7ee",
+      "report.json": "4530d90d9f53c88cc290bffff9194f3f4465146e65e1e20deab93e599379df21"
+    },
+    "verification": {
+      "path": "artifacts/trace2decision_i3/verification.json",
+      "sha256": "70ff4ca75d7e682fd2911b081b125b5d0753a914572327843a6a9a6d8db97378",
+      "pass": true,
+      "completed_deterministic_runs": 2,
+      "output_and_rerun_equal": true
+    }
+  },
+  "implementation": {
+    "converter_sha256": "5e80bee8711ea7c8dd260f38705791979736ff6ee6488c572028cfabd374c79f",
+    "verifier_sha256": "3a254850ef7aad0f629100161761472f4680cbf31f07a35573d70d598d9d2144",
+    "tests_sha256": "f5c2206691a9116c75349e43765ddcf0e2bfcb1fcda39f8460578647ac7fbb99"
+  },
+  "offline_cpu_only": true,
+  "network_or_model_download": false,
+  "integrity_repair_date": "2026-09-22"
+}

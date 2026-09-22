@@ -1,0 +1,31 @@
+{
+  "candidate_budget": 4,
+  "config": {
+    "C": 2.0,
+    "epochs": 20,
+    "id": "word12-c2",
+    "learning_rate": 0.15,
+    "max_features": 8000,
+    "min_df": 2,
+    "ngram_range": [
+      1,
+      2
+    ],
+    "optimizer": "deterministic shuffled SGD",
+    "seed": 271828,
+    "updates": 21020,
+    "vocabulary_size": 8000
+  },
+  "input_field": "state",
+  "labels": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "other_tool",
+    "respond_or_finish"
+  ],
+  "selected_id": "word12-c2",
+  "selection_metric": "dev_macro_f1",
+  "tie_break": "candidate id ascending"
+}

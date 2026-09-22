@@ -1,0 +1,9 @@
+2026-09-22 START_COMMIT 2d4408de85587a046c3f14fec1835dd9e69940c9
+FAILED (exit 127; /usr/bin/time unavailable; probe did not run):
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 /usr/bin/time -v -o artifacts/exploration_i3/resource_usage.txt .venv/bin/python exploration/trace_action_i3/run_probes.py --train artifacts/trace2decision_i2/output/train.jsonl --dev artifacts/trace2decision_i2/output/dev.jsonl --output artifacts/exploration_i3/results.json
+SUCCESS (exit 0):
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 .venv/bin/python exploration/trace_action_i3/run_probes.py --train artifacts/trace2decision_i2/output/train.jsonl --dev artifacts/trace2decision_i2/output/dev.jsonl --output artifacts/exploration_i3/results.json
+VERIFICATION:
+git diff --check
+sha256sum artifacts/exploration_i3/results.json exploration/trace_action_i3/run_probes.py exploration/trace_action_i3/PROTOCOL.md
+sha256sum -c artifacts/exploration_i3/checksums.sha256
