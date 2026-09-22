@@ -12,6 +12,10 @@ def to_laya_items(record: dict[str, Any], tokenizer: Any, *, max_len: int, head_
     from laya.common import QTYPES, build_sequence, render_options
 
     record = parse_record(record)
+    metadata = record.get("metadata")
+    record_id = record.get("id")
+    if record_id is None and isinstance(metadata, dict):
+        record_id = metadata.get("id")
     items = []
     for question_id, public_question in record["questions"].items():
         internal = {
@@ -39,7 +43,8 @@ def to_laya_items(record: dict[str, Any], tokenizer: Any, *, max_len: int, head_
             "label": native_label,
             "native_label": native_label,
             "gold_argmax": max(range(len(target)), key=target.__getitem__),
-            "record_id": record.get("id"),
+            "record_id": record_id,
+            "metadata": metadata,
             "question_id": question_id,
             "question_type": internal["t"],
             "option_keys": keys,

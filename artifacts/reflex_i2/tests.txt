@@ -1,0 +1,25 @@
+test_malformed_json_is_actionable_without_loading_model (test_reflex.CliTests.test_malformed_json_is_actionable_without_loading_model) ... ok
+test_emits_complete_probabilities (test_reflex.OutputTests.test_emits_complete_probabilities) ... ok
+test_invalid_probability_range_fails_cleanly (test_reflex.OutputTests.test_invalid_probability_range_fails_cleanly) ... ok
+test_malformed_model_responses_are_actionable (test_reflex.OutputTests.test_malformed_model_responses_are_actionable) ... ok
+test_noul_displayed_probabilities_sum_to_one (test_reflex.OutputTests.test_noul_displayed_probabilities_sum_to_one) ... ok
+test_repeated_output_is_stable (test_reflex.OutputTests.test_repeated_output_is_stable) ... ok
+test_score_emits_distribution_and_expected_score (test_reflex.OutputTests.test_score_emits_distribution_and_expected_score) ... ok
+test_unavailable_checkpoint_is_actionable (test_reflex.OutputTests.test_unavailable_checkpoint_is_actionable) ... ok
+test_unavailable_source_is_actionable (test_reflex.OutputTests.test_unavailable_source_is_actionable) ... ok
+test_ignored_python_bytecode_cache_is_allowed (test_reflex.SourceIntegrityTests.test_ignored_python_bytecode_cache_is_allowed) ... ok
+test_tracked_python_source_change_is_rejected (test_reflex.SourceIntegrityTests.test_tracked_python_source_change_is_rejected) ... ok
+test_untracked_python_and_ignored_native_payloads_are_rejected (test_reflex.SourceIntegrityTests.test_untracked_python_and_ignored_native_payloads_are_rejected) ... ok
+test_accepts_native_contract (test_reflex.ValidationTests.test_accepts_native_contract) ... ok
+test_gold_is_optional_for_inference (test_reflex.ValidationTests.test_gold_is_optional_for_inference) ... ok
+test_goldless_malformed_questions_are_rejected (test_reflex.ValidationTests.test_goldless_malformed_questions_are_rejected) ... ok
+test_native_gold_and_trace2decision_metadata_are_preserved (test_reflex.ValidationTests.test_native_gold_and_trace2decision_metadata_are_preserved) ... ok
+test_rejects_bad_gold_sum (test_reflex.ValidationTests.test_rejects_bad_gold_sum) ... ok
+test_rejects_bad_question (test_reflex.ValidationTests.test_rejects_bad_question) ... ok
+test_rejects_legacy_bare_gold (test_reflex.ValidationTests.test_rejects_legacy_bare_gold) ... ok
+test_trace2decision_record_reaches_model_without_metadata (test_reflex.ValidationTests.test_trace2decision_record_reaches_model_without_metadata) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.261s
+
+OK

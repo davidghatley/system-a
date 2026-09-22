@@ -10,8 +10,11 @@ data/
 # Small logs, profiles, manifests, and measurements under artifacts/ are tracked.
 artifacts/train_i1/run/checkpoint/
 artifacts/train_i1/resume_smoke/checkpoint/
+artifacts/train_i2/b2_run/checkpoint/model.safetensors
+artifacts/train_i2/b2_run/checkpoint/training_state.pt
 
 # Keep one shareable derivative; local source data and duplicate verification runs stay local.
 artifacts/trace2decision_i1/rerun/
 artifacts/trace2decision_i1/rerun2/
 artifacts/trace2decision_i1/test_output/
+artifacts/trace2decision_i2/rerun/

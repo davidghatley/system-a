@@ -17,6 +17,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("input", type=pathlib.Path, help="JSON file containing state, questions, and optional gold")
     parser.add_argument("--cache-dir", type=pathlib.Path, default=pathlib.Path("data/cache/huggingface/hub"))
     parser.add_argument("--laya-source", type=pathlib.Path, default=pathlib.Path("data/laya"))
+    parser.add_argument("--checkpoint", choices=("specialist", "base"), default="specialist")
     parser.add_argument("--device", help="torch device, for example cuda:0 or cpu (default: auto)")
     parser.add_argument("--offline", action="store_true", help="forbid checkpoint network access")
     parser.add_argument("--benchmark", action="store_true", help="measure repeated inference after model load")
@@ -42,6 +43,7 @@ def main() -> int:
             laya_source=args.laya_source,
             device=args.device,
             offline=args.offline,
+            checkpoint=args.checkpoint,
         )
         result = reflex.decide(record)
         if args.benchmark:

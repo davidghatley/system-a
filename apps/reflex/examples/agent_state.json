@@ -34,7 +34,7 @@
     }
   },
   "gold": {
-    "next_control_mode": {"inspect": 1.0, "act": 0.0, "publish": 0.0, "escalate": 0.0},
-    "allow_publish_now": {"false": 1.0, "true": 0.0}
+    "next_control_mode": {"type": "choice", "label": "inspect", "probabilities": {"inspect": 1.0, "act": 0.0, "publish": 0.0, "escalate": 0.0}},
+    "allow_publish_now": {"type": "noul", "label": "false", "probabilities": {"false": 1.0, "true": 0.0}}
   }
 }

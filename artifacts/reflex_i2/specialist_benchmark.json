@@ -1,0 +1,57 @@
+{
+  "answers": {
+    "allow_publish_now": {
+      "confidence": 0.5804,
+      "probabilities": {
+        "false": 0.4196,
+        "true": 0.5804
+      },
+      "selected": "true",
+      "type": "noul"
+    },
+    "next_control_mode": {
+      "confidence": 0.0172,
+      "probabilities": {
+        "act": 0.2362,
+        "escalate": 0.1734,
+        "inspect": 0.2678,
+        "publish": 0.3226
+      },
+      "selected": "publish",
+      "type": "choice"
+    }
+  },
+  "benchmark": {
+    "milliseconds": {
+      "max": 42.455,
+      "median": 41.089,
+      "min": 39.933,
+      "p95_nearest_rank": 42.455
+    },
+    "samples": 10,
+    "scope": "inference plus tokenization; excludes model load",
+    "warmup": 3
+  },
+  "checkpoint": {
+    "id": "convaiinnovations/laya-typed-decisions",
+    "revision": "f9ab0b228f0fc0f14d873dbc99038f135c2da1b2"
+  },
+  "device": "cuda:0",
+  "reference_evaluation": {
+    "allow_publish_now": {
+      "argmax_agrees": false,
+      "gold_argmax": "false",
+      "model_argmax": "true"
+    },
+    "next_control_mode": {
+      "argmax_agrees": false,
+      "gold_argmax": "inspect",
+      "model_argmax": "publish"
+    }
+  },
+  "usage": {
+    "input_tokens": 449,
+    "output_tokens": 0
+  },
+  "warning": "Observational checkpoint scores, not a universal policy or safety verdict; probabilities are not established as calibrated for this agent-state domain."
+}

@@ -4,17 +4,18 @@ Updated: 2026-09-21
 
 ## Current Iteration
 
-Iteration 1 is complete. Reflex and Trace2Decision are accepted. Local Trainer is blocked on the frozen learning criterion, although its bounded RTX 3060 training and resume mechanics are verified. Iteration 2 is not authorized.
+Iteration 2 is accepted. The trace-to-training-to-evaluation pipeline is connected and parent-verified; historical Iteration 1 artifacts remain unchanged. Iteration 3 is not authorized.
 
 ## Active Workstreams
 
 | Workstream | Acceptance | Result |
 |---|---|---|
-| Reflex | ACCEPTED | Local typed-decision API/CLI, realistic example, offline inference, tests, and measured latency |
-| Local Trainer | BLOCKED | Technical workflow verified; fixed-dev native-label choice accuracy regressed from 47.5% to 27.5% |
-| Trace2Decision | ACCEPTED | 1,544 GLM-5.2-derived decisions across 207 clean trajectory groups |
+| Reflex | ACCEPTED | Pinned specialist, shared native contract, offline execution, tests, warnings, and RTX 3060 benchmark verified |
+| Local Trainer | ACCEPTED | B1 validated the evaluator; the sole predeclared B2 run improved native-label choice accuracy from 36.0% to 70.5% |
+| Trace2Decision | ACCEPTED | Separate deterministic v2 derivative has stable metadata, protected 512-token construction, grouped splits, and 1,544 rows |
+| Cross-track integration | ACCEPTED | One unchanged v2 row passed shared loading, trainer construction, accepted B2 inference, and Reflex inference with metadata excluded from model tensors |
 
-The frozen criteria are `research/26_iteration_1_acceptance.md`. Reviews and final verification records are under each `artifacts/*_i1/` directory.
+Iteration 2 criteria are frozen in `research/27_iteration_2_acceptance.md`.
 
 ## Confirmed Findings
 
@@ -25,10 +26,15 @@ The frozen criteria are `research/26_iteration_1_acceptance.md`. Reviews and fin
 - `11-47/glm-5.2-coding-and-debugging-traces` at revision `1371ed38f8890d0520a53bc7ad850308eb4d7a22` yielded 1,544 clean decisions from 207 trajectories after excluding 277 prefixes with unresolved prior calls.
 - Trace2Decision splits contain 1,235 train, 159 dev, and 150 test decisions with zero trajectory, normalized-task, or rendered-state crossings. All records pass the shared validator and deterministic rerun hashes matched.
 - The previous Kimi and Hermes/raw-trace findings remain valid historical evidence but are not prerequisites for practical-state specialization.
+- Live Hub inspection identifies `convaiinnovations/laya-typed-decisions@f9ab0b228f0fc0f14d873dbc99038f135c2da1b2` as the intended public specialist. Its published metrics are claims to be independently checked by the Iteration 2 positive control.
+- B1 independently reproduced a clear public positive control: specialist choice accuracy 68.0% versus base 35.5%, a +32.5-point gain.
+- The sole B2 run completed 5,120 microforwards and 80 updates in 772.8 s total at 8.670 GiB peak reserved VRAM. Fixed-dev native-label choice accuracy improved from 72/200 to 141/200 (+34.5 points); all-question accuracy improved from 38.8% to 73.0% and native-gold NLL fell from 1.5310 to 0.6894.
+- Trace2Decision v2 retains 1,544 rows (1,235/159/150), stable IDs and grouped splits, all required protected sections, zero post-policy sequences over 512 tokens, and deterministic rerun hashes.
+- Parent integration verified source row `t2d-i2-4bba28e1b18498c2d153a95a223fc411` unchanged through shared loading, trainer/B2 inference, and Reflex specialist inference. Metadata remained out of model tensors. Both models missed this one row's label; this is not an accuracy claim.
 
 ## Blockers
 
-- Local Trainer Iteration 1 failed its predeclared +5-point choice-accuracy learning threshold. No large hyperparameter search was run.
+- Local Trainer Iteration 1 remains a historical failed run; Iteration 2 B2 separately passed its frozen learning criterion without a hyperparameter search.
 - Trace source authenticity and teacher identity are publisher-attributed rather than cryptographically attested; embedded-content rights are not independently resolved.
 - The first Trace2Decision ontology has no observed `other_tool` positives and is specific to one coding harness.
 
@@ -39,10 +45,10 @@ The frozen criteria are `research/26_iteration_1_acceptance.md`. Reviews and fin
 - Treat trace labels as behavioral cloning, not action optimality.
 - Keep generated model checkpoints and downloaded source data local; track compact evidence and the shareable derivative dataset.
 - Use Luna for time-sensitive implementation/review tasks. Nemotron Ultra is available at zero reported cost but timed out twice on the bounded trace audit, so it is not the default for this workflow.
-- Do not begin any Iteration 2 work before user feedback.
+- Do not train on Trace2Decision or begin Iteration 3 before user feedback.
 
 ## Next Proposed Actions
 
-1. Share/test Reflex as the immediate application artifact.
-2. Choose whether to authorize a separately predeclared Trainer retry focused on converting NLL improvement into hard-label accuracy.
-3. If Trainer learning is established, authorize Trace2Decision Iteration 2 training against simple baselines.
+1. Review the accepted Iteration 2 evidence and working-tree changes.
+2. Decide whether to commit/push Iteration 2; no commit was created automatically.
+3. Keep Trace2Decision training and Iteration 3 blocked until explicit user authorization.

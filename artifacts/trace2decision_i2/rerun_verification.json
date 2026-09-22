@@ -1,0 +1,68 @@
+{
+  "expected": {
+    "failures": [],
+    "length_1024": {
+      "max": 512,
+      "mean": 473.7,
+      "min": 187
+    },
+    "length_512": {
+      "max": 512,
+      "mean": 473.7,
+      "min": 187
+    },
+    "length_768": {
+      "max": 512,
+      "mean": 473.7,
+      "min": 187
+    },
+    "rows": 1544,
+    "stable_ids": 1544,
+    "valid": true
+  },
+  "file_comparison": {
+    "dev.jsonl": {
+      "equal": true,
+      "expected": "eed09d564f1ae17cabb2ef47bec8ae94aaa08c41ccd6da692149f14b0b47a540",
+      "rerun": "eed09d564f1ae17cabb2ef47bec8ae94aaa08c41ccd6da692149f14b0b47a540"
+    },
+    "samples.jsonl": {
+      "equal": true,
+      "expected": "ae359f131b984697f850f1972b3b8be7e45be0d714f06a306b8df1d1ceb64dea",
+      "rerun": "ae359f131b984697f850f1972b3b8be7e45be0d714f06a306b8df1d1ceb64dea"
+    },
+    "test.jsonl": {
+      "equal": true,
+      "expected": "01272aa8bb7f1b95b2c82092ae55ebcb037b3e960e70141d7ab1538c34abd9ba",
+      "rerun": "01272aa8bb7f1b95b2c82092ae55ebcb037b3e960e70141d7ab1538c34abd9ba"
+    },
+    "train.jsonl": {
+      "equal": true,
+      "expected": "79255bd82a26c663845ff8c82a97e3d912b0e19a7231cc8cec2e480e837b5e27",
+      "rerun": "79255bd82a26c663845ff8c82a97e3d912b0e19a7231cc8cec2e480e837b5e27"
+    }
+  },
+  "pass": true,
+  "report_equal": true,
+  "rerun": {
+    "failures": [],
+    "length_1024": {
+      "max": 512,
+      "mean": 473.7,
+      "min": 187
+    },
+    "length_512": {
+      "max": 512,
+      "mean": 473.7,
+      "min": 187
+    },
+    "length_768": {
+      "max": 512,
+      "mean": 473.7,
+      "min": 187
+    },
+    "rows": 1544,
+    "stable_ids": 1544,
+    "valid": true
+  }
+}

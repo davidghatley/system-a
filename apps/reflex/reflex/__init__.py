@@ -3,6 +3,10 @@
 from .core import (
     CHECKPOINT_ID,
     CHECKPOINT_REVISION,
+    BASE_CHECKPOINT_ID,
+    BASE_CHECKPOINT_REVISION,
+    SPECIALIST_CHECKPOINT_ID,
+    SPECIALIST_CHECKPOINT_REVISION,
     Reflex,
     ReflexError,
     ReflexInputError,

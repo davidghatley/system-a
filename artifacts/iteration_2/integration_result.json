@@ -1,0 +1,74 @@
+{
+  "canonical_row_sha256_before_after": "dd6322ae9630285aabeeae220b2a4669b8490e028e6ab50bfd09077e85268d7d",
+  "limitations": [
+    "One deterministic v2 row is an interoperability proof, not an accuracy estimate.",
+    "The source trace's action label and task success were not independently authenticated."
+  ],
+  "model_tensor_keys": [
+    "input_ids",
+    "attention_mask",
+    "marker_pos",
+    "marker_mask",
+    "qtype"
+  ],
+  "reflex": {
+    "checkpoint": {
+      "id": "convaiinnovations/laya-typed-decisions",
+      "revision": "f9ab0b228f0fc0f14d873dbc99038f135c2da1b2"
+    },
+    "correct": false,
+    "gold_label": "search",
+    "load_and_inference_seconds": 6.338612936902791,
+    "probabilities": {
+      "edit": 0.16851685168516853,
+      "execute": 0.15751575157515751,
+      "other_tool": 0.21192119211921193,
+      "read": 0.19031903190319033,
+      "respond_or_finish": 0.15851585158515852,
+      "search": 0.1132113211321132
+    },
+    "reference_evaluation": {
+      "next_action": {
+        "argmax_agrees": false,
+        "gold_argmax": "search",
+        "model_argmax": "other_tool"
+      }
+    },
+    "selected": "other_tool"
+  },
+  "row_unchanged": true,
+  "shared": {
+    "metadata_preserved": true,
+    "parse_equals_load": true
+  },
+  "source": "artifacts/trace2decision_i2/output/dev.jsonl",
+  "source_line": 1,
+  "source_line_sha256": "87cb076da3a9233363d94d9007c2fe2a17b3eb20c04bef3b9cacd460bc75aa68",
+  "stable_metadata": {
+    "id": "t2d-i2-4bba28e1b18498c2d153a95a223fc411",
+    "source_step": 1,
+    "task_group": "12195029f8542bdcd05c0759686031001c8cc4038d274d509ce3874888dd08b0",
+    "trajectory_id": "5da9e1adc9465f5d3f1d55a6832c2ad0bbfd60ede685d1b7c7d44d1c2575b5fb"
+  },
+  "status": "passed",
+  "trainer": {
+    "b2_checkpoint": "artifacts/train_i2/b2_run/checkpoint/model.safetensors",
+    "correct": false,
+    "gold_label": "search",
+    "gold_nll": 2.0902161598205566,
+    "input_tokens": 492,
+    "metadata_excluded_from_model_fields": true,
+    "metadata_retained_in_collator_meta": true,
+    "option_markers": 6,
+    "prediction": "read",
+    "probabilities": {
+      "edit": 0.15084750950336456,
+      "execute": 0.12463025748729706,
+      "other_tool": 0.16334415972232819,
+      "read": 0.24058328568935394,
+      "respond_or_finish": 0.19693446159362793,
+      "search": 0.1236603856086731
+    },
+    "record_id": "t2d-i2-4bba28e1b18498c2d153a95a223fc411"
+  }
+}

@@ -1,0 +1,2749 @@
+{
+  "commands": [
+    "mkdir -p data/cache/tmp artifacts/train_i2",
+    "env TMPDIR=$PWD/data/cache/tmp HF_HOME=$PWD/data/cache/huggingface HF_HUB_CACHE=$PWD/data/cache/huggingface/hub TRANSFORMERS_CACHE=$PWD/data/cache/huggingface/transformers TORCH_HOME=$PWD/data/cache/torch XDG_CACHE_HOME=$PWD/data/cache/xdg .venv/bin/python training/laya_local/positive_control.py"
+  ],
+  "construction": {
+    "head_max_len": 192,
+    "max_len": 512
+  },
+  "models": {
+    "base": {
+      "accuracy": 0.17333333333333334,
+      "all_question_native_accuracy": 0.17333333333333334,
+      "correct": 26,
+      "gold_nll_mean": 2.6084097901171677,
+      "id": "convaiinnovations/laya",
+      "predictions": [
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0089,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0000",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0765,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0001",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0765,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0002",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0184,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0003",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0765,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0004",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.6255,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0005",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.6316,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0006",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0159,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0007",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0256,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0008",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0256,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0009",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1552,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0010",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1552,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0011",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "edit",
+          "gold_probability": 0.3677,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0012",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "edit",
+          "gold_probability": 0.3677,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0013",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "edit",
+          "gold_probability": 0.3677,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0014",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0256,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0015",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1552,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0016",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1552,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0017",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1552,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0018",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.322,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0019",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0846,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0020",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0073,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0021",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0244,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0022",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0831,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0023",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.063,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0024",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.6641,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0025",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "search",
+          "gold_probability": 0.5725,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0026",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.014,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0027",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0306,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0028",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1634,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0029",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1634,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0030",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1634,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0031",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1634,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0032",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0306,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0033",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0306,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0034",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.1615,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0035",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.016,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0036",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0945,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0037",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.016,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0038",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1066,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0039",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1066,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0040",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0598,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0041",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1066,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0042",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1066,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0043",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.633,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0044",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0142,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0045",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0142,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0046",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0692,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0047",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2208,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0048",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1903,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0049",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0692,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0050",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2208,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0051",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.383,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0052",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0116,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0053",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0116,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0054",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0482,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0055",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.165,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0056",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0482,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0057",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.6251,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0058",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0143,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0059",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0321,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0060",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0944,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0061",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.186,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0062",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0944,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0063",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0944,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0064",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.6016,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0065",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3132,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0066",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0247,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0067",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0201,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0068",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.187,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0069",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0504,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0070",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.187,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0071",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0201,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0072",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.3845,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0073",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0055,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0074",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0617,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0075",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0617,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0076",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0624,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0077",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2897,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0078",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0624,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0079",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0624,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0080",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.4947,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0081",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0692,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0082",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0188,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0083",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0596,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0084",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2025,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0085",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0725,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0086",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2025,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0087",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.3828,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0088",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.013,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0089",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1447,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0090",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1447,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0091",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.037,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0092",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0293,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0093",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.4441,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0094",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0046,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0095",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0264,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0096",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0429,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0097",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0429,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0098",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0429,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0099",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0429,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0100",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0429,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0101",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0429,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0102",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0429,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0103",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0573,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0104",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0046,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0105",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0573,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0106",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.5271,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0107",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.3172,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0108",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0073,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0109",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0073,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0110",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0073,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0111",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0073,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0112",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0315,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0113",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0073,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0114",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.0315,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0115",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0073,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0116",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0073,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0117",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0073,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0118",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0073,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0119",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.1338,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0120",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0022,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0121",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0861,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0122",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.5669,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0123",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.5669,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0124",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.5669,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0125",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.061,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0126",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.5669,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0127",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.061,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0128",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.5669,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0129",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.061,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0130",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.5669,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0131",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.5669,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0132",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.2636,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0133",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.3101,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0134",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.006,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0135",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0685,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0136",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.235,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0137",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2994,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0138",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2994,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0139",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.235,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0140",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0685,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0141",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.3137,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0142",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0255,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0143",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.031,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0144",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2024,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0145",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1316,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0146",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.031,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0147",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2024,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0148",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.3134,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0149",
+          "type": "choice"
+        }
+      ],
+      "questions": 150,
+      "revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
+      "wall_seconds": 16.090248377993703
+    },
+    "specialist": {
+      "accuracy": 0.2,
+      "all_question_native_accuracy": 0.2,
+      "correct": 30,
+      "gold_nll_mean": 1.9815317280810962,
+      "id": "convaiinnovations/laya-typed-decisions",
+      "predictions": [
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0508,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0000",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1717,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0001",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1717,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0002",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1319,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0003",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1717,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0004",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.2403,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0005",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3552,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0006",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0239,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0007",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0376,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0008",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0376,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0009",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3221,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0010",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3221,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0011",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2568,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0012",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2568,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0013",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2568,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0014",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0376,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0015",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3221,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0016",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3221,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0017",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3221,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0018",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.2071,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0019",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2383,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0020",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0316,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0021",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0433,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0022",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1376,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0023",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1556,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0024",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.3916,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0025",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "search",
+          "gold_probability": 0.4955,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0026",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0288,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0027",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0679,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0028",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1896,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0029",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1896,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0030",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1896,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0031",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1896,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0032",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0679,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0033",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0679,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0034",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.1207,
+          "prediction": "search",
+          "question_id": "next_action",
+          "record_id": "test_row_0035",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0224,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0036",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.1513,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0037",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0224,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0038",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2507,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0039",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2507,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0040",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.153,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0041",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2507,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0042",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2507,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0043",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.231,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0044",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0393,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0045",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0393,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0046",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0933,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0047",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2814,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0048",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1984,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0049",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0933,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0050",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2814,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0051",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.2675,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0052",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0233,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0053",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0233,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0054",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1047,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0055",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2966,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0056",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1047,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0057",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.3164,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0058",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0255,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0059",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.063,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0060",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1611,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0061",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2386,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0062",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1611,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0063",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1611,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0064",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.3029,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0065",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1911,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0066",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0749,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0067",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.1102,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0068",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1594,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0069",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1527,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0070",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1594,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0071",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.1102,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0072",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.1999,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0073",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0245,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0074",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0907,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0075",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0907,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0076",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1492,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0077",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2395,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0078",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1492,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0079",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1492,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0080",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.2367,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0081",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1588,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0082",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0521,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0083",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.1548,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0084",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2549,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0085",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1502,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0086",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2549,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0087",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.1858,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0088",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0575,
+          "prediction": "respond_or_finish",
+          "question_id": "next_action",
+          "record_id": "test_row_0089",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2343,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0090",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2343,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0091",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1159,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0092",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.092,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0093",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.2176,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0094",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0109,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0095",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0879,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0096",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2604,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0097",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2604,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0098",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2604,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0099",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2604,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0100",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2604,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0101",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2604,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0102",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2604,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0103",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1631,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0104",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0109,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0105",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.1631,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0106",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.1721,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0107",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.4321,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0108",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0969,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0109",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0969,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0110",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0969,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0111",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0969,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0112",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2122,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0113",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0969,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0114",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.2122,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0115",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0969,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0116",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0969,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0117",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0969,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0118",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.0969,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0119",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.1322,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0120",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0094,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0121",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0869,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0122",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3186,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0123",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3186,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0124",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3186,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0125",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.304,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0126",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3186,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0127",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.304,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0128",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3186,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0129",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.304,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0130",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3186,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0131",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.3186,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0132",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.1794,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0133",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "execute",
+          "gold_probability": 0.2934,
+          "prediction": "execute",
+          "question_id": "next_action",
+          "record_id": "test_row_0134",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0285,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0135",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.1364,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0136",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.246,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0137",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "edit",
+          "gold_probability": 0.2898,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0138",
+          "type": "choice"
+        },
+        {
+          "correct": true,
+          "gold_label": "edit",
+          "gold_probability": 0.2898,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0139",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.246,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0140",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.1364,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0141",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.1961,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0142",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "search",
+          "gold_probability": 0.0711,
+          "prediction": "edit",
+          "question_id": "next_action",
+          "record_id": "test_row_0143",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0646,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0144",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2029,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0145",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "edit",
+          "gold_probability": 0.1756,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0146",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "read",
+          "gold_probability": 0.0646,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0147",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "execute",
+          "gold_probability": 0.2029,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0148",
+          "type": "choice"
+        },
+        {
+          "correct": false,
+          "gold_label": "respond_or_finish",
+          "gold_probability": 0.199,
+          "prediction": "other_tool",
+          "question_id": "next_action",
+          "record_id": "test_row_0149",
+          "type": "choice"
+        }
+      ],
+      "questions": 150,
+      "revision": "f9ab0b228f0fc0f14d873dbc99038f135c2da1b2",
+      "wall_seconds": 14.377706513972953
+    }
+  },
+  "source_revisions": {
+    "base_model": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
+    "laya": "d113dca2512fb3eaca313534bc54c7162d87c1d4",
+    "specialist_model": "f9ab0b228f0fc0f14d873dbc99038f135c2da1b2",
+    "trace2decision_source": "1371ed38f8890d0520a53bc7ad850308eb4d7a22"
+  },
+  "status": "completed",
+  "subset": {
+    "path": "artifacts/trace2decision_i1/rerun2/test.jsonl",
+    "rows": 150,
+    "sha256": "616d97e562b04723e8566028cb1a9117868580c94680db31d1f270ac334aa5b4"
+  },
+  "workflow": "agent_trace_observability"
+}

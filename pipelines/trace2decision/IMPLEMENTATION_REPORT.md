@@ -1,4 +1,4 @@
-# Trace2Decision Iteration 1 Implementation Report
+# Trace2Decision implementation report (I1 plus I2 repair-cycle-1)
 
 ## VERIFIED
 
@@ -36,6 +36,15 @@
 - Twelve deterministic hash-selected samples were inspected; task, prior call,
   result, and action labels were coherent in the inspected records.
 - No training or Iteration 2 work was performed.
+
+## I2 repair-cycle 1
+
+- Added a side-effect-free full bounded pre-policy candidate audit using the
+  pinned tokenizer, with threshold counts/percentages at 512, 768, and 1024;
+  post-policy distributions remain separate.
+- Preserved newest-fitting selection while restoring retained history to source
+  chronological order. Added regression tests for order and meaningful audit
+  differences. No training was run.
 
 ## INFERRED
 

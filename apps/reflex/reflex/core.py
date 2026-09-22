@@ -9,9 +9,18 @@ import subprocess
 import sys
 from typing import Any, Mapping
 
+_REPOSITORY_ROOT = pathlib.Path(__file__).resolve().parents[3]
+if str(_REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPOSITORY_ROOT))
+from shared.typed_decisions import ValidationError, parse_record
 
-CHECKPOINT_ID = "convaiinnovations/laya"
-CHECKPOINT_REVISION = "1c5edc17a7acd8701df6fc341c0d179f1c62c982"
+
+BASE_CHECKPOINT_ID = "convaiinnovations/laya"
+BASE_CHECKPOINT_REVISION = "1c5edc17a7acd8701df6fc341c0d179f1c62c982"
+SPECIALIST_CHECKPOINT_ID = "convaiinnovations/laya-typed-decisions"
+SPECIALIST_CHECKPOINT_REVISION = "f9ab0b228f0fc0f14d873dbc99038f135c2da1b2"
+CHECKPOINT_ID = SPECIALIST_CHECKPOINT_ID
+CHECKPOINT_REVISION = SPECIALIST_CHECKPOINT_REVISION
 LAYA_SOURCE_REVISION = "d113dca2512fb3eaca313534bc54c7162d87c1d4"
 _NATIVE_MODULE_SUFFIXES = {".dll", ".dylib", ".pyd", ".so"}
 
@@ -33,67 +42,14 @@ def _fail(path: str, message: str) -> None:
 
 
 def validate_record(record: Any) -> dict[str, Any]:
-    """Validate and return a native ``state + questions (+ gold)`` record."""
-    if not isinstance(record, dict):
-        _fail("input", "expected a JSON object")
-    if "state" not in record:
-        _fail("state", "required field is missing")
-    if not isinstance(record["state"], (str, dict, list)):
-        _fail("state", "expected a string, object, or array")
-    questions = record.get("questions")
-    if not isinstance(questions, dict) or not questions:
-        _fail("questions", "expected a non-empty object")
-
-    option_names: dict[str, list[str]] = {}
-    for qid, question in questions.items():
-        path = f"questions.{qid}"
-        if not isinstance(qid, str) or not qid:
-            _fail("questions", "question IDs must be non-empty strings")
-        if not isinstance(question, dict):
-            _fail(path, "expected an object")
-        qtype = question.get("type")
-        if qtype not in ("choice", "score", "noul"):
-            _fail(f"{path}.type", "expected choice, score, or noul")
-        if not isinstance(question.get("instructions"), str) or not question["instructions"].strip():
-            _fail(f"{path}.instructions", "expected a non-empty string")
-        criteria = question.get("criteria")
-        if qtype == "choice":
-            if not isinstance(criteria, dict) or len(criteria) < 2:
-                _fail(f"{path}.criteria", "choice requires an object with at least two options")
-            if any(not isinstance(key, str) or not key for key in criteria):
-                _fail(f"{path}.criteria", "option names must be non-empty strings")
-            option_names[qid] = list(criteria)
-        elif qtype == "score":
-            if not isinstance(criteria, list) or len(criteria) < 2:
-                _fail(f"{path}.criteria", "score requires an array with at least two levels")
-            option_names[qid] = [str(index) for index in range(len(criteria))]
-        else:
-            if criteria is not None and (
-                not isinstance(criteria, dict) or any(key not in ("false", "true") for key in criteria)
-            ):
-                _fail(f"{path}.criteria", "noul criteria may only describe false and true")
-            option_names[qid] = ["false", "true"]
-
-    gold = record.get("gold")
-    if gold is not None:
-        if not isinstance(gold, dict):
-            _fail("gold", "expected an object keyed by question ID")
-        unknown = set(gold) - set(questions)
-        if unknown:
-            _fail("gold", f"unknown question IDs: {', '.join(sorted(unknown))}")
-        for qid, distribution in gold.items():
-            path = f"gold.{qid}"
-            if not isinstance(distribution, dict) or set(distribution) != set(option_names[qid]):
-                _fail(path, f"expected exactly these options: {', '.join(option_names[qid])}")
-            values = list(distribution.values())
-            if any(isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0 for value in values):
-                _fail(path, "probabilities must be finite non-negative numbers")
-            if not math.isclose(sum(values), 1.0, abs_tol=1e-6):
-                _fail(path, "probabilities must sum to 1 (within 1e-6)")
-    return record
+    """Validate through the shared contract while preserving extra metadata."""
+    try:
+        return parse_record(record)
+    except ValidationError as exc:
+        _fail("record", str(exc))
 
 
-def resolve_checkpoint(cache_dir: pathlib.Path, offline: bool) -> pathlib.Path:
+def resolve_checkpoint(cache_dir: pathlib.Path, offline: bool, checkpoint_id: str = CHECKPOINT_ID, checkpoint_revision: str = CHECKPOINT_REVISION) -> pathlib.Path:
     """Resolve only the immutable checkpoint revision in the repository-local cache."""
     try:
         from huggingface_hub import snapshot_download
@@ -102,8 +58,8 @@ def resolve_checkpoint(cache_dir: pathlib.Path, offline: bool) -> pathlib.Path:
     try:
         path = pathlib.Path(
             snapshot_download(
-                CHECKPOINT_ID,
-                revision=CHECKPOINT_REVISION,
+                checkpoint_id,
+                revision=checkpoint_revision,
                 cache_dir=str(cache_dir),
                 local_files_only=offline,
             )
@@ -111,7 +67,7 @@ def resolve_checkpoint(cache_dir: pathlib.Path, offline: bool) -> pathlib.Path:
     except Exception as exc:
         mode = "offline cache" if offline else "Hugging Face download/cache"
         raise ReflexModelError(
-            f"Pinned checkpoint {CHECKPOINT_ID}@{CHECKPOINT_REVISION} is unavailable in the {mode}. "
+            f"Pinned checkpoint {checkpoint_id}@{checkpoint_revision} is unavailable in the {mode}. "
             "Run once without --offline with network access, then retry offline. "
             f"Underlying error: {exc}"
         ) from exc
@@ -170,6 +126,7 @@ class Reflex:
         laya_source: str | pathlib.Path = "data/laya",
         device: str | None = None,
         offline: bool = False,
+        checkpoint: str = "specialist",
     ) -> "Reflex":
         source = pathlib.Path(laya_source).resolve()
         if not (source / "laya" / "agent.py").is_file():
@@ -200,24 +157,34 @@ class Reflex:
         except (FileNotFoundError, subprocess.CalledProcessError) as exc:
             raise ReflexModelError(f"Could not verify the Laya source tree integrity at {source}") from exc
         _validate_laya_source_integrity(source, status)
-        checkpoint = resolve_checkpoint(pathlib.Path(cache_dir), offline)
+        checkpoints = {
+            "base": (BASE_CHECKPOINT_ID, BASE_CHECKPOINT_REVISION),
+            "specialist": (SPECIALIST_CHECKPOINT_ID, SPECIALIST_CHECKPOINT_REVISION),
+        }
+        if checkpoint not in checkpoints:
+            raise ReflexModelError("checkpoint must be 'base' or 'specialist'")
+        checkpoint_id, checkpoint_revision = checkpoints[checkpoint]
+        checkpoint_path = resolve_checkpoint(pathlib.Path(cache_dir), offline, checkpoint_id, checkpoint_revision)
         try:
             if str(source) not in sys.path:
                 sys.path.insert(0, str(source))
             from laya.agent import Agent
 
-            agent = Agent(str(checkpoint), device=device)
+            agent = Agent(str(checkpoint_path), device=device)
             if device is not None and str(agent.device) != str(device):
                 raise RuntimeError(f"requested device {device}, but Laya selected {agent.device}")
         except Exception as exc:
             raise ReflexModelError(
                 f"Could not load pinned checkpoint on device {device or 'auto'}: {type(exc).__name__}: {exc}"
             ) from exc
-        return cls(agent, checkpoint)
+        instance = cls(agent, checkpoint_path)
+        instance.checkpoint_id = checkpoint_id
+        instance.checkpoint_revision = checkpoint_revision
+        return instance
 
     def decide(self, record: Mapping[str, Any]) -> dict[str, Any]:
         """Evaluate questions and expose each complete probability distribution."""
-        validated = validate_record(record)
+        validated = validate_record(dict(record))
         try:
             raw = self._agent.system_one(validated["state"], validated["questions"])
             answers_raw = _required_mapping(raw, "response")
@@ -262,7 +229,7 @@ class Reflex:
 
         device = str(getattr(self._agent, "device", "unknown"))
         result = {
-            "checkpoint": {"id": CHECKPOINT_ID, "revision": CHECKPOINT_REVISION},
+            "checkpoint": {"id": getattr(self, "checkpoint_id", CHECKPOINT_ID), "revision": getattr(self, "checkpoint_revision", CHECKPOINT_REVISION)},
             "device": device,
             "answers": answers,
             "usage": raw.get("usage", {}),
@@ -273,8 +240,11 @@ class Reflex:
         }
         if validated.get("gold"):
             agreement = {}
-            for qid, distribution in validated["gold"].items():
-                gold_selected = max(distribution, key=distribution.get)
+            for qid, gold in validated["gold"].items():
+                distribution = gold["probabilities"]
+                gold_selected = gold["label"]
+                if gold_selected is None:
+                    gold_selected = max(distribution, key=distribution.get)
                 agreement[qid] = {
                     "gold_argmax": gold_selected,
                     "model_argmax": answers[qid]["selected"],
@@ -311,6 +281,8 @@ def _probabilities(value: Any, option_names: list[str], qid: str) -> dict[str, f
     if set(probabilities) != set(option_names):
         raise ValueError(f"response.answers.{qid}.probabilities must contain exactly {option_names}")
     result = {name: _probability(probabilities[name], f"response.answers.{qid}.probabilities.{name}") for name in option_names}
-    if not math.isclose(sum(result.values()), 1.0, abs_tol=1e-6):
+    total = sum(result.values())
+    rounding_tolerance = len(option_names) * 5e-5 + 1e-9
+    if not math.isclose(total, 1.0, abs_tol=rounding_tolerance):
         raise ValueError(f"response.answers.{qid}.probabilities must sum to 1")
-    return result
+    return {name: probability / total for name, probability in result.items()}

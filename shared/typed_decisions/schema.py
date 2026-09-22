@@ -1,4 +1,4 @@
-"""Minimal validation for native state/questions/gold typed-decision records."""
+"""Validation for native typed-decision records, retaining non-model metadata."""
 
 from __future__ import annotations
 
@@ -12,11 +12,13 @@ class ValidationError(ValueError):
     """A native typed-decisions record is malformed."""
 
 
-def _decoded(value: Any, field: str) -> Any:
+def _decoded(value: Any, field: str, *, allow_plain_string: bool = False) -> Any:
     if isinstance(value, str):
         try:
             return json.loads(value)
         except json.JSONDecodeError as exc:
+            if allow_plain_string:
+                return value
             raise ValidationError(f"{field} is not valid JSON: {exc}") from exc
     return value
 
@@ -28,8 +30,10 @@ def parse_record(raw: dict[str, Any]) -> dict[str, Any]:
     record = dict(raw)
     for field in ("state", "questions", "gold"):
         if field not in record:
+            if field == "gold":
+                continue
             raise ValidationError(f"missing required field: {field}")
-        record[field] = _decoded(record[field], field)
+        record[field] = _decoded(record[field], field, allow_plain_string=field == "state")
     validate_record(record)
     return record
 
@@ -60,26 +64,32 @@ def validate_record(record: dict[str, Any]) -> None:
     gold = record.get("gold")
     if not isinstance(questions, dict) or not questions:
         raise ValidationError("questions must be a non-empty object")
-    if not isinstance(gold, dict) or set(gold) != set(questions):
-        raise ValidationError("gold keys must exactly match question keys")
     for qid, question in questions.items():
         if not isinstance(qid, str) or not isinstance(question, dict):
             raise ValidationError("question ids must be strings and definitions must be objects")
         if not isinstance(question.get("instructions"), str) or not question["instructions"].strip():
             raise ValidationError(f"question {qid!r} requires non-empty instructions")
+        _option_keys(question)
+    if gold is None:
+        return
+    if not isinstance(gold, dict) or not set(gold).issubset(set(questions)):
+        raise ValidationError("gold keys must be a subset of question keys")
+    for qid, answer in gold.items():
+        question = questions[qid]
         keys = _option_keys(question)
-        answer = gold[qid]
-        if not isinstance(answer, dict) or answer.get("type") != question["type"]:
+        if not isinstance(answer, dict) or not {"type", "label", "probabilities"}.issubset(answer):
+            raise ValidationError(f"gold for {qid!r} must use native type, label, and probabilities")
+        if answer.get("type") != question["type"]:
             raise ValidationError(f"gold type mismatch for {qid!r}")
         probabilities = answer.get("probabilities")
         if not isinstance(probabilities, dict) or list(probabilities) != keys:
             raise ValidationError(f"gold probability keys/order mismatch for {qid!r}: expected {keys}")
         values = list(probabilities.values())
-        if not all(isinstance(v, (int, float)) and math.isfinite(v) and v >= 0 for v in values):
+        if not all(not isinstance(v, bool) and isinstance(v, (int, float)) and math.isfinite(v) and v >= 0 for v in values):
             raise ValidationError(f"gold probabilities must be finite and nonnegative for {qid!r}")
         if not math.isclose(sum(values), 1.0, abs_tol=2e-5):
-            raise ValidationError(f"gold probabilities must sum to one for {qid!r}")
-        if answer.get("label") not in keys:
+            raise ValidationError(f"gold probabilities must sum to 1 for {qid!r}")
+        if answer.get("label") is not None and answer.get("label") not in keys:
             raise ValidationError(f"gold label is not an option for {qid!r}")
 
 
