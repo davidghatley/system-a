@@ -995,28 +995,35 @@ class RunnerOrchestrationTests(unittest.TestCase):
                 config, manifest, freeze_hash, review_accepted=True, config_path=config_path,
             )
 
-    def test_authenticated_safetensors_loader_uses_open_fd_and_rejects_mutation(self) -> None:
+    def test_authenticated_safetensors_loader_uses_immutable_bytes_and_rejects_mutation(self) -> None:
         root = self.new_root()
         checkpoint = root / "checkpoint"
         checkpoint.mkdir()
         weights = checkpoint / "model.safetensors"
-        weights.write_bytes(b"authenticated synthetic weights\n")
+        original = b"authenticated synthetic weights\n"
+        weights.write_bytes(original)
         expected = sha256(weights)
-        seen: list[str] = []
+        seen: list[bytes] = []
 
-        def load_file(path):
-            seen.append(path)
+        def load_bytes(data: bytes):
+            seen.append(data)
+            # Simulate a concurrent in-place write and restoration while the
+            # immutable buffer is being deserialized.  Loading must still see
+            # exactly the bytes whose digest was authenticated.
+            weights.write_bytes(b"temporarily mutated bytes\n")
+            self.assertEqual(data, original)
+            weights.write_bytes(original)
             return {"ok": True}
 
         self.assertEqual(
-            experiment.load_authenticated_safetensors(weights, expected, load_file),
+            experiment.load_authenticated_safetensors(weights, expected, load_bytes),
             {"ok": True},
         )
-        self.assertTrue(seen[0].startswith("/proc/self/fd/"))
+        self.assertEqual(seen, [original])
         weights.write_bytes(b"mutated bytes\n")
         seen.clear()
         with self.assertRaisesRegex(ProtocolError, "changed before authenticated load"):
-            experiment.load_authenticated_safetensors(weights, expected, load_file)
+            experiment.load_authenticated_safetensors(weights, expected, load_bytes)
         self.assertEqual(seen, [])
 
     def test_post_decision_headroom_is_closed_and_training_allowance_is_exact(self) -> None:
@@ -1160,6 +1167,7 @@ class RunnerOrchestrationTests(unittest.TestCase):
         token = decision["final_budget_token"]
         fake_safetensors = MagicMock()
         fake_safetensors.torch.load_file = MagicMock(return_value={})
+        fake_safetensors.torch.load = MagicMock(return_value={})
         with patch.object(experiment, "GpuLock", return_value=contextlib.nullcontext()), patch.object(
             experiment, "load_authenticated_safetensors", side_effect=ProtocolError("synthetic unauthenticated bytes")
         ), patch.object(experiment, "consume_final_test_attempt") as marker, patch.dict(

@@ -28,13 +28,13 @@ Every non-final worker rechecks `require_non_final_worker_open()` immediately af
 
 ### 5. Authenticated final evaluator
 
-**VERIFIED by CPU synthetic loader/marker tests; real CUDA execution remains untested.** Before the final marker or test bytes, the held final token is activated. The selected `model.safetensors` file is opened with `O_NOFOLLOW`, hashed through that open descriptor, loaded through `/proc/self/fd/<fd>` while the descriptor remains open, hashed again, and closed. The pathname is not passed to safetensors for the final load. A changed/unauthenticated file causes failure before marker consumption.
+**VERIFIED by CPU synthetic loader/marker tests; real CUDA execution remains untested.** Before the final marker or test bytes, the held final token is activated. The selected `model.safetensors` file is opened once with `O_NOFOLLOW`, read fully into an immutable `bytes` buffer, hashed, and passed to `safetensors.torch.load`. The pathname or descriptor is never reopened for deserialization, so concurrent in-place writes after the read cannot alter the loaded state. A changed/unauthenticated file causes failure before marker consumption.
 
-The final marker is create-once and carries freeze, decision, config, manifest, full code identity, selected checkpoint hash, budget ledger path/hash, token, reserved seconds, and the exact in-flight reservation. The final result is create-once and carries the same identities and selection, the marker path/hash, and the finished reservation. Repeated final invocation is rejected. The compatibility `final_test_once()` probe cannot bypass authenticated admission on a run containing a decision or ledger.
+The final marker is create-once and carries freeze, decision, config, manifest, full code identity, selected checkpoint hash, budget ledger path/hash, token, reserved seconds, and the exact in-flight reservation. The final result is create-once and carries the same identities and selection, the marker path/hash, and the finished reservation. Repeated final invocation is rejected. The former two-argument marker helper and `final_test_once()` compatibility probe are retired and cannot bypass authenticated admission.
 
 ### 6. Loaded-code identity
 
-**VERIFIED by CPU patch tests and source-identity inspection.** `protocol.py` captures the five-file code identity once when the module loads (`runner.py`, `experiment.py`, `protocol.py`, `metrics.py`, and `b2_train.py`). Admission, claim, decision, seed result, freeze, and final-result validation compare recorded identity with both the current disk identity and that import-time snapshot. A disk edit during the process, or an independently altered current/import-time identity, fails closed. This is a fail-closed runtime check; a fresh process and an immutable source tree are still required for an authorized run, and no claim is made that an in-process code edit is made safe.
+**VERIFIED by CPU patch tests and source-identity inspection.** `protocol.py` captures a five-file disk identity when the module loads. Admission, claim, decision, seed result, freeze, and final-result validation compare current disk identity with that snapshot and reject provenance/publication when they differ. This detects many in-process edits but does not prove the bytes of a dynamic import performed between checks; therefore a fresh process launched from an immutable complete Git tree remains an operational precondition. No runtime test is claimed to make concurrent source mutation safe.
 
 ## Verification commands and results
 
@@ -44,7 +44,7 @@ All Python commands ran from `/home/davidhatley/Projects/research/system_a` with
 
 ```text
 $ CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python -B -m unittest training.laya_trace_i3.test_orchestration -v
-Ran 34 tests in 7.467s
+Ran 34 tests in 6.160s
 OK
 ```
 
@@ -52,7 +52,7 @@ OK
 
 ```text
 $ CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python -B -m unittest training.laya_trace_i3.test_orchestration -v
-Ran 34 tests in 7.465s
+Ran 34 tests in 7.139s
 OK
 ```
 
@@ -62,11 +62,11 @@ The obsolete final-test fixture was updated to assert that a selection lacking d
 
 ```text
 $ CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python -B -m unittest training.laya_trace_i3.test_i3 training.laya_trace_i3.test_orchestration scripts.test_i3_dev_diagnostics release.i3.test_inference
-Ran 87 tests in 6.062s
+Ran 87 tests in 6.029s
 OK
 
 $ CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python -B -m unittest training.laya_trace_i3.test_i3 training.laya_trace_i3.test_orchestration scripts.test_i3_dev_diagnostics release.i3.test_inference
-Ran 87 tests in 6.129s
+Ran 87 tests in 6.593s
 OK
 ```
 
@@ -96,9 +96,9 @@ Source hashes at the verification point (the report itself is not part of the fi
 
 ```text
 959572beaebe6eff880fe3c44155c8b94902ebbeda4ee0c601c838d55640bbff  training/laya_trace_i3/runner.py
-eef2ef976e0ab76a0a3505747420c876f567a80de7f132cad65cdaaa5ed9a373  training/laya_trace_i3/experiment.py
+11793123cf15f9ab339949b9c90fcdd658e8451b2db71aa73950fb165c1b964d  training/laya_trace_i3/experiment.py
 16e97ab18a71f7c249717f45376e54267bbb48f27acbded479d9f3ac4cd8bb94  training/laya_trace_i3/protocol.py
-0c0deb9cd38d00079efdd5ecde4baeba408e378089d5c0cb2de118bcb5ded5da  training/laya_trace_i3/test_orchestration.py
+080303bf41331c1dfc60c2e2882e9823442f71fb9d8fc10d386b43fb989e6b19  training/laya_trace_i3/test_orchestration.py
 ```
 
 The following historical artifact hashes were rechecked and remain unchanged:
@@ -119,7 +119,7 @@ Synthetic CPU ledgers, claims, contexts, and run roots remain under `artifacts/r
 - The hard-link create-once publication, directory fsync, descriptor authentication, and local flock ordering are intended to provide the stated single-host lifecycle guarantees on this filesystem. The CPU suite does not emulate power loss.
 - A held final reservation is conservative accounting, not a measured CUDA duration. A worker that overruns its reservation is durably charged and raises.
 - A separate future output root remains an independent namespace; it is not a continuation or retroactive authorization of the consumed historical run.
-- The import-time identity check is fail-closed for source edits during a process, but a fresh process and immutable complete source tree remain operational preconditions.
+- The import-time disk identity check detects many source edits and blocks mismatched publication, but it cannot prove bytes of a dynamic import between checks. A fresh process from an immutable complete Git tree is required.
 
 ## UNKNOWN / remaining limitations
 

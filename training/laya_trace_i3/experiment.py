@@ -359,25 +359,12 @@ def _exclusive_json(path: Path, value: Mapping[str, Any]) -> None:
         temporary.unlink(missing_ok=True)
 
 
-def _sha256_open_fd(fd: int) -> str:
-    """Hash the bytes reachable through an already-open descriptor."""
-    digest = hashlib.sha256()
-    offset = os.lseek(fd, 0, os.SEEK_CUR)
-    try:
-        os.lseek(fd, 0, os.SEEK_SET)
-        for chunk in iter(lambda: os.read(fd, 1024 * 1024), b""):
-            digest.update(chunk)
-    finally:
-        os.lseek(fd, offset, os.SEEK_SET)
-    return digest.hexdigest()
+def load_authenticated_safetensors(path: Path, expected_sha256: str, load_bytes: Any) -> Any:
+    """Read once through ``O_NOFOLLOW`` and deserialize the same immutable bytes.
 
-
-def load_authenticated_safetensors(path: Path, expected_sha256: str, load_file: Any) -> Any:
-    """Load exact checkpoint bytes through one O_NOFOLLOW descriptor.
-
-    The pathname is never passed to safetensors.  The descriptor remains open
-    for both the pre-load hash and the load, and is hashed again afterward to
-    catch an in-place mutation between those operations.
+    The callback receives a ``bytes`` object, never a pathname or descriptor.
+    Concurrent in-place writes after the read therefore cannot alter the model
+    state being authenticated and loaded.
     """
     if not hasattr(os, "O_NOFOLLOW"):
         raise ProtocolError("O_NOFOLLOW is unavailable; authenticated checkpoint loading is fail-closed")
@@ -389,15 +376,20 @@ def load_authenticated_safetensors(path: Path, expected_sha256: str, load_file: 
     except OSError as exc:
         raise ProtocolError("selected checkpoint cannot be opened with O_NOFOLLOW") from exc
     try:
-        if _sha256_open_fd(fd) != expected:
-            raise ProtocolError("selected checkpoint bytes changed before authenticated load")
-        fd_path = f"/proc/self/fd/{fd}"
-        loaded = load_file(fd_path)
-        if _sha256_open_fd(fd) != expected:
-            raise ProtocolError("selected checkpoint bytes changed during authenticated load")
-        return loaded
+        chunks = []
+        while True:
+            chunk = os.read(fd, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        data = b"".join(chunks)
+    except OSError as exc:
+        raise ProtocolError("selected checkpoint bytes could not be read") from exc
     finally:
         os.close(fd)
+    if hashlib.sha256(data).hexdigest() != expected:
+        raise ProtocolError("selected checkpoint bytes changed before authenticated load")
+    return load_bytes(data)
 
 
 def _finish_final_budget_if_needed(ledger: AggregateBudget, token: str, started: float, error: BaseException | None = None) -> None:
@@ -524,11 +516,11 @@ def _run_final_test_worker(
         # to proceed while its own decision-held token is in flight.
         require_non_final_worker_open(config, route="final-test")
         deadline_checkpoint("final-test GPU admission")
-        from safetensors.torch import load_file
+        from safetensors.torch import load as load_safetensors
         authenticated_state = load_authenticated_safetensors(
             checkpoint / "model.safetensors",
             selection["selected_weights_file_sha256"],
-            load_file,
+            load_safetensors,
         )
         import numpy as np
         import torch
@@ -1012,7 +1004,7 @@ def _runtime_worker(config: Mapping[str, Any], manifest: Mapping[str, Any], *, c
         # All imports below are deliberately after the non-blocking GPU lock.
         import numpy as np
         import torch
-        from safetensors.torch import load_file, save_file
+        from safetensors.torch import load as load_safetensors, save_file
         from transformers import AutoTokenizer
         sys.path.insert(0, str(source_dir))
         from laya.common import QTYPES, build_model, build_sequence, collate_items, proper_reward, render_options
@@ -1034,7 +1026,7 @@ def _runtime_worker(config: Mapping[str, Any], manifest: Mapping[str, Any], *, c
                 load_authenticated_safetensors(
                     weights_path,
                     config["model"]["weights_sha256"],
-                    lambda fd_path: load_file(fd_path),
+                    load_safetensors,
                 ),
                 strict=True,
             )
@@ -1176,7 +1168,7 @@ def _runtime_worker(config: Mapping[str, Any], manifest: Mapping[str, Any], *, c
             load_authenticated_safetensors(
                 checkpoint / "model.safetensors",
                 reloaded_weights_hash,
-                lambda fd_path: load_file(fd_path),
+                load_safetensors,
             ),
             strict=True,
         )
@@ -1410,7 +1402,7 @@ def _run_recover_model_worker(
         reload_evidence=reload_evidence,
     )
     snapshot, weights_path, source_dir = _model_paths(config)
-    from safetensors.torch import load_file
+    from safetensors.torch import load as load_safetensors
     from transformers import AutoTokenizer
     sys.path.insert(0, str(source_dir))
     from laya.common import QTYPES, build_model, build_sequence, collate_items, render_options
@@ -1421,7 +1413,7 @@ def _run_recover_model_worker(
     authenticated_state = load_authenticated_safetensors(
         checkpoint / "model.safetensors",
         checkpoint_record["weights_file_sha256"],
-        lambda fd_path: load_file(fd_path, device="cpu"),
+        load_safetensors,
     )
     model.load_state_dict(authenticated_state, strict=True)
     model.eval()
