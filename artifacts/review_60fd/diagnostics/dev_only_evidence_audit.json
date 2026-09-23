@@ -1,0 +1,41 @@
+{
+  "audit": "i3_evidence_audit",
+  "baseline_metrics_recomputed": {
+    "accuracy": 0.6071428571428571,
+    "brier": 0.5149799498866514,
+    "macro_f1": 0.2927361251829337,
+    "nll": 0.9518856046173839
+  },
+  "baseline_source_sha256": "fcdfc685e54aac245a2bd8555c1b3da8c62120292363f8a24b179694e1f1fa91",
+  "dev_split_sha256_verified": true,
+  "manifest_sha256": "158b6fa3a1a491312b377cf46b6da212e554f811a6431eece19232fcd50d5ed2",
+  "scope": "DEV-ONLY saved predictions; no checkpoint bytes or test records opened",
+  "seed_dev_predictions": [
+    {
+      "metrics_recomputed": {
+        "accuracy": 0.6785714285714286,
+        "brier": 0.5326921745457706,
+        "macro_f1": 0.4452647889891532,
+        "nll": 3.405565959151737
+      },
+      "records": 140,
+      "same_dev_id_gold_metadata_order": true,
+      "seed": 42,
+      "source": "artifacts/review_60fd/dev_inputs/seed_42_dev_predictions.jsonl",
+      "source_sha256": "87f6125a66c4cb2c6aa098cae331cdfa3107667755e45ce4a920fe6284409a7a"
+    },
+    {
+      "metrics_recomputed": {
+        "accuracy": 0.7142857142857143,
+        "brier": 0.5525369931903487,
+        "macro_f1": 0.4419447311088178,
+        "nll": 3.748088220668597
+      },
+      "records": 140,
+      "same_dev_id_gold_metadata_order": true,
+      "seed": 314159,
+      "source": "artifacts/review_60fd/dev_inputs/seed_314159_dev_predictions.jsonl",
+      "source_sha256": "247a4abee00da4292436461e398519498e1176c8a0049f48de12d7c48decab3e"
+    }
+  ]
+}
