@@ -8,61 +8,94 @@ import hashlib
 import json
 import os
 import sys
-import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 BOOT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BOOT_ROOT))
 
 from training.laya_trace_i3.protocol import (
     ROOT,
+    HISTORICAL_RUN_ROOT,
     ProtocolError,
+    admit_worker as _protocol_admit_worker,
+    code_identity,
+    create_pilot_decision,
+    create_once_json,
+    decision_identity,
     expected_updates,
+    future_run_paths as _protocol_future_run_paths,
     group_bootstrap_ids,
     load_json,
     repo_path,
-    choose_seed_count,
+    require_exact_seed_set,
+    require_non_final_worker_open,
+    select_dev_checkpoint,
     sha256,
     validate_config,
+    validate_freeze_binding,
     validate_manifest,
+    validate_pilot_decision,
     validate_runtime_budget,
+    validate_seed_result,
     verify_split_files,
-    require_exact_seed_set,
 )
 from training.laya_trace_i3.experiment import (
     final_test_once, load_split, planned_run, run_actual_model_pilot, run_base_eval,
     run_bounded_smoke, run_final_test, run_recover_seed, run_training_seed, six_class_rlcd_reference, write_plan,
 )
-from training.laya_trace_i3.protocol import select_dev_checkpoint
-
-
 DEFAULT_CONFIG = ROOT / "training/laya_trace_i3/config.json"
-ACCEPTED_PILOT = ROOT / "artifacts/experiment_i3/preflight/actual_model_pilot.json"
-ACCEPTED_PILOT_SHA256 = "2323e509f35e9d2e0e2fba64bd12dcb28a488f6086715c0ac4e115226a65d511"
 
 
-def require_compute_open(config: dict[str, Any]) -> None:
-    """Forbid additional experiment compute after the one-shot test was consumed."""
-    run_dir = repo_path(config["output_root"], artifact_output=True)
-    if (run_dir / "final_test.attempt.json").exists():
-        raise ProtocolError("Iteration 3 final test was consumed; additional model compute is forbidden")
+def future_run_paths(config: dict[str, Any]) -> tuple[Path, Path]:
+    return _protocol_future_run_paths(config, path_resolver=repo_path)
+
+
+def require_compute_open(config: dict[str, Any], *, route: str | None = None) -> None:
+    """Compatibility wrapper around the shared cumulative worker guard."""
+    require_non_final_worker_open(config, route=route, path_resolver=repo_path)
+
+
+def admit_worker(
+    config: dict[str, Any],
+    config_path: Path,
+    manifest_path: Path,
+    command: str,
+    *,
+    seed: int | None = None,
+    pilot_decision_path: Path | None = None,
+    requested_wall_seconds: float | None = None,
+) -> Path:
+    return _protocol_admit_worker(
+        config,
+        config_path,
+        manifest_path,
+        command,
+        seed=seed,
+        pilot_decision_path=pilot_decision_path,
+        requested_wall_seconds=requested_wall_seconds,
+    )
 
 
 def persist_seed_result(run_dir: Path, result: dict[str, Any]) -> None:
-    """Publish one seed result atomically before this process can handle another seed."""
-    run_dir.mkdir(parents=True, exist_ok=True)
-    temporary = run_dir / f".result.json.{os.getpid()}.tmp"
-    temporary.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    os.replace(temporary, run_dir / "result.json")
+    """Publish a seed result once; never replace an existing result identity."""
+    create_once_json(
+        run_dir / "result.json",
+        result,
+        exists_message="seed result already exists; replacement/retry is forbidden",
+    )
 
 
-def load_dev_candidates(config: dict[str, Any], manifest: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    """Load only the complete result set selected by the accepted pilot projection."""
-    if not ACCEPTED_PILOT.is_file() or sha256(ACCEPTED_PILOT) != ACCEPTED_PILOT_SHA256:
-        raise ProtocolError("accepted actual-model pilot is absent or hash-mismatched")
-    decision = choose_seed_count(
-        load_json(ACCEPTED_PILOT), config, manifest["splits"]["train"]["rows"]
+def load_dev_candidates(
+    config: dict[str, Any],
+    manifest: dict[str, Any],
+    config_path: Path = DEFAULT_CONFIG,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Load only complete, provenance-bound results selected by the decision."""
+    pilot_path, decision_path = future_run_paths(config)
+    manifest_path = repo_path(config["data_manifest"])
+    decision = validate_pilot_decision(
+        pilot_path, decision_path, config_path, manifest_path, config, manifest
     )
     runs_root = repo_path(config["output_root"], artifact_output=True)
     result_paths = list(runs_root.glob("seed_*/result.json"))
@@ -80,10 +113,22 @@ def load_dev_candidates(config: dict[str, Any], manifest: dict[str, Any]) -> tup
     candidates = []
     for seed in decision["selected_seeds"]:
         result_path = result_by_seed[seed]
-        result = load_json(result_path)
-        if result.get("seed") != seed or result.get("status") not in {"completed", "recovered"}:
-            raise ProtocolError(f"seed result is not an ordinary or recovered completion: {result_path.relative_to(ROOT)}")
-        checkpoint = result["checkpoint"]
+        result = validate_seed_result(
+            load_json(result_path),
+            result_path,
+            decision,
+            decision_path,
+            config,
+            config_path,
+            manifest_path,
+        )
+        checkpoint = result.get("checkpoint")
+        if not isinstance(checkpoint, Mapping):
+            raise ProtocolError("seed result checkpoint provenance is incomplete")
+        expected_seed_root = (runs_root / f"seed_{seed}").resolve()
+        checkpoint_path = repo_path(checkpoint["checkpoint_path"], artifact_output=True)
+        if checkpoint_path != expected_seed_root / "checkpoint":
+            raise ProtocolError("result checkpoint must belong to its selected run seed")
         candidates.append({"seed": seed, "split": "dev", "macro_f1": result["dev"]["macro_f1"], "nll": result["dev"]["nll"], "checkpoint_path": checkpoint["checkpoint_path"], "weights_file_sha256": checkpoint["weights_file_sha256"], "model_state_sha256": checkpoint["model_state_sha256"], "training_state_file_sha256": checkpoint["training_state_file_sha256"], "labels": config["labels"], "reload_evidence": checkpoint["reload_evidence"], "reload_evidence_path": checkpoint["reload_evidence_path"], "reload_evidence_sha256": checkpoint["reload_evidence_sha256"]})
     return decision, candidates
 
@@ -168,7 +213,7 @@ def build_repair_report(config_path: Path) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("validate-config", "dry-run", "validate-accepted-manifest", "repair-preflight", "actual-model-pilot", "base-eval", "train", "recover-seed", "dev-select", "final-test", "smoke"))
+    parser.add_argument("command", choices=("validate-config", "dry-run", "validate-accepted-manifest", "repair-preflight", "actual-model-pilot", "record-pilot-decision", "base-eval", "train", "recover-seed", "dev-select", "final-test", "smoke"))
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--manifest-sha256")
     parser.add_argument("--report", type=Path)
@@ -178,6 +223,8 @@ def main() -> None:
     args = parser.parse_args()
 
     config_path = args.config.resolve()
+    if args.command in {"actual-model-pilot", "base-eval", "train", "recover-seed", "smoke"} and not args.review_accepted:
+        raise ProtocolError(f"{args.command} requires explicit independent review authorization")
     if args.command == "validate-config":
         config = load_json(config_path)
         validate_config(config)
@@ -189,58 +236,231 @@ def main() -> None:
     elif args.command == "actual-model-pilot":
         config = load_json(config_path)
         validate_config(config)
-        require_compute_open(config)
-        manifest = load_json(repo_path(config["data_manifest"]))
-        report = run_actual_model_pilot(config, manifest, review_accepted=args.review_accepted)
+        require_compute_open(config, route="actual-model-pilot")
+        manifest_path = repo_path(config["data_manifest"])
+        manifest = load_json(manifest_path)
+        pilot_path, _ = future_run_paths(config)
+        admission_path = admit_worker(
+            config,
+            config_path,
+            manifest_path,
+            "actual-model-pilot",
+            seed=config["budget"]["smoke_seed"],
+            requested_wall_seconds=600.0,
+        )
+        report = run_actual_model_pilot(
+            config,
+            manifest,
+            review_accepted=args.review_accepted,
+            config_path=config_path,
+            admission_path=admission_path,
+        )
+        report = {
+            key: value
+            for key, value in report.items()
+            if not key.startswith("_") and key != "worker_wall_seconds"
+        }
+        create_once_json(
+            pilot_path,
+            report,
+            exists_message="future actual-model pilot already exists; immutable result cannot be replaced",
+        )
+    elif args.command == "record-pilot-decision":
+        config = load_json(config_path)
+        validate_config(config)
+        require_compute_open(config, route="validation")
+        manifest_path = repo_path(config["data_manifest"])
+        manifest = load_json(manifest_path)
+        pilot_path, decision_path = future_run_paths(config)
+        record = create_pilot_decision(pilot_path, decision_path, config_path, manifest_path, config, manifest)
+        report = {
+            "status": "pilot_decision_frozen",
+            "selected_seeds": record["decision"]["selected_seeds"],
+            "charged_seconds_before_training": record["decision"]["charged_seconds_before_training"],
+            "fixed_final_test_reserve_seconds": record["decision"]["fixed_final_test_reserve_seconds"],
+            "aggregate_composition": record["decision"]["aggregate_composition"],
+            "budget_ledger_sha256": record["budget_ledger_sha256"],
+            "test_opened": False,
+        }
     elif args.command == "base-eval":
         config = load_json(config_path)
         validate_config(config)
-        require_compute_open(config)
-        manifest = load_json(repo_path(config["data_manifest"]))
-        report = run_base_eval(config, manifest, review_accepted=args.review_accepted)
+        require_compute_open(config, route="base-eval")
+        manifest_path = repo_path(config["data_manifest"])
+        manifest = load_json(manifest_path)
+        admission_path = admit_worker(config, config_path, manifest_path, "base-eval", requested_wall_seconds=600.0)
+        report = run_base_eval(
+            config,
+            manifest,
+            review_accepted=args.review_accepted,
+            config_path=config_path,
+            admission_path=admission_path,
+        )
+        report = {key: value for key, value in report.items() if not key.startswith("_") and key != "worker_wall_seconds"}
+        create_once_json(
+            repo_path(config["output_root"], artifact_output=True) / "base_eval.result.json",
+            report,
+            exists_message="base evaluation result already exists; retry is forbidden",
+        )
     elif args.command == "train":
         config = load_json(config_path)
         validate_config(config)
-        require_compute_open(config)
-        manifest = load_json(repo_path(config["data_manifest"]))
+        require_compute_open(config, route="train")
         if args.seed is None:
             raise ProtocolError("train requires exactly one explicit frozen --seed per process")
-        seeds = [args.seed]
-        if any(seed not in config["training"]["default_seeds"] for seed in seeds):
-            raise ProtocolError("seed is not declared by the frozen training config")
-        item = run_training_seed(config, manifest, args.seed, review_accepted=args.review_accepted)
-        run_dir = repo_path(config["output_root"], artifact_output=True) / f"seed_{item['seed']}"
-        persist_seed_result(run_dir, item)
-        report = {"status": "training_completed", "seeds": [item["seed"]], "reports": [item], "test_opened": False}
+        manifest_path = repo_path(config["data_manifest"])
+        manifest = load_json(manifest_path)
+        pilot_path, decision_path = future_run_paths(config)
+        decision = validate_pilot_decision(
+            pilot_path,
+            decision_path,
+            config_path,
+            manifest_path,
+            config,
+            manifest,
+        )
+        if args.seed not in decision["selected_seeds"]:
+            raise ProtocolError("seed is not authorized by the immutable pilot decision")
+        admission_path = admit_worker(
+            config,
+            config_path,
+            manifest_path,
+            "train",
+            seed=args.seed,
+            pilot_decision_path=decision_path,
+            requested_wall_seconds=decision["projected_gpu_seconds_per_seed"],
+        )
+        item = run_training_seed(
+            config,
+            manifest,
+            args.seed,
+            review_accepted=args.review_accepted,
+            reservation_seconds=decision["projected_gpu_seconds_per_seed"],
+            config_path=config_path,
+            admission_path=admission_path,
+            pilot_decision_path=decision_path,
+        )
+        if item.get("seed") != args.seed or item.get("status") not in {"completed", "recovered"}:
+            raise ProtocolError("training worker returned an invalid seed result")
+        run_dir = repo_path(config["output_root"], artifact_output=True) / f"seed_{args.seed}"
+        public_item = {key: value for key, value in item.items() if not key.startswith("_") and key != "worker_wall_seconds"}
+        persist_seed_result(run_dir, public_item)
+        report = {"status": "training_completed", "seeds": [args.seed], "reports": [public_item], "test_opened": False}
     elif args.command == "recover-seed":
         if args.seed is None:
             raise ProtocolError("recover-seed requires an explicit --seed")
         config = load_json(config_path)
         validate_config(config)
-        manifest = load_json(repo_path(config["data_manifest"]))
-        report = run_recover_seed(config, manifest, args.seed, review_accepted=args.review_accepted)
+        require_compute_open(config, route="recover-seed")
+        if args.seed != config["training"]["single_seed_fallback"]:
+            raise ProtocolError("recover-seed is authorized only for seed 42")
+        manifest_path = repo_path(config["data_manifest"])
+        manifest = load_json(manifest_path)
+        pilot_path, decision_path = future_run_paths(config)
+        decision = validate_pilot_decision(
+            pilot_path, decision_path, config_path, manifest_path, config, manifest
+        )
+        if (
+            not decision.get("fallback_applied")
+            or decision.get("selected_seeds") != [args.seed]
+        ):
+            raise ProtocolError("recovery requires the immutable one-seed fallback decision for seed 42")
+        admission_path = admit_worker(
+            config,
+            config_path,
+            manifest_path,
+            "recover-seed",
+            seed=args.seed,
+            pilot_decision_path=decision_path,
+        )
+        report = run_recover_seed(
+            config,
+            manifest,
+            args.seed,
+            review_accepted=args.review_accepted,
+            config_path=config_path,
+            admission_path=admission_path,
+            pilot_decision_path=decision_path,
+        )
     elif args.command == "dev-select":
         config = load_json(config_path)
         validate_config(config)
-        manifest = load_json(repo_path(config["data_manifest"]))
-        decision, candidates = load_dev_candidates(config, manifest)
+        require_compute_open(config, route="validation")
+        manifest_path = repo_path(config["data_manifest"])
+        manifest = load_json(manifest_path)
+        decision, candidates = load_dev_candidates(config, manifest, config_path)
         selection = select_dev_checkpoint(candidates, config["labels"])
         freeze = repo_path(config["output_root"], artifact_output=True) / "freeze.json"
-        freeze.write_text(json.dumps({"selection": selection, "candidates": candidates, "config_sha256": sha256(config_path), "manifest_sha256": sha256(repo_path(config["data_manifest"])), "test_opened": False}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        if freeze.exists():
+            raise ProtocolError("dev freeze already exists; immutable freeze cannot be replaced")
+        result_root = repo_path(config["output_root"], artifact_output=True)
+        result_hashes = {
+            str(seed): sha256(result_root / f"seed_{seed}/result.json")
+            for seed in decision["selected_seeds"]
+        }
+        decision_record = load_json(repo_path(config["output_root"], artifact_output=True) / "pilot_decision.json")
+        create_once_json(
+            freeze,
+            {
+                "schema": "i3-dev-freeze-v2",
+                "selection": selection,
+                "candidates": candidates,
+                "result_artifact_sha256": result_hashes,
+                "pilot_decision_path": str((repo_path(config["output_root"], artifact_output=True) / "pilot_decision.json").relative_to(ROOT)),
+                "pilot_decision_sha256": sha256(repo_path(config["output_root"], artifact_output=True) / "pilot_decision.json"),
+                "decision_identity": decision_identity(decision_record),
+                "config_path": str(config_path.resolve().relative_to(ROOT)),
+                "config_sha256": sha256(config_path),
+                "manifest_path": str(manifest_path.relative_to(ROOT)),
+                "manifest_sha256": sha256(manifest_path),
+                "code": code_identity(),
+                "test_opened": False,
+            },
+            exists_message="dev freeze already exists; immutable freeze cannot be replaced",
+        )
         report = {"status": "dev_checkpoint_selected", "seed_decision": decision, "selection": selection, "freeze_path": str(freeze.relative_to(ROOT)), "freeze_sha256": sha256(freeze), "test_opened": False}
     elif args.command == "smoke":
         config = load_json(config_path)
         validate_config(config)
-        require_compute_open(config)
-        manifest = load_json(repo_path(config["data_manifest"]))
-        report = run_bounded_smoke(config, manifest, review_accepted=args.review_accepted)
+        require_compute_open(config, route="smoke")
+        manifest_path = repo_path(config["data_manifest"])
+        manifest = load_json(manifest_path)
+        admission_path = admit_worker(
+            config,
+            config_path,
+            manifest_path,
+            "smoke",
+            requested_wall_seconds=float(config["budget"]["smoke_max_gpu_seconds"]),
+        )
+        report = run_bounded_smoke(
+            config,
+            manifest,
+            review_accepted=args.review_accepted,
+            config_path=config_path,
+            admission_path=admission_path,
+        )
+        report = {key: value for key, value in report.items() if not key.startswith("_") and key != "worker_wall_seconds"}
+        create_once_json(
+            repo_path(config["output_root"], artifact_output=True) / "smoke.result.json",
+            report,
+            exists_message="bounded smoke result already exists; retry is forbidden",
+        )
     elif args.command == "final-test":
         if not args.freeze_sha256:
             raise ProtocolError("final-test requires the dev-freeze SHA-256")
         config = load_json(config_path)
         validate_config(config)
         manifest = load_json(repo_path(config["data_manifest"]))
-        report = run_final_test(config, manifest, args.freeze_sha256, review_accepted=args.review_accepted)
+        # The final route is intentionally separate from the non-final worker
+        # guard; run_final_test activates the immutable held budget token and
+        # owns the one create-once authenticated marker.
+        report = run_final_test(
+            config,
+            manifest,
+            args.freeze_sha256,
+            review_accepted=args.review_accepted,
+            config_path=config_path,
+        )
     else:
         config = load_json(config_path)
         validate_config(config)

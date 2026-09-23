@@ -4,7 +4,6 @@ import copy
 import json
 import math
 import sys
-import tempfile
 import threading
 import uuid
 import unittest
@@ -36,7 +35,6 @@ from training.laya_trace_i3.experiment import GpuLock, _exclusive_json, _load_sp
 CONFIG_PATH = ROOT / "training/laya_trace_i3/config.json"
 MANIFEST_PATH = ROOT / "artifacts/experiment_i3/preflight/data_manifest.v3.json"
 PENDING_MANIFEST_PATH = ROOT / "artifacts/experiment_i3/preflight/data_manifest.pending.json"
-PILOT_PATH = ROOT / "artifacts/experiment_i3/preflight/actual_model_pilot.json"
 
 
 def probabilities(**overrides: float) -> dict[str, float]:
@@ -96,7 +94,17 @@ class ProtocolTest(unittest.TestCase):
         cls.config = json.loads(CONFIG_PATH.read_text())
         cls.manifest = json.loads(MANIFEST_PATH.read_text())
         cls.pending = json.loads(PENDING_MANIFEST_PATH.read_text())
-        cls.pilot = json.loads(PILOT_PATH.read_text())
+        cls.pilot = {
+            "status": "actual_model_pilot_measured",
+            "seed": 42,
+            "updates": 2,
+            "training_seconds": 19.0,
+            "cold_load_seconds": 6.0,
+            "dev_evaluation_seconds": 7.0,
+            "peak_reserved_gib": 8.0,
+            "finite": True,
+            "test_opened": False,
+        }
 
     def test_config_and_accepted_plan_do_not_load_model_or_test(self):
         validate_config(self.config)
@@ -188,39 +196,37 @@ class ProtocolTest(unittest.TestCase):
         self.assertEqual([window["divisor"] for window in windows], [4, 4, 2])
         self.assertEqual(windows[-1]["positions"], [8, 9])
 
-    def test_final_test_validates_before_irreversible_order_and_test_decode(self):
-        events = []
-        selection = {"selected_seed": 42, "selected_checkpoint_path": "artifacts/experiment_i3/preflight/guard_probe/checkpoint", "selected_weights_file_sha256": "a" * 64}
-        probe = ROOT / "artifacts/experiment_i3/preflight/guard_probe/final_test_probe"
+    def test_final_test_rejects_unbound_freeze_before_irreversible_work(self):
+        selection = {
+            "selected_seed": 42,
+            "selected_checkpoint_path": "artifacts/experiment_i3/preflight/guard_probe/checkpoint",
+            "selected_weights_file_sha256": "a" * 64,
+        }
+        probe = ROOT / "artifacts/experiment_i3/preflight/guard_probe" / f"final_test_probe_{uuid.uuid4().hex}"
         probe.mkdir(parents=True, exist_ok=True)
         config = copy.deepcopy(self.config)
         config["output_root"] = str(probe.relative_to(ROOT))
-
-        class LockProbe:
-            def __init__(self, *args):
-                pass
-
-            def __enter__(self):
-                events.append("lock")
-                return self
-
-            def __exit__(self, *args):
-                events.append("unlock")
-
-        def stop_before_rows(*args):
-            events.append("test")
-            raise RuntimeError("stopped before real test rows")
-
-        with mock.patch("training.laya_trace_i3.experiment._final_selection", return_value=(selection, {})), mock.patch("training.laya_trace_i3.experiment.GpuLock", LockProbe), mock.patch("training.laya_trace_i3.experiment.consume_final_test_attempt", side_effect=lambda *args: events.append("marker") or probe / "marker.json"), mock.patch("training.laya_trace_i3.experiment._load_split_bytes", side_effect=stop_before_rows):
-            with self.assertRaisesRegex(RuntimeError, "before real test rows"):
+        with mock.patch(
+            "training.laya_trace_i3.experiment._final_selection",
+            return_value=(selection, {}),
+        ), mock.patch("training.laya_trace_i3.experiment.GpuLock") as lock, mock.patch(
+            "training.laya_trace_i3.experiment.consume_final_test_attempt"
+        ) as marker, mock.patch(
+            "training.laya_trace_i3.experiment._load_split_bytes"
+        ) as loader:
+            with self.assertRaisesRegex(ProtocolError, "lacks pilot-decision provenance"):
                 run_final_test(config, self.manifest, "b" * 64, review_accepted=True)
-        self.assertEqual(events[:3], ["lock", "marker", "test"])
+            lock.assert_not_called()
+            marker.assert_not_called()
+            loader.assert_not_called()
 
     def test_final_test_rejects_selection_before_lock_or_test(self):
         events = []
+        config = copy.deepcopy(self.config)
+        config["output_root"] = f"artifacts/experiment_i3/preflight/guard_probe/final_selection_reject_{uuid.uuid4().hex}"
         with mock.patch("training.laya_trace_i3.experiment._final_selection", side_effect=ProtocolError("bad frozen selection")), mock.patch("training.laya_trace_i3.experiment.GpuLock", side_effect=lambda *args: events.append("lock")), mock.patch("training.laya_trace_i3.experiment._load_split_bytes", side_effect=lambda *args: events.append("test")):
             with self.assertRaisesRegex(ProtocolError, "bad frozen selection"):
-                run_final_test(self.config, self.manifest, "c" * 64, review_accepted=True)
+                run_final_test(config, self.manifest, "c" * 64, review_accepted=True)
         self.assertEqual(events, [])
 
     def test_two_seed_default_and_only_declared_fallback(self):
@@ -319,22 +325,34 @@ class ProtocolTest(unittest.TestCase):
         with self.assertRaisesRegex(ProtocolError, "hash-mismatched"):
             _load_split_bytes(manifest, "train", FIXED_LABELS)
 
-    def test_final_test_once_rejects_synthetic_test_byte_mismatch_before_decode(self):
+    def test_authenticated_test_loader_rejects_synthetic_byte_mismatch_before_decode(self):
         fixture = ROOT / "artifacts/experiment_i3/preflight/guard_probe/synthetic_test_mismatch"
         fixture.mkdir(parents=True, exist_ok=True)
         data_path = fixture / "synthetic.jsonl"
-        if not data_path.exists():
-            data_path.write_bytes(b'{"synthetic_fixture_only":true}\n')
+        data_path.write_bytes(b'{"synthetic_fixture_only":true}\n')
         manifest = copy.deepcopy(self.manifest)
-        manifest["splits"]["test"] = {"path": str(data_path.relative_to(ROOT)), "sha256": "0" * 64, "rows": 1}
-        with mock.patch("training.laya_trace_i3.experiment.consume_final_test_attempt", return_value=fixture / "synthetic_marker.json") as marker, mock.patch("training.laya_trace_i3.experiment.validate_record", side_effect=AssertionError("decoded synthetic test despite checksum mismatch")):
+        manifest["splits"]["test"] = {
+            "path": str(data_path.relative_to(ROOT)),
+            "sha256": "0" * 64,
+            "rows": 1,
+        }
+        with mock.patch(
+            "training.laya_trace_i3.experiment.validate_record",
+            side_effect=AssertionError("decoded synthetic test despite checksum mismatch"),
+        ):
             with self.assertRaisesRegex(ProtocolError, "test file is absent or hash-mismatched"):
-                final_test_once(manifest, FIXED_LABELS, fixture, "f" * 64)
-        marker.assert_called_once_with(fixture, "f" * 64)
+                _load_split_bytes(manifest, "test", FIXED_LABELS)
 
     def test_completed_final_attempt_blocks_additional_compute(self):
-        with self.assertRaisesRegex(ProtocolError, "additional model compute is forbidden"):
-            require_compute_open(self.config)
+        fixture = ROOT / "artifacts/review_60fd/fixtures/completed_attempt"
+        fixture.mkdir(parents=True, exist_ok=True)
+        config = copy.deepcopy(self.config)
+        config["output_root"] = str(fixture.relative_to(ROOT))
+        marker = fixture / "final_test.attempt.json"
+        marker.write_text(json.dumps({"synthetic_fixture": True, "freeze_sha256": "a" * 64}) + "\n")
+        with mock.patch("training.laya_trace_i3.runner.repo_path", return_value=fixture):
+            with self.assertRaisesRegex(ProtocolError, "additional model compute is forbidden"):
+                require_compute_open(config)
 
     def test_smoke_requires_review_and_never_cpu_falls_back(self):
         with self.assertRaisesRegex(ProtocolError, "fail-closed"):
@@ -342,6 +360,8 @@ class ProtocolTest(unittest.TestCase):
 
     def test_authorized_smoke_builds_lock_owner_before_torch(self):
         captured = {}
+        config = copy.deepcopy(self.config)
+        config["output_root"] = f"artifacts/experiment_i3/preflight/guard_probe/smoke_lock_{uuid.uuid4().hex}"
 
         def stop_before_torch(lock_path, owner):
             captured["lock_path"] = lock_path
@@ -350,7 +370,7 @@ class ProtocolTest(unittest.TestCase):
 
         with mock.patch("training.laya_trace_i3.experiment.GpuLock", side_effect=stop_before_torch):
             with self.assertRaisesRegex(RuntimeError, "before Torch/CUDA"):
-                run_bounded_smoke(self.config, self.manifest, review_accepted=True)
+                run_bounded_smoke(config, self.manifest, review_accepted=True)
 
         self.assertEqual(captured["lock_path"], ROOT / self.config["gpu_lock"])
         self.assertEqual(
@@ -365,6 +385,8 @@ class ProtocolTest(unittest.TestCase):
 
     def test_actual_model_pilot_builds_local_lock_owner_before_torch(self):
         captured = {}
+        config = copy.deepcopy(self.config)
+        config["output_root"] = f"artifacts/experiment_i3/preflight/guard_probe/pilot_lock_{uuid.uuid4().hex}"
 
         def stop_before_torch(lock_path, owner):
             captured["lock_path"] = lock_path
@@ -373,7 +395,7 @@ class ProtocolTest(unittest.TestCase):
 
         with mock.patch("training.laya_trace_i3.experiment._model_paths", return_value=(ROOT / "data/cache", ROOT / "data/cache/model.safetensors", ROOT / "data/laya")), mock.patch("training.laya_trace_i3.experiment.GpuLock", side_effect=stop_before_torch):
             with self.assertRaisesRegex(RuntimeError, "before actual Torch/model"):
-                run_actual_model_pilot(self.config, self.manifest, review_accepted=True)
+                run_actual_model_pilot(config, self.manifest, review_accepted=True)
 
         self.assertEqual(captured["lock_path"], ROOT / self.config["gpu_lock"])
         self.assertEqual(captured["owner"]["command"], "actual-model-pilot")
@@ -381,102 +403,109 @@ class ProtocolTest(unittest.TestCase):
         self.assertFalse(captured["owner"] is None)
 
     def test_actual_model_paths_fail_closed_when_local_pin_is_missing(self):
+        from training.laya_trace_i3.experiment import _model_paths
         with mock.patch("training.laya_trace_i3.experiment.ROOT", ROOT / "does-not-exist"):
             with self.assertRaisesRegex(ProtocolError, "snapshot"):
-                run_actual_model_pilot(self.config, self.manifest, review_accepted=True)
+                _model_paths(self.config)
 
     def test_recovery_checkpoint_requires_exact_bytes_and_stopping_state(self):
-        checkpoint = ROOT / "artifacts/experiment_i3/preflight/runs/seed_42/checkpoint"
-        reload_evidence = json.loads((checkpoint / "reload.json").read_text())
+        fixture = ROOT / "artifacts/review_60fd/fixtures/recovery_checkpoint"
+        valid = fixture / "valid"
+        tampered = fixture / "tampered"
+        valid.mkdir(parents=True, exist_ok=True)
+        tampered.mkdir(parents=True, exist_ok=True)
+        weights_bytes, state_bytes = b"synthetic fixture weights v1\n", b"synthetic fixture state v1\n"
+        for directory, payload in ((valid, weights_bytes), (tampered, b"tampered fixture weights\n")):
+            (directory / "model.safetensors").write_bytes(payload)
+            (directory / "training_state.pt").write_bytes(state_bytes)
         state = {"updates": 68, "microforwards": 4204, "epochs": 4}
+        digest = "a" * 64
+        training_state = valid / "training_state.pt"
+        evidence = {"strict_model_load": True, "model_state_before_sha256": digest,
+                    "model_state_after_sha256": digest, "training_state_file_sha256": sha256(training_state),
+                    "optimizer_exact": True, "scheduler_exact": True, "scaler_exact": True,
+                    "stopping_state_exact": True}
+        reload_bytes = (json.dumps(evidence, sort_keys=True) + "\n").encode()
+        for directory in (valid, tampered):
+            (directory / "reload.json").write_bytes(reload_bytes)
+        expected = {"weights_sha256": sha256(valid / "model.safetensors"),
+                    "training_state_sha256": sha256(training_state),
+                    "reload_sha256": sha256(valid / "reload.json")}
         hashes = validate_recovery_checkpoint(
-            checkpoint,
-            weights_sha256="9eaa15bbae116f2e18fd73942d6b76729fdbce4ca40fb5a54d4205e1d8ce8947",
-            training_state_sha256="f32c1032708e191079ca5c56072d87a08e88a21e205e2229424432dff48706cb",
-            reload_sha256="b47b091270f3983f1d56ab7e92c8f2196d61298e884c02f3cf698f796ed1e084",
-            model_state_sha256=reload_evidence["model_state_before_sha256"],
-            expected_updates=68,
-            expected_microforwards=4204,
-            expected_epochs=4,
-            state=state,
-            reload_evidence=reload_evidence,
-        )
-        self.assertEqual(hashes["weights_file_sha256"], "9eaa15bbae116f2e18fd73942d6b76729fdbce4ca40fb5a54d4205e1d8ce8947")
+            valid, **expected, model_state_sha256=digest,
+            expected_updates=68, expected_microforwards=4204, expected_epochs=4,
+            state=state, reload_evidence=evidence)
+        self.assertEqual(hashes["weights_file_sha256"], expected["weights_sha256"])
+        with self.assertRaisesRegex(ProtocolError, "hash-mismatched"):
+            validate_recovery_checkpoint(
+                tampered, **expected, model_state_sha256=digest,
+                expected_updates=68, expected_microforwards=4204, expected_epochs=4,
+                state=state, reload_evidence=evidence)
         with self.assertRaisesRegex(ProtocolError, "stopping state"):
             validate_recovery_checkpoint(
-                checkpoint,
-                weights_sha256=hashes["weights_file_sha256"],
-                training_state_sha256=hashes["training_state_file_sha256"],
-                reload_sha256=hashes["reload_evidence_sha256"],
-                model_state_sha256=reload_evidence["model_state_before_sha256"],
-                expected_updates=69,
-                expected_microforwards=4204,
-                expected_epochs=4,
-                state=state,
-                reload_evidence=reload_evidence,
-            )
+                valid, **expected, model_state_sha256=digest,
+                expected_updates=69, expected_microforwards=4204, expected_epochs=4,
+                state=state, reload_evidence=evidence)
 
-    def test_recovery_acquires_lock_before_torch_or_model_work(self):
-        captured = {}
-
-        def stop_before_torch(lock_path, owner):
-            captured["path"] = lock_path
-            captured["owner"] = owner
-            self.assertNotIn("torch", sys.modules)
-            raise RuntimeError("stopped before CPU Torch recovery")
-
-        with mock.patch("training.laya_trace_i3.experiment.GpuLock", side_effect=stop_before_torch):
-            with self.assertRaisesRegex(RuntimeError, "before CPU Torch"):
+    def test_recovery_rejects_consumed_historical_root_before_torch_or_model(self):
+        with mock.patch("training.laya_trace_i3.experiment.GpuLock") as lock:
+            with self.assertRaisesRegex(ProtocolError, "permanently blocked"):
                 run_recover_seed(self.config, self.manifest, 42, review_accepted=True)
-        self.assertEqual(captured["owner"]["command"], "recover-seed")
-        self.assertEqual(captured["owner"]["seed"], 42)
+        lock.assert_not_called()
 
     def test_seed_result_persists_atomically(self):
-        run_dir = ROOT / "artifacts/experiment_i3/preflight/guard_probe/atomic_seed"
+        run_dir = ROOT / "artifacts/experiment_i3/preflight/guard_probe" / f"atomic_seed_{uuid.uuid4().hex}"
         persist_seed_result(run_dir, {"seed": 42, "status": "completed"})
         self.assertEqual(json.loads((run_dir / "result.json").read_text())["seed"], 42)
         self.assertFalse(any(run_dir.glob(".result.json.*.tmp")))
+        with self.assertRaisesRegex(ProtocolError, "already exists"):
+            persist_seed_result(run_dir, {"seed": 314159, "status": "completed"})
+        self.assertEqual(json.loads((run_dir / "result.json").read_text())["seed"], 42)
 
     def test_recovery_publication_rejects_existing_result_without_overwrite(self):
-        with tempfile.TemporaryDirectory(dir=ROOT / "artifacts/experiment_i3/preflight/guard_probe") as directory:
-            result_path = Path(directory) / "result.json"
-            original = {"seed": 42, "status": "recovered"}
-            _exclusive_json(result_path, original)
-            with self.assertRaisesRegex(ProtocolError, "overwrite is forbidden"):
-                _exclusive_json(result_path, {"seed": 314159, "status": "recovered"})
-            self.assertEqual(json.loads(result_path.read_text()), original)
+        directory = ROOT / "artifacts/review_60fd/fixtures" / f"exclusive_recovery_{uuid.uuid4().hex}"
+        directory.mkdir(parents=True)
+        result_path = directory / "result.json"
+        original = {"seed": 42, "status": "recovered"}
+        _exclusive_json(result_path, original)
+        with self.assertRaisesRegex(ProtocolError, "overwrite is forbidden"):
+            _exclusive_json(result_path, {"seed": 314159, "status": "recovered"})
+        self.assertEqual(json.loads(result_path.read_text()), original)
 
     def test_recovery_publication_concurrent_attempts_are_exclusive(self):
-        with tempfile.TemporaryDirectory(dir=ROOT / "artifacts/experiment_i3/preflight/guard_probe") as directory:
-            result_path = Path(directory) / "result.json"
-            barrier = threading.Barrier(2)
-            outcomes = []
+        directory = ROOT / "artifacts/review_60fd/fixtures" / f"concurrent_recovery_{uuid.uuid4().hex}"
+        directory.mkdir(parents=True)
+        result_path = directory / "result.json"
+        barrier = threading.Barrier(2)
+        outcomes = []
 
-            def publish(seed):
-                barrier.wait()
-                try:
-                    _exclusive_json(result_path, {"seed": seed, "status": "recovered"})
-                except ProtocolError as exc:
-                    outcomes.append(str(exc))
-                else:
-                    outcomes.append("published")
+        def publish(seed):
+            barrier.wait()
+            try:
+                _exclusive_json(result_path, {"seed": seed, "status": "recovered"})
+            except ProtocolError as exc:
+                outcomes.append(str(exc))
+            else:
+                outcomes.append("published")
 
-            threads = [threading.Thread(target=publish, args=(seed,)) for seed in (42, 314159)]
-            for thread in threads:
-                thread.start()
-            for thread in threads:
-                thread.join()
-            self.assertEqual(sorted(outcomes), ["published", "seed recovery result already exists; overwrite is forbidden"])
-            self.assertIn(json.loads(result_path.read_text())["seed"], (42, 314159))
+        threads = [threading.Thread(target=publish, args=(seed,)) for seed in (42, 314159)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        self.assertEqual(sorted(outcomes), ["published", "seed recovery result already exists; overwrite is forbidden"])
+        self.assertIn(json.loads(result_path.read_text())["seed"], (42, 314159))
 
     def test_dev_select_rejects_schema_valid_mutated_pilot_bytes(self):
-        with tempfile.TemporaryDirectory(dir=ROOT / "artifacts/experiment_i3/preflight/guard_probe") as directory:
-            mutated_path = Path(directory) / "actual_model_pilot.json"
-            mutated = dict(self.pilot, training_seconds=self.pilot["training_seconds"] + 0.001)
-            mutated_path.write_text(json.dumps(mutated, sort_keys=True) + "\n")
-            with mock.patch("training.laya_trace_i3.runner.ACCEPTED_PILOT", mutated_path):
-                with self.assertRaisesRegex(ProtocolError, "hash-mismatched"):
-                    load_dev_candidates(self.config, self.manifest)
+        directory = ROOT / "artifacts/review_60fd/fixtures" / f"mutated_pilot_{uuid.uuid4().hex}"
+        directory.mkdir(parents=True)
+        mutated_path = directory / "actual_model_pilot.json"
+        mutated = dict(self.pilot, training_seconds=self.pilot["training_seconds"] + 0.001)
+        mutated_path.write_text(json.dumps(mutated, sort_keys=True) + "\n")
+        from training.laya_trace_i3.runner import future_run_paths
+        with mock.patch("training.laya_trace_i3.runner.future_run_paths", return_value=(mutated_path, directory / "decision.json")):
+            with self.assertRaises(ProtocolError):
+                load_dev_candidates(self.config, self.manifest)
 
     def test_restored_optimizer_scheduler_scaler_structural_equality_is_bitwise(self):
         # This CPU fixture models state_dict() values after load_state_dict();
@@ -500,7 +529,8 @@ class ProtocolTest(unittest.TestCase):
         root = ROOT / "artifacts/experiment_i3/preflight/guard_probe" / f"partial_two_seed_{uuid.uuid4().hex}"
         first = root / "seed_42"
         persist_seed_result(first, {"seed": 42, "status": "completed"})
-        with mock.patch("training.laya_trace_i3.runner.ACCEPTED_PILOT", PILOT_PATH), mock.patch("training.laya_trace_i3.runner.repo_path", side_effect=lambda value, artifact_output=False: root if value == self.config["output_root"] else ROOT / value):
+        decision = {"selected_seeds": [42, 314159]}
+        with mock.patch("training.laya_trace_i3.runner.validate_pilot_decision", return_value=decision), mock.patch("training.laya_trace_i3.runner.repo_path", side_effect=lambda value, artifact_output=False: root if value == self.config["output_root"] else ROOT / value):
             with self.assertRaisesRegex(ProtocolError, r"missing=\[314159\]"):
                 load_dev_candidates(self.config, self.manifest)
         self.assertEqual(json.loads((first / "result.json").read_text())["seed"], 42)

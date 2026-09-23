@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Offline audit of I3 checkpoint evidence and dev-only predictions."""
+import argparse
 import hashlib
 import json
 import math
@@ -105,7 +106,63 @@ def audit_baseline(dev_rows):
             "records": len(rows), **metrics, "nll_probability_floor": FLOOR}
 
 
+def dev_only_audit():
+    manifest = read(MANIFEST)
+    split = manifest["splits"]["dev"]
+    dev_path = ROOT / split["path"]
+    if not dev_path.is_file() or sha(dev_path) != split["sha256"]:
+        raise RuntimeError("DEV-ONLY prerequisite missing or mismatched: accepted dev split")
+    dev_rows = [json.loads(line) for line in dev_path.read_text().splitlines()]
+    expected = [
+        (r["metadata"]["id"], r["gold"]["next_action"]["label"], r["metadata"])
+        for r in dev_rows
+    ]
+    baseline_path = ROOT / "artifacts/baseline_i3/preflight/corrected_v3/dev_predictions.jsonl"
+    baseline = [json.loads(line) for line in baseline_path.read_text().splitlines()]
+    if [(r["id"], r["gold"]) for r in baseline] != [(i, g) for i, g, _ in expected]:
+        raise RuntimeError("DEV-ONLY baseline IDs/gold do not match the accepted dev split")
+    seeds = []
+    for seed in (42, 314159):
+        path = ROOT / f"artifacts/review_60fd/dev_inputs/seed_{seed}_dev_predictions.jsonl"
+        if not path.is_file():
+            raise RuntimeError(f"DEV-ONLY prerequisite missing: {path.relative_to(ROOT)}")
+        rows = [json.loads(line) for line in path.read_text().splitlines()]
+        if [(r["record_id"], r["gold_label"], r["metadata"]) for r in rows] != expected:
+            raise RuntimeError(
+                f"DEV-ONLY seed {seed} IDs/gold/metadata do not match accepted dev split"
+            )
+        metrics = dev_metrics(rows)
+        seeds.append({"seed": seed, "source": str(path.relative_to(ROOT)), "source_sha256": sha(path),
+                      "records": len(rows), "same_dev_id_gold_metadata_order": True,
+                      "metrics_recomputed": metrics})
+    baseline_rows = [{"gold_label": r["gold"], "probabilities": r["methods"]["tfidf_logistic"]["probabilities"]} for r in baseline]
+    out = {"audit": "i3_evidence_audit", "scope": "DEV-ONLY saved predictions; no checkpoint bytes or test records opened",
+           "manifest_sha256": sha(MANIFEST), "dev_split_sha256_verified": True,
+           "baseline_source_sha256": sha(baseline_path), "baseline_metrics_recomputed": dev_metrics(baseline_rows),
+           "seed_dev_predictions": seeds}
+    outpath = ROOT / "artifacts/review_60fd/diagnostics/dev_only_evidence_audit.json"
+    outpath.parent.mkdir(parents=True, exist_ok=True)
+    outpath.write_text(json.dumps(out, indent=2, sort_keys=True) + "\n")
+    print(outpath.relative_to(ROOT))
+
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dev-only", action="store_true", help="audit saved dev predictions only; never inspect checkpoints")
+    args = parser.parse_args()
+    if args.dev_only:
+        dev_only_audit()
+        return
+    missing = []
+    for seed in (42, 314159):
+        for rel in (f"artifacts/experiment_i3/preflight/runs/seed_{seed}/result.json",
+                    f"artifacts/experiment_i3/preflight/runs/seed_{seed}/checkpoint/model.safetensors",
+                    f"artifacts/experiment_i3/preflight/runs/seed_{seed}/checkpoint/training_state.pt",
+                    f"artifacts/experiment_i3/preflight/runs/seed_{seed}/checkpoint/reload.json"):
+            if not (ROOT / rel).is_file():
+                missing.append(rel)
+    if missing:
+        raise RuntimeError("FULL CHECKPOINT AUDIT unavailable; missing prerequisites: " + ", ".join(missing))
     manifest = read(MANIFEST)
     split = manifest["splits"]["dev"]
     dev_path = ROOT / split["path"]

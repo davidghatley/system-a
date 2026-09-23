@@ -3,7 +3,7 @@
 import json, math
 from pathlib import Path
 import numpy as np
-ROOT=Path(__file__).resolve().parents[1]; OUT=ROOT/'artifacts/release_i3';OUT.mkdir(parents=True,exist_ok=True)
+ROOT=Path(__file__).resolve().parents[1]; OUT=ROOT/'artifacts/review_60fd/diagnostics';OUT.mkdir(parents=True,exist_ok=True)
 L=['read','search','edit','execute','other_tool','respond_or_finish']; FLOOR=1e-12
 
 def score(name,rows,groups,probs):
@@ -60,17 +60,21 @@ def grouped_cv(rows,y,p,groups):
 
 def main():
  sources=[]
- for name,path in [('seed42','artifacts/experiment_i3/seed42_recovery.json'),('seed314159','artifacts/experiment_i3/seed314159_run.json')]:
-  d=json.loads((ROOT/path).read_text());dev=d.get('dev') or d['reports'][0]['dev']; rows=dev['predictions']; sources.append((name,rows,lambda r: [r['probabilities'].get(l,0) for l in L]))
- rows=[json.loads(x) for x in (ROOT/'artifacts/baseline_i3/preflight/corrected_v3/dev_predictions.jsonl').read_text().splitlines()]
- adapted=[{'gold_label':r['gold'],'record_id':r['id'],'metadata':r.get('metadata',{}),'probabilities':r['methods']['tfidf_logistic']['probabilities']} for r in rows]
- sources.append(('tfidf_logistic',adapted,lambda r: [r['probabilities'].get(l,0) for l in L]))
+ seed42_path=ROOT/'artifacts/review_60fd/dev_inputs/seed_42_dev_predictions.jsonl'
+ seed42=[json.loads(x) for x in seed42_path.read_text().splitlines()]
+ lookup={r['record_id']:r for r in seed42}
+ for name,path in [('seed42',seed42_path),('seed314159',ROOT/'artifacts/review_60fd/dev_inputs/seed_314159_dev_predictions.jsonl')]:
+  rows=[json.loads(x) for x in (ROOT/path).read_text().splitlines()]
+  sources.append((name,rows,lambda r: [r['probabilities'].get(l,0) for l in L]))
+ baseline_path=ROOT/'artifacts/baseline_i3/preflight/corrected_v3/dev_predictions.jsonl'
+ baseline=[]
+ for line in baseline_path.read_text().splitlines():
+  r=json.loads(line); source=lookup[r['id']]
+  baseline.append({'record_id':r['id'],'gold_label':r['gold'],'metadata':source.get('metadata',{}),
+                   'probabilities':r['methods']['tfidf_logistic']['probabilities']})
+ sources.append(('tfidf_logistic',baseline,lambda r: [r['probabilities'].get(l,0) for l in L]))
  results=[];plot=[]
  for name,rs,get in sources:
-  # baseline file has no group metadata in prediction records; recover only via same-ID dev artifact (dev-only)
-  if name=='tfidf_logistic':
-   lookup={r['record_id']:r for r in json.loads((ROOT/'artifacts/experiment_i3/seed42_recovery.json').read_text())['dev']['predictions']}
-   for r in rs:r['metadata']=lookup[r['record_id']]['metadata']
   groups=[r.get('metadata',{}).get('task_group') or r.get('metadata',{}).get('trajectory_id') or r['record_id'] for r in rs]
   result,(y,p,pr,c,ok)=score(name,rs,groups,[get(r) for r in rs]); result['grouped_temperature_cv']=grouped_cv(rs,y,p,groups)
   result['full_dev_temperature_in_sample_exploratory']=temperature(p,y);result['full_dev_scaled_in_sample_exploratory']=metrics(y,scaled(p,result['full_dev_temperature_in_sample_exploratory']))
@@ -85,5 +89,5 @@ def main():
    if m.any():points.append((c[m].mean(),ok[m].mean()))
   parts.append(f'<polyline points="{" ".join(f"{70+520*x:.1f},{450-410*z:.1f}" for x,z in points)}" fill="none" stroke="{colors[j]}" stroke-width="3"/>');parts.append(f'<text x="{80+j*175}" y="480" fill="{colors[j]}" font-family="sans-serif">{name}</text>')
  parts.append('</svg>');(OUT/'reliability.svg').write_text(''.join(parts))
- print('wrote metrics.json and reliability.svg')
+ print('wrote artifacts/review_60fd/diagnostics/metrics.json and reliability.svg')
 if __name__=='__main__':main()

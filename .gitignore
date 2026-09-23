@@ -22,6 +22,11 @@ artifacts/release_i3/isolated_contract_final/
 artifacts/release_i3/integrity_fixtures/
 artifacts/release_i3/seed_failure_fixtures/
 
+# Durable local review fixtures and isolated source snapshots; compact reports are tracked.
+artifacts/review_60fd/fixtures/
+artifacts/review_60fd/import_fixtures/
+artifacts/review_60fd/test_ledgers/
+
 # Keep one shareable derivative; local source data and duplicate verification runs stay local.
 artifacts/trace2decision_i1/rerun/
 artifacts/trace2decision_i1/rerun2/

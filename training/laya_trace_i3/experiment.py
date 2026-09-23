@@ -12,6 +12,7 @@ import hashlib
 import math
 import os
 import random
+import re
 import subprocess
 import sys
 import tempfile
@@ -21,12 +22,18 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from .metrics import evaluate_records
+HEX64_LOCAL = re.compile(r"^[0-9a-f]{64}$")
+
+
 from .protocol import (
     CHOICE_OPTION_ORDER,
     LABEL_TO_CHOICE_INDEX,
     ROOT,
     GpuLock,
     ProtocolError,
+    admit_worker,
+    budget_identity,
+    code_identity,
     consume_final_test_attempt,
     expected_updates,
     load_json,
@@ -36,10 +43,29 @@ from .protocol import (
     validate_manifest,
     verify_split_files,
     validate_runtime_budget,
+    AggregateBudget,
     select_dev_checkpoint,
     validate_recovery_checkpoint,
     validate_checkpoint_reload,
     validate_latency_evidence,
+    validate_pilot_decision,
+    validate_freeze_binding,
+    validate_final_result,
+    validate_worker_admission,
+    claim_path_for_admission,
+    claim_worker,
+    create_once_json,
+    validate_execution_claim,
+    validate_recovery_admission,
+    require_non_final_worker_open,
+    future_run_paths,
+    fsync_directory,
+    _repo_relative,
+    _mapping_sha256,
+    budget_close,
+    BUDGET_EPSILON,
+    FINAL_HOLD_COMMAND,
+    FINAL_TEST_RESERVE_SECONDS,
 )
 
 
@@ -105,6 +131,118 @@ def finite(value: Any, name: str) -> float:
     return float(value)
 
 
+def _actual_config_path(config_path: Path | None) -> Path:
+    """Resolve the invocation's config file; direct API calls retain the frozen default."""
+    resolved = (config_path or ROOT / "training/laya_trace_i3/config.json").resolve()
+    if resolved != ROOT and ROOT not in resolved.parents:
+        raise ProtocolError("config path escapes repository")
+    if not resolved.is_file():
+        raise ProtocolError("actual config path is absent")
+    return resolved
+
+
+def _aggregate_budget(
+    config: Mapping[str, Any], actual_config_path: Path
+) -> AggregateBudget:
+    root = repo_path(config["output_root"], artifact_output=True)
+    return AggregateBudget(
+        root / "gpu_budget.json",
+        budget_identity(config, actual_config_path),
+        float(config["budget"]["main_max_aggregate_gpu_seconds"]),
+    )
+
+
+def _public_result(value: Mapping[str, Any], *, drop_worker_wall: bool = False) -> dict[str, Any]:
+    """Remove runtime-only metadata before immutable publication."""
+    return {
+        key: item
+        for key, item in value.items()
+        if not key.startswith("_") and not (drop_worker_wall and key == "worker_wall_seconds")
+    }
+
+
+def _reservation_metadata(
+    command: str,
+    seed: int,
+    admission_path: Path,
+    decision_path: Path | None = None,
+) -> dict[str, Any]:
+    metadata: dict[str, Any] = {
+        "command": command,
+        "seed": seed,
+        "admission_sha256": sha256(admission_path),
+    }
+    if decision_path is not None:
+        metadata["pilot_decision_sha256"] = sha256(decision_path)
+    return metadata
+
+
+def _decorate_runtime_result(
+    result: Mapping[str, Any],
+    *,
+    command: str,
+    seed: int,
+    admission_path: Path,
+    claim_path: Path,
+    decision_path: Path | None,
+    actual_config_path: Path,
+    manifest_path: Path,
+    ledger: AggregateBudget,
+    token: str,
+    elapsed_seconds: float | None = None,
+) -> dict[str, Any]:
+    """Attach public provenance and the internal budget token to a result."""
+    reservation = ledger.reservation_snapshot(token, require_finished=True)
+    snapshot = ledger.snapshot()
+    value = dict(result)
+    value["worker_wall_seconds"] = elapsed_seconds if elapsed_seconds is not None else 0.0
+    value["_budget_token"] = token
+    value["_budget_ledger_path"] = _repo_relative(ledger.path)
+    value["_budget_ledger_sha256"] = snapshot["sha256"]
+    value["_budget_reservation"] = reservation
+    value["_budget_identity"] = snapshot["identity"]
+    value["admission_path"] = _repo_relative(admission_path)
+    value["admission_sha256"] = sha256(admission_path)
+    value["claim_path"] = _repo_relative(claim_path)
+    value["claim_sha256"] = sha256(claim_path)
+    value["config_path"] = _repo_relative(actual_config_path)
+    value["config_sha256"] = sha256(actual_config_path)
+    value["manifest_path"] = _repo_relative(manifest_path)
+    value["manifest_sha256"] = sha256(manifest_path)
+    value["code"] = code_identity()
+    value["budget_ledger_path"] = _repo_relative(ledger.path)
+    value["budget_ledger_sha256"] = snapshot["sha256"]
+    value["budget_token"] = token
+    value["budget_reservation"] = reservation
+    if decision_path is not None:
+        value["pilot_decision_path"] = _repo_relative(decision_path)
+        value["pilot_decision_sha256"] = sha256(decision_path)
+        value["selected_seed"] = seed
+    if command == "actual-model-pilot":
+        value["schema"] = "i3-actual-model-pilot-v2"
+        # The pilot's own post-reservation snapshot is part of its result,
+        # not a later mutable view of the ledger.
+        value["budget_snapshot"] = snapshot
+    elif command == "train":
+        value["schema"] = "i3-train-result-v2"
+    return value
+
+
+def _finish_failed_budget(
+    ledger: AggregateBudget,
+    token: str,
+    started: float,
+    worker_error: BaseException,
+) -> None:
+    try:
+        ledger.finish(token, time.monotonic() - started, outcome="failed")
+    except ProtocolError as budget_error:
+        raise ProtocolError(
+            f"{budget_error}; original worker failure: "
+            f"{type(worker_error).__name__}: {worker_error}"
+        ) from worker_error
+
+
 def accumulation_windows(order: list[int], accumulation: int) -> list[dict[str, Any]]:
     """Describe exact microbatch boundaries without retaining forward graphs."""
     if not order or isinstance(accumulation, bool) or not isinstance(accumulation, int) or accumulation <= 0:
@@ -142,26 +280,54 @@ def _load_split_bytes(manifest: Mapping[str, Any], split: str, labels: list[str]
 
 def load_split(manifest: Mapping[str, Any], split: str, labels: list[str]) -> list[dict[str, Any]]:
     if split == "test":
-        raise ProtocolError("test bytes are available only through final_test_once")
+        raise ProtocolError("test bytes are available only through the authenticated run_final_test route")
     return _load_split_bytes(manifest, split, labels)
 
 
 def final_test_once(manifest: Mapping[str, Any], labels: list[str], run_dir: Path, freeze_sha256: str) -> tuple[Path, list[dict[str, Any]]]:
-    """The only composed operation that can consume the attempt and open test."""
-    marker = consume_final_test_attempt(run_dir, freeze_sha256)
-    return marker, _load_split_bytes(manifest, "test", labels)
+    """Retired compatibility probe; authorized runs must use :func:`run_final_test`."""
+    raise ProtocolError("final_test_once cannot bypass authenticated final admission; use run_final_test")
 
 
-def _final_selection(run_dir: Path, freeze_sha256: str, labels: list[str], config: Mapping[str, Any], manifest: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+def _final_selection(
+    run_dir: Path,
+    freeze_sha256: str,
+    labels: list[str],
+    config: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    config_path: Path,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Revalidate the complete immutable chain before selecting for final test."""
     freeze = run_dir / "freeze.json"
     if not freeze.is_file() or sha256(freeze) != freeze_sha256:
         raise ProtocolError("dev-only freeze artifact is absent or hash-mismatched")
     frozen = load_json(freeze)
-    if frozen.get("config_sha256") != sha256(ROOT / "training/laya_trace_i3/config.json") or frozen.get("manifest_sha256") != sha256(repo_path(config["data_manifest"])):
-        raise ProtocolError("freeze provenance does not match the supplied config and manifest")
-    if frozen.get("test_opened") is not False or not isinstance(frozen.get("candidates"), list):
-        raise ProtocolError("freeze is not a dev-only checkpoint selection")
-    selection = select_dev_checkpoint(frozen["candidates"], labels)
+    if frozen.get("schema") != "i3-dev-freeze-v2":
+        raise ProtocolError("historical freeze is read-only and non-executable; a provenance-bound freeze is required")
+    decision_path = repo_path(frozen.get("pilot_decision_path", ""), artifact_output=True)
+    validate_freeze_binding(
+        frozen,
+        freeze,
+        decision_path,
+        config,
+        config_path,
+        repo_path(config["data_manifest"]),
+    )
+    validate_pilot_decision(
+        future_run_paths(config)[0],
+        decision_path,
+        config_path,
+        repo_path(config["data_manifest"]),
+        config,
+        manifest,
+    )
+    # Import locally to avoid the runner/experiment import cycle.  This repeats
+    # the full seed-result provenance validation at the irreversible boundary.
+    from .runner import load_dev_candidates
+    _, current_candidates = load_dev_candidates(config, manifest, config_path)
+    if frozen.get("candidates") != current_candidates:
+        raise ProtocolError("freeze candidates or result provenance changed")
+    selection = select_dev_checkpoint(current_candidates, labels)
     if selection != frozen.get("selection"):
         raise ProtocolError("freeze selection does not match its validated dev candidates")
     return selection, frozen
@@ -188,31 +354,184 @@ def _exclusive_json(path: Path, value: Mapping[str, Any]) -> None:
             os.link(temporary, path)
         except FileExistsError as exc:
             raise ProtocolError("seed recovery result already exists; overwrite is forbidden") from exc
+        fsync_directory(path.parent)
     finally:
         temporary.unlink(missing_ok=True)
 
 
-def run_final_test(config: Mapping[str, Any], manifest: Mapping[str, Any], freeze_sha256: str, *, review_accepted: bool = False) -> dict[str, Any]:
-    """Run the irreversible, no-training final evaluator exactly once."""
+def _sha256_open_fd(fd: int) -> str:
+    """Hash the bytes reachable through an already-open descriptor."""
+    digest = hashlib.sha256()
+    offset = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, 0, os.SEEK_SET)
+        for chunk in iter(lambda: os.read(fd, 1024 * 1024), b""):
+            digest.update(chunk)
+    finally:
+        os.lseek(fd, offset, os.SEEK_SET)
+    return digest.hexdigest()
+
+
+def load_authenticated_safetensors(path: Path, expected_sha256: str, load_file: Any) -> Any:
+    """Load exact checkpoint bytes through one O_NOFOLLOW descriptor.
+
+    The pathname is never passed to safetensors.  The descriptor remains open
+    for both the pre-load hash and the load, and is hashed again afterward to
+    catch an in-place mutation between those operations.
+    """
+    if not hasattr(os, "O_NOFOLLOW"):
+        raise ProtocolError("O_NOFOLLOW is unavailable; authenticated checkpoint loading is fail-closed")
+    expected = str(expected_sha256)
+    if not HEX64_LOCAL.fullmatch(expected):
+        raise ProtocolError("selected checkpoint SHA-256 is malformed")
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    except OSError as exc:
+        raise ProtocolError("selected checkpoint cannot be opened with O_NOFOLLOW") from exc
+    try:
+        if _sha256_open_fd(fd) != expected:
+            raise ProtocolError("selected checkpoint bytes changed before authenticated load")
+        fd_path = f"/proc/self/fd/{fd}"
+        loaded = load_file(fd_path)
+        if _sha256_open_fd(fd) != expected:
+            raise ProtocolError("selected checkpoint bytes changed during authenticated load")
+        return loaded
+    finally:
+        os.close(fd)
+
+
+def _finish_final_budget_if_needed(ledger: AggregateBudget, token: str, started: float, error: BaseException | None = None) -> None:
+    try:
+        current = ledger.reservation_snapshot(token)
+    except ProtocolError:
+        return
+    if current.get("state") != "in_flight":
+        return
+    try:
+        ledger.finish(token, time.monotonic() - started, outcome="failed" if error is not None else "finished")
+    except ProtocolError as budget_error:
+        if error is None:
+            raise
+        raise ProtocolError(f"{budget_error}; original final worker failure: {type(error).__name__}: {error}") from error
+
+
+def run_final_test(config: Mapping[str, Any], manifest: Mapping[str, Any], freeze_sha256: str, *, review_accepted: bool = False, config_path: Path | None = None) -> dict[str, Any]:
+    """Admit and activate the immutable final allowance before one attempt."""
     if not review_accepted:
         raise ProtocolError("final-test requires explicit independent review authorization")
+    actual_config_path = _actual_config_path(config_path)
+    run_dir = repo_path(config["output_root"], artifact_output=True)
+    require_non_final_worker_open(config, route="final-test")
+    if (run_dir / "final_test.result.json").exists():
+        raise ProtocolError("final-test result already exists; retry forbidden")
+    if (run_dir / "final_test.attempt.json").exists():
+        raise ProtocolError("final test attempt was already consumed; retry forbidden")
+    selection, frozen = _final_selection(
+        run_dir, freeze_sha256, list(config["labels"]), config, manifest, actual_config_path,
+    )
+    decision_value = frozen.get("pilot_decision_path") if isinstance(frozen, Mapping) else None
+    if not isinstance(decision_value, str) or not decision_value:
+        raise ProtocolError("final freeze lacks pilot-decision provenance")
+    decision_path = repo_path(decision_value, artifact_output=True)
+    decision_record = load_json(decision_path)
+    token = decision_record.get("final_budget_token")
+    if not isinstance(token, str) or not token:
+        raise ProtocolError("immutable decision does not bind a final budget token")
+    ledger = _aggregate_budget(config, actual_config_path)
+    # Activation is a state transition of the decision-held reservation, not
+    # a second 600-second charge.
+    activated = ledger.activate_hold(
+        token,
+        expected_seconds=FINAL_TEST_RESERVE_SECONDS,
+        metadata_updates={
+            "freeze_path": _repo_relative(run_dir / "freeze.json"),
+            "freeze_sha256": freeze_sha256,
+            "pilot_decision_path": _repo_relative(decision_path),
+            "pilot_decision_sha256": sha256(decision_path),
+            "selection": selection,
+        },
+    )
+    started = time.monotonic()
+    try:
+        result = _run_final_test_worker(
+            config, manifest, freeze_sha256,
+            actual_config_path=actual_config_path,
+            worker_started=started,
+            deadline=started + FINAL_TEST_RESERVE_SECONDS,
+            final_token=token,
+            final_reservation=activated,
+            decision_path=decision_path,
+            selection=selection,
+            frozen=frozen,
+            ledger=ledger,
+        )
+    except BaseException as worker_error:
+        _finish_final_budget_if_needed(ledger, token, started, worker_error)
+        raise
+    # A patched/synthetic worker may return before finalizing; production
+    # workers finalize before create-once result publication.
+    _finish_final_budget_if_needed(ledger, token, started)
+    return result
+
+
+def _run_final_test_worker(
+    config: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    freeze_sha256: str,
+    *,
+    actual_config_path: Path,
+    worker_started: float,
+    deadline: float,
+    final_token: str,
+    final_reservation: Mapping[str, Any],
+    decision_path: Path,
+    selection: Mapping[str, Any],
+    frozen: Mapping[str, Any],
+    ledger: AggregateBudget,
+) -> dict[str, Any]:
+    """Run one authenticated, irreversible no-training evaluation."""
     validate_manifest(manifest, allow_pending=False)
     verify_split_files(manifest, include_test=False)
     run_dir = repo_path(config["output_root"], artifact_output=True)
-    selection, _ = _final_selection(run_dir, freeze_sha256, list(config["labels"]), config, manifest)
+
+    def deadline_checkpoint(phase: str) -> None:
+        if time.monotonic() >= deadline:
+            raise ProtocolError(f"final worker deadline exhausted during {phase}; no retry")
+
+    deadline_checkpoint("final validation")
+    current_selection, current_frozen = _final_selection(
+        run_dir, freeze_sha256, list(config["labels"]), config, manifest, actual_config_path,
+    )
+    if current_selection != selection or current_frozen != frozen:
+        raise ProtocolError("final selection changed after budget activation")
     result_path = run_dir / "final_test.result.json"
+    if not isinstance(final_reservation, Mapping) or final_reservation.get("token") != final_token or final_reservation.get("state") != "in_flight":
+        raise ProtocolError("final activated reservation provenance is invalid")
+    if ledger.reservation_snapshot(final_token) != dict(final_reservation):
+        raise ProtocolError("final activated reservation differs from the ledger")
     if result_path.exists():
         raise ProtocolError("final-test result already exists; retry forbidden")
     checkpoint = repo_path(selection["selected_checkpoint_path"], artifact_output=True)
-    owner = {"command": "final-test", "config_sha256": sha256(ROOT / "training/laya_trace_i3/config.json"), "manifest_sha256": sha256(repo_path(config["data_manifest"])), "seed": int(selection["selected_seed"])}
-    started = time.monotonic()
-    # The marker and test decode occur only after all CPU validation and lock acquisition.
+    owner = {
+        "command": "final-test",
+        "config_sha256": sha256(actual_config_path),
+        "manifest_sha256": sha256(repo_path(config["data_manifest"])),
+        "seed": int(selection["selected_seed"]),
+    }
+    started = worker_started
     with GpuLock(repo_path(config["gpu_lock"], artifact_output=True), owner):
-        marker = consume_final_test_attempt(run_dir, freeze_sha256)
-        test_records = _load_split_bytes(manifest, "test", list(config["labels"]))
+        # The final route uses the shared guard too, but is explicitly allowed
+        # to proceed while its own decision-held token is in flight.
+        require_non_final_worker_open(config, route="final-test")
+        deadline_checkpoint("final-test GPU admission")
+        from safetensors.torch import load_file
+        authenticated_state = load_authenticated_safetensors(
+            checkpoint / "model.safetensors",
+            selection["selected_weights_file_sha256"],
+            load_file,
+        )
         import numpy as np
         import torch
-        from safetensors.torch import load_file
         from transformers import AutoTokenizer
         snapshot, _, source_dir = _model_paths(config)
         sys.path.insert(0, str(source_dir))
@@ -226,11 +545,42 @@ def run_final_test(config: Mapping[str, Any], manifest: Mapping[str, Any], freez
         model_config = json.loads((snapshot / "rl_agent_config.json").read_text(encoding="utf-8"))
         model_config.update(max_len=config["model"]["max_len"], head_max_len=config["model"]["head_max_len"])
         model = build_model(model_config, encoder_dir=str(snapshot / "encoder"))
-        model.load_state_dict(load_file(checkpoint / "model.safetensors"), strict=True)
+        model.load_state_dict(authenticated_state, strict=True)
         model.encoder.config.reference_compile = False
         model.to(device).eval()
         tokenizer = AutoTokenizer.from_pretrained(snapshot / "tokenizer", local_files_only=True)
+
+        # The token is already activated before this point.  Capture its exact
+        # in-flight reservation and ledger hash for the marker.
+        in_flight = ledger.reservation_snapshot(final_token)
+        if in_flight.get("state") != "in_flight" or in_flight.get("token") != final_token:
+            raise ProtocolError("final budget token is not activated in flight")
+        ledger_snapshot = ledger.snapshot()
+        marker_provenance = {
+            "freeze_path": _repo_relative(run_dir / "freeze.json"),
+            "freeze_sha256": freeze_sha256,
+            "pilot_decision_path": _repo_relative(decision_path),
+            "pilot_decision_sha256": sha256(decision_path),
+            "config_path": _repo_relative(actual_config_path),
+            "config_sha256": sha256(actual_config_path),
+            "manifest_path": _repo_relative(repo_path(config["data_manifest"])),
+            "manifest_sha256": sha256(repo_path(config["data_manifest"])),
+            "code": code_identity(),
+            "budget_ledger_path": _repo_relative(ledger.path),
+            "budget_ledger_sha256": ledger_snapshot["sha256"],
+            "budget_token": final_token,
+            "budget_reserved_seconds": in_flight["reserved_seconds"],
+            "budget_reservation": in_flight,
+            "selection": selection,
+            "selected_weights_file_sha256": selection["selected_weights_file_sha256"],
+        }
+        marker = consume_final_test_attempt(run_dir, freeze_sha256, marker_provenance)
+        marker_hash = sha256(marker)
+        test_records = _load_split_bytes(manifest, "test", list(config["labels"]))
+        deadline_checkpoint("test decode")
         test_items = _record_items(test_records, tokenizer, build_sequence, QTYPES, render_options, config)
+        deadline_checkpoint("final model setup")
+
         def infer(item: Mapping[str, Any]) -> list[float]:
             batch = collate_items([[item]], tokenizer.pad_token_id)
             tensors = [batch[key].to(device) for key in ("input_ids", "attention_mask", "marker_pos", "marker_mask", "qtype")]
@@ -245,6 +595,7 @@ def run_final_test(config: Mapping[str, Any], manifest: Mapping[str, Any], freez
         torch.cuda.synchronize(device)
         latency_samples = []
         for index in range(config["latency"]["warmups"] + config["latency"]["measured_records"]):
+            deadline_checkpoint("latency measurement boundary")
             torch.cuda.synchronize(device); latency_start = time.perf_counter()
             infer_record(test_records[0])
             torch.cuda.synchronize(device)
@@ -252,51 +603,169 @@ def run_final_test(config: Mapping[str, Any], manifest: Mapping[str, Any], freez
                 latency_samples.append(time.perf_counter() - latency_start)
         rows = []
         for item in test_items:
+            deadline_checkpoint("test inference boundary")
             probs = infer(item)
             by_label = {label: float(probs[position]) for position, label in enumerate(item["option_keys"])}
             rows.append({"record_id": item["record_id"], "gold_label": item["gold_label"], "probabilities": {label: by_label[label] for label in config["labels"]}, "metadata": item["metadata"]})
         scored = evaluate_records([{key: row[key] for key in ("record_id", "gold_label", "probabilities")} for row in rows], list(config["labels"]), nll_floor=config["evaluation"]["nll_probability_floor"])
         scored["predictions"] = rows
         scored["task_group_bootstrap"] = _group_bootstrap(rows, list(config["labels"]))
+        deadline_checkpoint("final scoring")
         latency = validate_latency_evidence({"batch_size": 1, "warmups_completed": config["latency"]["warmups"], "samples_seconds": latency_samples, "synchronize_before_each": True, "synchronize_after_each": True, "included_phases": ["tokenize_build", "collate", "host_to_device", "forward", "softmax", "cpu_probability_copy"], "measurement_source": "runtime_monotonic_with_cuda_synchronization", "synchronization_events": 2 * (config["latency"]["warmups"] + config["latency"]["measured_records"])}, config)
-        result = {"status": "final_test_completed", "attempt_marker": str(marker.relative_to(ROOT)), "selection": selection, "test": scored, "latency": latency, "elapsed_seconds": time.monotonic() - started, "training": False, "test_opened": True}
-        _atomic_json(result_path, result)
+        elapsed = time.monotonic() - started
+        ledger.finish(final_token, elapsed)
+        finished = ledger.reservation_snapshot(final_token, require_finished=True)
+        final_snapshot = ledger.snapshot()
+        result = {
+            "schema": "i3-final-test-result-v2",
+            "status": "final_test_completed",
+            "attempt_marker": _repo_relative(marker),
+            "attempt_marker_sha256": marker_hash,
+            "selection": selection,
+            "freeze_path": _repo_relative(run_dir / "freeze.json"),
+            "freeze_sha256": freeze_sha256,
+            "pilot_decision_path": _repo_relative(decision_path),
+            "pilot_decision_sha256": sha256(decision_path),
+            "config_path": _repo_relative(actual_config_path),
+            "config_sha256": sha256(actual_config_path),
+            "manifest_path": _repo_relative(repo_path(config["data_manifest"])),
+            "manifest_sha256": sha256(repo_path(config["data_manifest"])),
+            "code": code_identity(),
+            "budget_ledger_path": _repo_relative(ledger.path),
+            "budget_ledger_sha256": final_snapshot["sha256"],
+            "budget_token": final_token,
+            "budget_reserved_seconds": finished["reserved_seconds"],
+            "budget_reservation": finished,
+            "test": scored,
+            "latency": latency,
+            "elapsed_seconds": elapsed,
+            "training": False,
+            "test_opened": True,
+        }
+        create_once_json(
+            result_path, result,
+            exists_message="final-test result already exists; retry forbidden",
+        )
+        validate_final_result(
+            result, result_path, run_dir / "freeze.json", decision_path,
+            config, actual_config_path, repo_path(config["data_manifest"]),
+        )
         return result
 
-
-def run_bounded_smoke(config: Mapping[str, Any], manifest: Mapping[str, Any], *, review_accepted: bool = False) -> dict[str, Any]:
-    """Run two synthetic six-logit updates after lock acquisition, never before Torch."""
+def run_bounded_smoke(
+    config: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    *,
+    review_accepted: bool = False,
+    config_path: Path | None = None,
+    admission_path: Path | None = None,
+) -> dict[str, Any]:
+    """Run two synthetic six-logit updates after shared budget admission."""
     if not review_accepted or config["execution_gate"] != "blocked_until_independent_data_verification_and_pre_run_review":
         raise ProtocolError("GPU smoke is fail-closed until independent review opens the execution gate")
-    validate_manifest(manifest, allow_pending=False)
-    verify_split_files(manifest, include_test=False)
+    require_non_final_worker_open(config, route="smoke")
+    actual_config_path = _actual_config_path(config_path)
+    actual_manifest_path = repo_path(config["data_manifest"])
+    if admission_path is None:
+        admission_path = admit_worker(
+            config,
+            actual_config_path,
+            actual_manifest_path,
+            "smoke",
+            requested_wall_seconds=float(config["budget"]["smoke_max_gpu_seconds"]),
+        )
+    else:
+        validate_worker_admission(
+            admission_path,
+            config,
+            actual_config_path,
+            actual_manifest_path,
+            "smoke",
+        )
+    require_non_final_worker_open(config, route="smoke")
+    claim_path = claim_worker(
+        admission_path, config, actual_config_path, actual_manifest_path,
+        "smoke", pilot_decision_path=None,
+    )
+    ledger = _aggregate_budget(config, actual_config_path)
+    token, grant = ledger.reserve_non_final(
+        float(config["budget"]["smoke_max_gpu_seconds"]),
+        metadata=_reservation_metadata("smoke", config["budget"]["smoke_seed"], admission_path),
+        run_root=repo_path(config["output_root"], artifact_output=True),
+    )
     started = time.monotonic()
-    owner = {"command": "smoke", "config_sha256": sha256(ROOT / "training/laya_trace_i3/config.json"), "manifest_sha256": sha256(repo_path(config["data_manifest"])), "seed": config["budget"]["smoke_seed"]}
-    with GpuLock(repo_path(config["gpu_lock"], artifact_output=True), owner):
-        import torch
-        if not torch.cuda.is_available():
-            raise ProtocolError("CUDA is unavailable; smoke does not fall back to CPU")
-        torch.cuda.synchronize()
-        torch.manual_seed(owner["seed"])
-        logits = torch.nn.Parameter(torch.zeros(6, device="cuda", dtype=torch.float32))
-        optimizer = torch.optim.SGD([logits], lr=0.01)
-        perturbations = torch.tensor([[0.3, -0.1, 0.2, -0.4, 0.1, -0.1], [-0.4, 0.8, -0.6, 0.2, -0.2, 0.2]], device="cuda")
-        gold = torch.tensor([0, 1], device="cuda")
-        for _ in range(config["budget"]["smoke_updates"]):
-            optimizer.zero_grad(set_to_none=True)
-            noisy = logits.unsqueeze(0) + perturbations
-            loss_rlcd = -(torch.log_softmax(noisy, dim=-1).gather(1, gold[:, None]).mean())
-            loss_ce = torch.nn.functional.cross_entropy(logits.unsqueeze(0), gold[:1])
-            (loss_rlcd + loss_ce).backward()
-            torch.nn.utils.clip_grad_norm_([logits], 1.0)
-            optimizer.step()
-        torch.cuda.synchronize()
-        elapsed = time.monotonic() - started
-        peak = torch.cuda.max_memory_reserved() / (1024 ** 3)
+    deadline = started + grant
+
+    def checkpoint(phase: str) -> None:
+        if time.monotonic() >= deadline:
+            raise ProtocolError(f"aggregate worker deadline exhausted during {phase}; no retry")
+
+    try:
+        validate_manifest(manifest, allow_pending=False)
+        verify_split_files(manifest, include_test=False)
+        owner = {"command": "smoke", "config_sha256": sha256(actual_config_path), "manifest_sha256": sha256(actual_manifest_path), "seed": config["budget"]["smoke_seed"]}
+        with GpuLock(repo_path(config["gpu_lock"], artifact_output=True), owner):
+            # Close the consumed-marker race after lock acquisition and before
+            # importing Torch or touching model/device state.
+            require_non_final_worker_open(config, route="smoke")
+            checkpoint("smoke GPU admission")
+            import torch
+            if not torch.cuda.is_available():
+                raise ProtocolError("CUDA is unavailable; smoke does not fall back to CPU")
+            torch.cuda.synchronize()
+            torch.manual_seed(owner["seed"])
+            logits = torch.nn.Parameter(torch.zeros(6, device="cuda", dtype=torch.float32))
+            optimizer = torch.optim.SGD([logits], lr=0.01)
+            perturbations = torch.tensor([[0.3, -0.1, 0.2, -0.4, 0.1, -0.1], [-0.4, 0.8, -0.6, 0.2, -0.2, 0.2]], device="cuda")
+            gold = torch.tensor([0, 1], device="cuda")
+            for _ in range(config["budget"]["smoke_updates"]):
+                checkpoint("smoke update boundary")
+                optimizer.zero_grad(set_to_none=True)
+                noisy = logits.unsqueeze(0) + perturbations
+                loss_rlcd = -(torch.log_softmax(noisy, dim=-1).gather(1, gold[:, None]).mean())
+                loss_ce = torch.nn.functional.cross_entropy(logits.unsqueeze(0), gold[:1])
+                (loss_rlcd + loss_ce).backward()
+                torch.nn.utils.clip_grad_norm_([logits], 1.0)
+                optimizer.step()
+            torch.cuda.synchronize()
+            checkpoint("smoke completion")
+            elapsed = time.monotonic() - started
+            peak = torch.cuda.max_memory_reserved() / (1024 ** 3)
+    except BaseException as worker_error:
+        _finish_failed_budget(ledger, token, started, worker_error)
+        raise
+
+    ledger.finish(token, elapsed)
     validate_runtime_budget(elapsed, elapsed, config)
     if not math.isfinite(elapsed) or peak > config["budget"]["max_peak_reserved_gib"] or elapsed > config["budget"]["smoke_max_gpu_seconds"]:
         raise ProtocolError("smoke exceeded its bounded resource contract")
-    return {"status": "smoke_measured", "seed": owner["seed"], "updates": config["budget"]["smoke_updates"], "training_seconds": elapsed, "cold_load_seconds": 0.0, "dev_evaluation_seconds": 0.0, "peak_reserved_gib": peak, "finite": True, "test_opened": False}
+    result = {
+        "status": "smoke_measured",
+        "seed": owner["seed"],
+        "updates": config["budget"]["smoke_updates"],
+        "training_seconds": elapsed,
+        "cold_load_seconds": 0.0,
+        "dev_evaluation_seconds": 0.0,
+        "peak_reserved_gib": peak,
+        "finite": True,
+        "test_opened": False,
+    }
+    return _public_result(
+        _decorate_runtime_result(
+            result,
+            command="smoke",
+            seed=owner["seed"],
+            admission_path=admission_path,
+            claim_path=claim_path,
+            decision_path=None,
+            actual_config_path=actual_config_path,
+            manifest_path=actual_manifest_path,
+            ledger=ledger,
+            token=token,
+            elapsed_seconds=elapsed,
+        ),
+        drop_worker_wall=True,
+    )
 
 
 def _model_paths(config: Mapping[str, Any]) -> tuple[Path, Path, Path]:
@@ -396,7 +865,134 @@ def _group_bootstrap(records: list[dict[str, Any]], labels: list[str], replicate
     return {"bootstrap_unit": "task_group", "replicates": replicates, "seed": seed, "task_groups": len(keys), "intervals": interval}
 
 
-def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command: str, seed: int, review_accepted: bool, pilot_updates: int | None = None, train_enabled: bool = True) -> dict[str, Any]:
+def _runtime(
+    config: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    *,
+    command: str,
+    seed: int,
+    review_accepted: bool,
+    config_path: Path | None = None,
+    pilot_updates: int | None = None,
+    train_enabled: bool = True,
+    reservation_seconds: float | None = None,
+    admission_path: Path | None = None,
+    pilot_decision_path: Path | None = None,
+) -> dict[str, Any]:
+    """Run one already-admitted route under the shared all-or-nothing ledger."""
+    require_non_final_worker_open(config, route=command)
+    if not review_accepted:
+        raise ProtocolError("actual-model execution requires explicit independent review authorization")
+    actual_config_path = _actual_config_path(config_path)
+    actual_manifest_path = repo_path(config["data_manifest"])
+    if admission_path is None:
+        raise ProtocolError("runtime worker requires a pre-created immutable admission")
+    admission = validate_worker_admission(
+        admission_path,
+        config,
+        actual_config_path,
+        actual_manifest_path,
+        command,
+        seed=seed if command in {"actual-model-pilot", "train", "recover-seed"} else None,
+        pilot_decision_path=pilot_decision_path,
+    )
+    reservation = reservation_seconds if reservation_seconds is not None else (
+        600.0 if pilot_updates is not None or not train_enabled else 3600.0
+    )
+    if command == "train":
+        expected = admission.get("requested_wall_seconds")
+        try:
+            exact = math.isfinite(float(reservation)) and abs(float(reservation) - float(expected)) <= BUDGET_EPSILON
+        except (TypeError, ValueError):
+            exact = False
+        if not exact:
+            raise ProtocolError("training reservation must equal the immutable per-seed projection")
+    # Claim creation is deliberately before constructing the ledger or making
+    # any reservation.  A second direct invocation therefore fails before it
+    # can consume another budget slice.
+    claim_path = claim_worker(
+        admission_path, config, actual_config_path, actual_manifest_path,
+        command, seed=seed if command in {"actual-model-pilot", "train", "recover-seed"} else None,
+        pilot_decision_path=pilot_decision_path,
+    )
+    ledger = _aggregate_budget(config, actual_config_path)
+    # This is an all-or-nothing pre-admission charge.  No model worker starts
+    # unless the entire requested wall-time allowance is available.
+    run_root = repo_path(config["output_root"], artifact_output=True)
+    reserve = (
+        ledger.reserve_up_to
+        if command in {"train", "recover-seed"}
+        else lambda seconds, **kwargs: ledger.reserve_non_final(seconds, run_root=run_root, **kwargs)
+    )
+    token, grant = reserve(
+        reservation,
+        metadata=_reservation_metadata(command, seed, admission_path, pilot_decision_path),
+    )
+    started = time.monotonic()
+    try:
+        result = _runtime_worker(
+            config,
+            manifest,
+            command=command,
+            seed=seed,
+            review_accepted=review_accepted,
+            config_path=actual_config_path,
+            pilot_updates=pilot_updates,
+            train_enabled=train_enabled,
+            worker_started=started,
+            deadline=started + grant,
+        )
+    except BaseException as worker_error:
+        _finish_failed_budget(ledger, token, started, worker_error)
+        raise
+    elapsed = time.monotonic() - started
+    ledger.finish(token, elapsed)
+    if not isinstance(result, Mapping):
+        raise ProtocolError("runtime worker returned a non-object result")
+    value = _decorate_runtime_result(
+        result,
+        command=command,
+        seed=seed,
+        admission_path=admission_path,
+        claim_path=claim_path,
+        decision_path=pilot_decision_path,
+        actual_config_path=actual_config_path,
+        manifest_path=actual_manifest_path,
+        ledger=ledger,
+        token=token,
+        elapsed_seconds=elapsed,
+    )
+    value["worker_wall_seconds"] = elapsed
+    if command == "train":
+        context_path = repo_path(config["output_root"], artifact_output=True) / f"seed_{seed}" / "training_context.json"
+        context_result = _public_result(value, drop_worker_wall=True)
+        context_payload = {
+            "schema": "i3-training-context-v1",
+            "seed": seed,
+            "admission_path": _repo_relative(admission_path),
+            "admission_sha256": sha256(admission_path),
+            "pilot_decision_path": _repo_relative(pilot_decision_path) if pilot_decision_path is not None else None,
+            "pilot_decision_sha256": sha256(pilot_decision_path) if pilot_decision_path is not None else None,
+            "config_path": _repo_relative(actual_config_path),
+            "config_sha256": sha256(actual_config_path),
+            "manifest_path": _repo_relative(actual_manifest_path),
+            "manifest_sha256": sha256(actual_manifest_path),
+            "code": code_identity(),
+            "budget_token": token,
+            "budget_reservation": value["budget_reservation"],
+            "result": context_result,
+        }
+        create_once_json(
+            context_path,
+            context_payload,
+            exists_message="training context already exists; create-once recovery evidence is immutable",
+        )
+        value["training_context_path"] = _repo_relative(context_path)
+        value["training_context_sha256"] = sha256(context_path)
+    return value
+
+
+def _runtime_worker(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command: str, seed: int, review_accepted: bool, config_path: Path, pilot_updates: int | None = None, train_enabled: bool = True, worker_started: float, deadline: float) -> dict[str, Any]:
     if not review_accepted:
         raise ProtocolError("actual-model execution requires explicit independent review authorization")
     validate_manifest(manifest, allow_pending=False)
@@ -404,9 +1000,15 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
     train_records = load_split(manifest, "train", list(config["labels"]))
     dev_records = load_split(manifest, "dev", list(config["labels"]))
     snapshot, weights_path, source_dir = _model_paths(config)
-    owner = {"command": command, "config_sha256": sha256(ROOT / "training/laya_trace_i3/config.json"), "manifest_sha256": sha256(repo_path(config["data_manifest"])), "seed": seed}
-    started = time.monotonic()
+    owner = {"command": command, "config_sha256": sha256(config_path), "manifest_sha256": sha256(repo_path(config["data_manifest"])), "seed": seed}
+    started = worker_started
+    def deadline_checkpoint(phase: str) -> None:
+        if time.monotonic() >= deadline: raise ProtocolError(f"aggregate worker deadline exhausted during {phase}; no retry")
     with GpuLock(repo_path(config["gpu_lock"], artifact_output=True), owner):
+        # Recheck after lock acquisition: a final marker can be consumed by a
+        # competing process while this worker is waiting for the lock.
+        require_non_final_worker_open(config, route=command)
+        deadline_checkpoint("GPU admission")
         # All imports below are deliberately after the non-blocking GPU lock.
         import numpy as np
         import torch
@@ -428,7 +1030,14 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
         model_config.update(max_len=config["model"]["max_len"], head_max_len=config["model"]["head_max_len"])
         def make_model() -> Any:
             candidate = build_model(model_config, encoder_dir=str(snapshot / "encoder"))
-            candidate.load_state_dict(load_file(weights_path), strict=True)
+            candidate.load_state_dict(
+                load_authenticated_safetensors(
+                    weights_path,
+                    config["model"]["weights_sha256"],
+                    lambda fd_path: load_file(fd_path),
+                ),
+                strict=True,
+            )
             candidate.encoder.config.reference_compile = False
             if config["training"]["gradient_checkpointing"]:
                 candidate.encoder.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
@@ -465,7 +1074,7 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
             scored["task_group_bootstrap"] = _group_bootstrap(rows, list(config["labels"]))
             return scored
 
-        base_started = time.perf_counter(); base = evaluate(dev_items); base_seconds = time.perf_counter() - base_started
+        deadline_checkpoint("model setup"); base_started = time.perf_counter(); base = evaluate(dev_items); base_seconds = time.perf_counter() - base_started; deadline_checkpoint("pre-training dev evaluation")
         latency_samples = []
         for index in range(config["latency"]["warmups"] + config["latency"]["measured_records"]):
             torch.cuda.synchronize(device); latency_start = time.perf_counter()
@@ -494,6 +1103,7 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
             model.train(); optimizer.zero_grad(set_to_none=True); torch.cuda.synchronize(device)
             pilot_started = time.perf_counter()
             for window in pilot_windows[:pilot_updates]:
+                deadline_checkpoint("pilot update boundary")
                 for item_index in window["record_indices"]:
                     terms, _ = forward_item(train_items[item_index], True)
                     if not bool(torch.isfinite(terms["loss"]).all()):
@@ -528,6 +1138,7 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
         for epoch, sigma in enumerate(config["training"]["sigmas_by_epoch"]):
             order = list(range(len(train_items))); random.Random(seed + epoch).shuffle(order); windows = accumulation_windows(order, config["training"]["gradient_accumulation"]); window_by_position = {position: window for window in windows for position in window["positions"]}; optimizer.zero_grad(set_to_none=True); window_loss = 0.0; window_start = 0
             for position, item_index in enumerate(order):
+                if position == 0 or position % config["training"]["gradient_accumulation"] == 0: deadline_checkpoint("training accumulation window")
                 # The window size is known from position, including a shuffled epoch tail.
                 window = window_by_position[position]; divisor = window["divisor"]
                 terms, _ = forward_item(train_items[item_index], True, sigma)
@@ -547,6 +1158,7 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
                 if torch.cuda.max_memory_reserved(device) > max_reserved: raise ProtocolError("peak CUDA reserved memory exceeded; no retry")
         torch.cuda.synchronize(device); training_seconds = time.perf_counter() - train_start
         if update != total_updates or microforwards != len(train_items) * config["training"]["epochs"]: raise ProtocolError("training stopping state does not match the frozen schedule")
+        deadline_checkpoint("checkpoint save/reload and dev evaluation")
         elapsed_after_training = time.monotonic() - started
         validate_runtime_budget(elapsed_after_training, elapsed_after_training, config)
         if training_seconds > config["budget"]["main_max_aggregate_gpu_seconds"]:
@@ -556,9 +1168,19 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
         save_file(state_cpu, checkpoint / "model.safetensors")
         training_state = _tree_cpu(torch, {"optimizer": optimizer.state_dict(), "scheduler": scheduler.state_dict(), "scaler": scaler.state_dict(), "updates": update, "microforwards": microforwards, "epochs": config["training"]["epochs"]})
         torch.save(training_state, checkpoint / "training_state.pt")
-        post = evaluate(dev_items)
+        post = evaluate(dev_items); deadline_checkpoint("post-training dev evaluation")
         del model, optimizer, scheduler, scaler; torch.cuda.empty_cache()
-        reloaded = make_model(); reloaded.load_state_dict(load_file(checkpoint / "model.safetensors"), strict=True); after_digest = _state_digest(torch, reloaded.state_dict())
+        reloaded = make_model()
+        reloaded_weights_hash = sha256(checkpoint / "model.safetensors")
+        reloaded.load_state_dict(
+            load_authenticated_safetensors(
+                checkpoint / "model.safetensors",
+                reloaded_weights_hash,
+                lambda fd_path: load_file(fd_path),
+            ),
+            strict=True,
+        )
+        after_digest = _state_digest(torch, reloaded.state_dict())
         reloaded.to(device); reload_optimizer = torch.optim.AdamW([{"params": [p for n, p in reloaded.named_parameters() if n.startswith("encoder.")], "lr": config["training"]["encoder_learning_rate"]}, {"params": [p for n, p in reloaded.named_parameters() if not n.startswith("encoder.") and not n.startswith("act_head." )], "lr": config["training"]["nonencoder_learning_rate"]}], weight_decay=config["training"]["weight_decay"])
         reload_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(reload_optimizer, T_max=total_updates, eta_min=config["training"]["scheduler_eta_min"]); reload_scaler = torch.amp.GradScaler("cuda", enabled=True, init_scale=config["training"]["fp16_init_scale"], growth_interval=config["training"]["fp16_growth_interval"])
         loaded = torch.load(checkpoint / "training_state.pt", map_location="cpu", weights_only=True)
@@ -581,27 +1203,323 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
         reload_evidence = {"strict_model_load": True, "model_state_before_sha256": model_digest, "model_state_after_sha256": after_digest, "training_state_file_sha256": sha256(checkpoint / "training_state.pt"), "optimizer_exact": True, "scheduler_exact": True, "scaler_exact": True, "stopping_state_exact": True}
         evidence_path = checkpoint / "reload.json"; evidence_path.write_text(json.dumps(reload_evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         run_dir.mkdir(parents=True, exist_ok=True) if not run_dir.exists() else None
+        deadline_checkpoint("checkpoint reload verification")
         return {"status": "completed", "seed": seed, "base": base, "dev": post, "cold_load_seconds": cold_load_seconds, "training_seconds": training_seconds, "dev_evaluation_seconds": base_seconds, "peak_reserved_gib": torch.cuda.max_memory_reserved(device) / 1024 ** 3, "updates": update, "microforwards": microforwards, "checkpoint": {"checkpoint_path": str(checkpoint.relative_to(ROOT)), "weights_file_sha256": sha256(checkpoint / "model.safetensors"), "model_state_sha256": model_digest, "training_state_file_sha256": sha256(checkpoint / "training_state.pt"), "reload_evidence": reload_evidence, "reload_evidence_path": str(evidence_path.relative_to(ROOT)), "reload_evidence_sha256": sha256(evidence_path)}, "loss_curve": loss_curve, "test_opened": False}
 
 
-def run_actual_model_pilot(config: Mapping[str, Any], manifest: Mapping[str, Any], *, review_accepted: bool = False) -> dict[str, Any]:
-    return _runtime(config, manifest, command="actual-model-pilot", seed=config["budget"]["smoke_seed"], review_accepted=review_accepted, pilot_updates=2)
+def run_actual_model_pilot(
+    config: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    *,
+    review_accepted: bool = False,
+    config_path: Path | None = None,
+    admission_path: Path | None = None,
+) -> dict[str, Any]:
+    require_non_final_worker_open(config, route="actual-model-pilot")
+    if not review_accepted:
+        raise ProtocolError("actual-model execution requires explicit independent review authorization")
+    actual_config_path = _actual_config_path(config_path)
+    actual_manifest_path = repo_path(config["data_manifest"])
+    if admission_path is None:
+        admission_path = admit_worker(
+            config,
+            actual_config_path,
+            actual_manifest_path,
+            "actual-model-pilot",
+            seed=config["budget"]["smoke_seed"],
+            requested_wall_seconds=float(config["budget"]["smoke_max_gpu_seconds"]),
+        )
+    return _public_result(
+        _runtime(
+            config,
+            manifest,
+            command="actual-model-pilot",
+            seed=config["budget"]["smoke_seed"],
+            review_accepted=review_accepted,
+            config_path=actual_config_path,
+            pilot_updates=2,
+            admission_path=admission_path,
+        ),
+        drop_worker_wall=True,
+    )
 
 
-def run_base_eval(config: Mapping[str, Any], manifest: Mapping[str, Any], *, review_accepted: bool = False) -> dict[str, Any]:
-    return _runtime(config, manifest, command="base-eval", seed=config["budget"]["smoke_seed"], review_accepted=review_accepted, pilot_updates=None, train_enabled=False)
+def run_base_eval(
+    config: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    *,
+    review_accepted: bool = False,
+    config_path: Path | None = None,
+    admission_path: Path | None = None,
+) -> dict[str, Any]:
+    require_non_final_worker_open(config, route="base-eval")
+    if not review_accepted:
+        raise ProtocolError("actual-model execution requires explicit independent review authorization")
+    actual_config_path = _actual_config_path(config_path)
+    actual_manifest_path = repo_path(config["data_manifest"])
+    if admission_path is None:
+        admission_path = admit_worker(
+            config,
+            actual_config_path,
+            actual_manifest_path,
+            "base-eval",
+            requested_wall_seconds=float(config["budget"]["smoke_max_gpu_seconds"]),
+        )
+    return _public_result(
+        _runtime(
+            config,
+            manifest,
+            command="base-eval",
+            seed=config["budget"]["smoke_seed"],
+            review_accepted=review_accepted,
+            config_path=actual_config_path,
+            pilot_updates=None,
+            train_enabled=False,
+            admission_path=admission_path,
+        )
+    )
 
 
-def run_training_seed(config: Mapping[str, Any], manifest: Mapping[str, Any], seed: int, *, review_accepted: bool = False) -> dict[str, Any]:
-    return _runtime(config, manifest, command="train", seed=seed, review_accepted=review_accepted, pilot_updates=None)
+def run_training_seed(
+    config: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    seed: int,
+    *,
+    review_accepted: bool = False,
+    reservation_seconds: float | None = None,
+    config_path: Path | None = None,
+    admission_path: Path | None = None,
+    pilot_decision_path: Path | None = None,
+) -> dict[str, Any]:
+    require_non_final_worker_open(config, route="train")
+    if not review_accepted:
+        raise ProtocolError("actual-model execution requires explicit independent review authorization")
+    actual_config_path = _actual_config_path(config_path)
+    actual_manifest_path = repo_path(config["data_manifest"])
+    _, default_decision_path = future_run_paths(config)
+    decision_path = pilot_decision_path or default_decision_path
+    decision = validate_pilot_decision(
+        future_run_paths(config)[0],
+        decision_path,
+        actual_config_path,
+        actual_manifest_path,
+        config,
+        manifest,
+    )
+    if seed not in decision["selected_seeds"]:
+        raise ProtocolError("seed is not authorized by the immutable pilot decision")
+    expected_reservation = float(decision["projected_gpu_seconds_per_seed"])
+    requested_reservation = expected_reservation
+    if reservation_seconds is not None:
+        if isinstance(reservation_seconds, bool):
+            raise ProtocolError("training reservation is not finite")
+        try:
+            requested_reservation = float(reservation_seconds)
+        except (TypeError, ValueError) as exc:
+            raise ProtocolError("training reservation is not finite") from exc
+        if not math.isfinite(requested_reservation):
+            raise ProtocolError("training reservation is not finite")
+        if abs(requested_reservation - expected_reservation) > BUDGET_EPSILON:
+            raise ProtocolError("training reservation must equal the immutable pilot projection")
+    if admission_path is None:
+        admission_path = admit_worker(
+            config,
+            actual_config_path,
+            actual_manifest_path,
+            "train",
+            seed=seed,
+            pilot_decision_path=decision_path,
+            requested_wall_seconds=requested_reservation,
+        )
+    else:
+        existing_admission = validate_worker_admission(
+            admission_path, config, actual_config_path, actual_manifest_path,
+            "train", seed=seed, pilot_decision_path=decision_path,
+        )
+        if not budget_close(existing_admission.get("requested_wall_seconds"), expected_reservation):
+            raise ProtocolError("training admission allowance differs from the immutable pilot projection")
+    return _public_result(
+        _runtime(
+            config,
+            manifest,
+            command="train",
+            seed=seed,
+            review_accepted=review_accepted,
+            config_path=actual_config_path,
+            pilot_updates=None,
+            reservation_seconds=requested_reservation,
+            admission_path=admission_path,
+            pilot_decision_path=decision_path,
+        )
+    )
 
 
-def run_recover_seed(config: Mapping[str, Any], manifest: Mapping[str, Any], seed: int, *, review_accepted: bool = False) -> dict[str, Any]:
-    """Recover the completed seed-42 checkpoint on CPU, without retraining or test access."""
+def _find_finished_seed_reservation(
+    ledger: AggregateBudget,
+    *,
+    seed: int,
+    decision_path: Path,
+    training_admission_path: Path,
+    training_token: str,
+) -> tuple[str, dict[str, Any]]:
+    """Find only the exact finished reservation named by the training chain."""
+    snapshot = ledger.snapshot()
+    expected_metadata = {
+        "command": "train",
+        "seed": seed,
+        "admission_sha256": sha256(training_admission_path),
+        "pilot_decision_sha256": sha256(decision_path),
+    }
+    for item in snapshot["reservations"]:
+        if item.get("token") != training_token or item.get("state") != "finished":
+            continue
+        metadata = item.get("metadata")
+        if isinstance(metadata, Mapping) and set(metadata) == set(expected_metadata) and all(metadata.get(key) == value for key, value in expected_metadata.items()):
+            return str(item["token"]), dict(item)
+    raise ProtocolError("the genuine finished training reservation named by the admission is missing")
+
+
+def _run_recover_model_worker(
+    *,
+    config: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    seed: int,
+    checkpoint: Path,
+    checkpoint_record: Mapping[str, Any],
+    train_records: list[dict[str, Any]],
+    dev_records: list[dict[str, Any]],
+    reload_evidence: Mapping[str, Any],
+    expected_updates: int,
+    expected_microforwards: int,
+    training_admission_path: Path,
+    training_token: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Run the real recovery evaluator after the training chain is validated."""
+    import torch
+    state = torch.load(checkpoint / "training_state.pt", map_location="cpu", weights_only=True)
+    checkpoint_hashes = validate_recovery_checkpoint(
+        checkpoint,
+        weights_sha256=checkpoint_record["weights_file_sha256"],
+        training_state_sha256=checkpoint_record["training_state_file_sha256"],
+        reload_sha256=checkpoint_record["reload_evidence_sha256"],
+        model_state_sha256=checkpoint_record["model_state_sha256"],
+        expected_updates=expected_updates,
+        expected_microforwards=expected_microforwards,
+        expected_epochs=config["training"]["epochs"],
+        state=state,
+        reload_evidence=reload_evidence,
+    )
+    snapshot, weights_path, source_dir = _model_paths(config)
+    from safetensors.torch import load_file
+    from transformers import AutoTokenizer
+    sys.path.insert(0, str(source_dir))
+    from laya.common import QTYPES, build_model, build_sequence, collate_items, render_options
+
+    model_config = json.loads((snapshot / "rl_agent_config.json").read_text(encoding="utf-8"))
+    model_config.update(max_len=config["model"]["max_len"], head_max_len=config["model"]["head_max_len"])
+    model = build_model(model_config, encoder_dir=str(snapshot / "encoder"))
+    authenticated_state = load_authenticated_safetensors(
+        checkpoint / "model.safetensors",
+        checkpoint_record["weights_file_sha256"],
+        lambda fd_path: load_file(fd_path, device="cpu"),
+    )
+    model.load_state_dict(authenticated_state, strict=True)
+    model.eval()
+    tokenizer = AutoTokenizer.from_pretrained(snapshot / "tokenizer", local_files_only=True)
+    dev_items = _record_items(dev_records, tokenizer, build_sequence, QTYPES, render_options, config)
+    rows = []
+    with torch.no_grad():
+        for item in dev_items:
+            batch = collate_items([[item]], tokenizer.pad_token_id)
+            tensors = [batch[key] for key in ("input_ids", "attention_mask", "marker_pos", "marker_mask", "qtype")]
+            logits, _ = model(*tensors)
+            probs = torch.softmax(logits[0, :6].float(), -1).cpu().tolist()
+            by_label = {label: float(probs[position]) for position, label in enumerate(item["option_keys"])}
+            rows.append({"record_id": item["record_id"], "gold_label": item["gold_label"], "probabilities": {label: by_label[label] for label in config["labels"]}, "metadata": item["metadata"]})
+    dev = evaluate_records([{key: row[key] for key in ("record_id", "gold_label", "probabilities")} for row in rows], list(config["labels"]), nll_floor=config["evaluation"]["nll_probability_floor"])
+    dev["predictions"] = rows
+    dev["task_group_bootstrap"] = _group_bootstrap(rows, list(config["labels"]))
+    result = {
+        "status": "recovered",
+        "recovery": {
+            "authorized": True,
+            "source": "genuine_training_checkpoint_in_current_run",
+            "retraining": False,
+            "test_opened": False,
+            "training_admission_path": _repo_relative(training_admission_path),
+            "training_admission_sha256": sha256(training_admission_path),
+            "training_budget_token": training_token,
+        },
+        "seed": seed,
+        "dev": dev,
+        "checkpoint": {
+            "checkpoint_path": str(checkpoint.relative_to(ROOT)),
+            **checkpoint_hashes,
+            "model_state_sha256": checkpoint_record["model_state_sha256"],
+            "reload_evidence": reload_evidence,
+            "reload_evidence_path": str((checkpoint / "reload.json").relative_to(ROOT)),
+            "reload_evidence_sha256": checkpoint_hashes["reload_evidence_sha256"],
+        },
+        "cold_load_seconds": "unknown",
+        "training_seconds": "unknown",
+        "dev_evaluation_seconds": "unknown",
+        "latency": "unknown",
+        "loss_curve": "unknown",
+        "updates": expected_updates,
+        "microforwards": expected_microforwards,
+        "test_opened": False,
+    }
+
+    return checkpoint_hashes, result
+
+
+def run_recover_seed(
+    config: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    seed: int,
+    *,
+    review_accepted: bool = False,
+    config_path: Path | None = None,
+    admission_path: Path | None = None,
+    pilot_decision_path: Path | None = None,
+    budget_token: str | None = None,
+) -> dict[str, Any]:
+    """Recover only a decision-authorized fallback from a genuine train chain."""
+    require_non_final_worker_open(config, route="recover-seed")
     if not review_accepted:
         raise ProtocolError("recover-seed requires explicit independent review authorization")
     if seed != config["training"]["single_seed_fallback"]:
-        raise ProtocolError("recover-seed is authorized only for the completed seed-42 checkpoint")
+        raise ProtocolError("recover-seed is authorized only for seed 42")
+    actual_config_path = _actual_config_path(config_path)
+    actual_manifest_path = repo_path(config["data_manifest"])
+    pilot_path, default_decision_path = future_run_paths(config)
+    decision_path = pilot_decision_path or default_decision_path
+    decision = validate_pilot_decision(
+        pilot_path, decision_path, actual_config_path, actual_manifest_path, config, manifest,
+    )
+    if not decision.get("fallback_applied") or decision.get("selected_seeds") != [seed]:
+        raise ProtocolError("recovery requires the immutable one-seed fallback decision for seed 42")
+    if admission_path is None:
+        admission_path = admit_worker(
+            config, actual_config_path, actual_manifest_path, "recover-seed",
+            seed=seed, pilot_decision_path=decision_path,
+        )
+    recovery_chain = validate_recovery_admission(
+        admission_path, config, actual_config_path, actual_manifest_path, seed, decision_path,
+    )
+    if budget_token is not None and budget_token != recovery_chain["training_budget_token"]:
+        raise ProtocolError("requested recovery token differs from the genuine training reservation")
+    claim_path = claim_worker(
+        admission_path, config, actual_config_path, actual_manifest_path,
+        "recover-seed", seed=seed, pilot_decision_path=decision_path,
+    )
+    ledger = _aggregate_budget(config, actual_config_path)
+    training_admission_path = recovery_chain["training_admission_path"]
+    training_token = recovery_chain["training_budget_token"]
+    token, training_reservation = _find_finished_seed_reservation(
+        ledger, seed=seed, decision_path=decision_path,
+        training_admission_path=training_admission_path, training_token=training_token,
+    )
     validate_manifest(manifest, allow_pending=False)
     verify_split_files(manifest, include_test=False)
     train_records = load_split(manifest, "train", list(config["labels"]))
@@ -609,73 +1527,44 @@ def run_recover_seed(config: Mapping[str, Any], manifest: Mapping[str, Any], see
     run_dir = repo_path(config["output_root"], artifact_output=True) / f"seed_{seed}"
     result_path = run_dir / "result.json"
     checkpoint = run_dir / "checkpoint"
-    reload_evidence = load_json(checkpoint / "reload.json") if (checkpoint / "reload.json").is_file() else {}
+    checkpoint_record = recovery_chain["checkpoint"]
+    reload_evidence = load_json(checkpoint / "reload.json")
     expected_updates = config["training"]["epochs"] * math.ceil(len(train_records) / config["training"]["gradient_accumulation"])
     expected_microforwards = len(train_records) * config["training"]["epochs"]
-    config_hash = sha256(ROOT / "training/laya_trace_i3/config.json")
-    manifest_hash = sha256(repo_path(config["data_manifest"]))
-    owner = {"command": "recover-seed", "config_sha256": config_hash, "manifest_sha256": manifest_hash, "seed": seed}
-    # The lock is acquired before model-stack imports. Recovery itself remains CPU-only.
+    owner = {"command": "recover-seed", "config_sha256": sha256(actual_config_path), "manifest_sha256": sha256(actual_manifest_path), "seed": seed}
     with GpuLock(repo_path(config["gpu_lock"], artifact_output=True), owner):
+        require_non_final_worker_open(config, route="recover-seed")
         if result_path.exists():
             raise ProtocolError("seed recovery result already exists; overwrite is forbidden")
-        import torch
-        state = torch.load(checkpoint / "training_state.pt", map_location="cpu", weights_only=True)
-        checkpoint_hashes = validate_recovery_checkpoint(
-            checkpoint,
-            weights_sha256="9eaa15bbae116f2e18fd73942d6b76729fdbce4ca40fb5a54d4205e1d8ce8947",
-            training_state_sha256="f32c1032708e191079ca5c56072d87a08e88a21e205e2229424432dff48706cb",
-            reload_sha256="b47b091270f3983f1d56ab7e92c8f2196d61298e884c02f3cf698f796ed1e084",
-            model_state_sha256=reload_evidence.get("model_state_before_sha256", ""),
+        checkpoint_hashes, result = _run_recover_model_worker(
+            config=config,
+            manifest=manifest,
+            seed=seed,
+            checkpoint=checkpoint,
+            checkpoint_record=checkpoint_record,
+            train_records=train_records,
+            dev_records=dev_records,
+            reload_evidence=reload_evidence,
             expected_updates=expected_updates,
             expected_microforwards=expected_microforwards,
-            expected_epochs=config["training"]["epochs"],
-            state=state,
-            reload_evidence=reload_evidence,
+            training_admission_path=training_admission_path,
+            training_token=training_token,
         )
-        snapshot, weights_path, source_dir = _model_paths(config)
-        from safetensors.torch import load_file
-        from transformers import AutoTokenizer
-        sys.path.insert(0, str(source_dir))
-        from laya.common import QTYPES, build_model, build_sequence, collate_items, render_options
-
-        model_config = json.loads((snapshot / "rl_agent_config.json").read_text(encoding="utf-8"))
-        model_config.update(max_len=config["model"]["max_len"], head_max_len=config["model"]["head_max_len"])
-        model = build_model(model_config, encoder_dir=str(snapshot / "encoder"))
-        model.load_state_dict(load_file(checkpoint / "model.safetensors", device="cpu"), strict=True)
-        model.eval()
-        tokenizer = AutoTokenizer.from_pretrained(snapshot / "tokenizer", local_files_only=True)
-        dev_items = _record_items(dev_records, tokenizer, build_sequence, QTYPES, render_options, config)
-        rows = []
-        with torch.no_grad():
-            for item in dev_items:
-                batch = collate_items([[item]], tokenizer.pad_token_id)
-                tensors = [batch[key] for key in ("input_ids", "attention_mask", "marker_pos", "marker_mask", "qtype")]
-                logits, _ = model(*tensors)
-                probs = torch.softmax(logits[0, :6].float(), -1).cpu().tolist()
-                by_label = {label: float(probs[index]) for index, label in enumerate(item["option_keys"])}
-                rows.append({"record_id": item["record_id"], "gold_label": item["gold_label"], "probabilities": {label: by_label[label] for label in config["labels"]}, "metadata": item["metadata"]})
-        dev = evaluate_records([{key: row[key] for key in ("record_id", "gold_label", "probabilities")} for row in rows], list(config["labels"]), nll_floor=config["evaluation"]["nll_probability_floor"])
-        dev["predictions"] = rows
-        dev["task_group_bootstrap"] = _group_bootstrap(rows, list(config["labels"]))
-        result = {
-            "status": "recovered",
-            "recovery": {"authorized": True, "source": "completed_seed_42_checkpoint", "retraining": False, "test_opened": False},
-            "seed": seed,
-            "dev": dev,
-            "checkpoint": {"checkpoint_path": str(checkpoint.relative_to(ROOT)), **checkpoint_hashes, "model_state_sha256": reload_evidence["model_state_before_sha256"], "reload_evidence": reload_evidence, "reload_evidence_path": str((checkpoint / "reload.json").relative_to(ROOT)), "reload_evidence_sha256": checkpoint_hashes["reload_evidence_sha256"]},
-            "cold_load_seconds": "unknown",
-            "training_seconds": "unknown",
-            "dev_evaluation_seconds": "unknown",
-            "latency": "unknown",
-            "loss_curve": "unknown",
-            "updates": expected_updates,
-            "microforwards": expected_microforwards,
-            "test_opened": False,
-        }
-        _exclusive_json(result_path, result)
-    return result
-
+        value = _decorate_runtime_result(
+            result, command="recover-seed", seed=seed,
+            admission_path=admission_path, claim_path=claim_path,
+            decision_path=decision_path, actual_config_path=actual_config_path,
+            manifest_path=actual_manifest_path, ledger=ledger, token=token,
+        )
+        value["schema"] = "i3-train-result-v2"
+        value["training_admission_path"] = _repo_relative(training_admission_path)
+        value["training_admission_sha256"] = sha256(training_admission_path)
+        value["training_budget_token"] = training_token
+        value["training_context_path"] = _repo_relative(recovery_chain["training_context_path"])
+        value["training_context_sha256"] = sha256(recovery_chain["training_context_path"])
+        value["worker_wall_seconds"] = 0.0
+        _exclusive_json(result_path, _public_result(value, drop_worker_wall=True))
+    return _public_result(value, drop_worker_wall=True)
 
 def planned_run(config: Mapping[str, Any], manifest: Mapping[str, Any], command: str) -> dict[str, Any]:
     """Return a reproducible, model-free plan and assert the GPU gate."""
@@ -715,4 +1604,4 @@ def smoke_guard(smoke: Mapping[str, Any], config: Mapping[str, Any]) -> None:
         raise ProtocolError("smoke is not finite")
 
 
-__all__ = ["GpuLock", "accumulation_windows", "consume_final_test_attempt", "final_test_once", "finite", "load_split", "planned_run", "run_bounded_smoke", "run_final_test", "run_recover_seed", "six_class_rlcd_reference", "smoke_guard", "write_plan"]
+__all__ = ["GpuLock", "accumulation_windows", "consume_final_test_attempt", "final_test_once", "finite", "load_split", "load_authenticated_safetensors", "planned_run", "run_bounded_smoke", "run_final_test", "run_recover_seed", "six_class_rlcd_reference", "smoke_guard", "write_plan"]

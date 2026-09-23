@@ -16,10 +16,10 @@
     "bundle_integrity.py": "7a0a40ec9438f98d24a444ff8889e6e1aa55297c3ef10768a632e2e8940ff5e6",
     "calibration.json": "28b3f9f23303a78ffb3964fa80a03b80dd30279974d6fd86ad7fcff5c929071b",
     "examples.json": "94bf2519cb59a43155890bf8b5954e593817e0e213ae49f4b6abd0e95c34eb06",
-    "inference.py": "67bbe6f48f8c559d49d25377f4482315e16e34e8926174b8dfb14bf392fc8897",
+    "inference.py": "039f5411a9ac72c31724e050df9abe352b8c848cb6d158a2066ae0aceacdeb36",
     "metrics.py": "7ea950ec371c3a96d33f11e4d3c1c6dbc4748b45b811252f2c456d97581c0049",
     "quickstart.py": "a7fb6b385ce04c7904022ef79c086eb50a32636581887c122bddba68af00d1fe",
     "requirements.txt": "f8c97dab43448c9476bd7df6004a08a2711c20698eb04a2a5be721147a362bf9",
-    "test_inference.py": "310c3cd272f15c0bfe7dd9825518a3da9481e1fd22b6eec57c3d00fb53618041"
+    "test_inference.py": "be77d12e533d55f9333edded220daed73573c45dd246298449e039e41a7efa00"
   }
 }
