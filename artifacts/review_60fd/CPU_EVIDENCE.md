@@ -4,9 +4,9 @@ Date: 2026-09-23. Scope: CPU-only source tests, dev-only diagnostics, release im
 
 ## Local checkpoints
 
-- Implementation commit: `6a07e6f` (`fix: harden System-A release execution`).
+- Implementation commits: `6a07e6f` (`fix: harden System-A release execution`) and `23542a6` (`fix: authenticate checkpoint bytes before loading`).
 - Reproducible dev-evidence commit: `c72676e` (`data: add reproducible i3 dev evidence`).
-- Commit-derived acceptance used exact commit `c72676e77e94760534af7fd72d18c820c02448ef`.
+- Commit-derived acceptance used exact commit `23542a625582d45f5f2f774796422bc1da585f9c`.
 
 ## Integrated CPU checks
 
@@ -58,23 +58,23 @@ With local weights present and CUDA hidden, `scripts/i3_verify_package.py` compl
 Exact command:
 
 ```sh
-scripts/run_review_cpu_suite.sh c72676e77e94760534af7fd72d18c820c02448ef commit_c72676e
+scripts/run_review_cpu_suite.sh 23542a625582d45f5f2f774796422bc1da585f9c commit_23542a6
 ```
 
-Inventory records `object_type=commit` and source commit `c72676e77e94760534af7fd72d18c820c02448ef`. The retained source is `data/review_60fd/isolated_tree_commit_c72676e/`; it explicitly omits:
+Inventory records `object_type=commit` and source commit `23542a625582d45f5f2f774796422bc1da585f9c`. The retained source is `data/review_60fd/isolated_tree_commit_23542a6/`; it explicitly omits:
 
 - `artifacts/trace2decision_i3/output/test.jsonl`
 - `artifacts/experiment_i3/preflight/runs/`
 - `release/i3/bundle/model/model.safetensors`
 - `data/cache/`
 
-The 87-test suite passed twice in that commit-derived tree: 7.407 s and 7.521 s. Dev-only diagnostics and audit completed with hashes `0cfba0db...cd563` and `bbc3dc1b...67e0d`. Package parity was not counted as a pass: with weights absent it failed exactly with `PACKAGE PARITY unavailable; missing local prerequisites: release/i3/bundle/model/model.safetensors`.
+The 87-test suite passed twice in that commit-derived tree: 6.093 s and 9.165 s. Dev-only diagnostics and audit completed with hashes `0cfba0db...cd563` and `bbc3dc1b...67e0d`. Package parity was not counted as a pass: with weights absent it failed exactly with `PACKAGE PARITY unavailable; missing local prerequisites: release/i3/bundle/model/model.safetensors`.
 
 Evidence hashes:
 
-- inventory: `dfafda7742012cd6712fb98d3037536976b564b92ef5cfc6897071ac4dd57bcb`
-- run 1: `371673fa5af0a0029cc975e24493711ed5ac741af6485a6f9bb3c9d1723181b2`
-- run 2: `5cb862f6010c507f33953df30a028c8b480bfa9e4f32c66c4afe226b9a5cafad`
+- inventory: `d94bde065c7391d5153f95ed939eaf9fe12ed50b225c1f2342ec397b69d7ec2a`
+- run 1: `debc25dad026851126190b1f49b7e42ee475b3f134f2b9835e7337e10cba1321`
+- run 2: `b3d9969c88aff690fa60affb9020a0fc3cca77e5847124877adef87672063440`
 - diagnostics log: `19e20dceebdd7e3e6f6dabf507b65bf2efa990aa9b9dbd29cc9867806559fd6b`
 - dev audit log: `dc4f05057025c84e001624bbdab43aa2b97d00aecace0ea14f7e61da091efc73`
 - missing-weight log: `31d4df83a761608b88d6c1e2a53e67be93111c2b51dbcd4c886dd302ea707660`
