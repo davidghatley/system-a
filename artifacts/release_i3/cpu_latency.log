@@ -1,0 +1,11 @@
+{
+  "hardware": "local CPU; CUDA_VISIBLE_DEVICES empty; OMP/MKL/OPENBLAS threads 4",
+  "sample": "synthetic fixed-schema next-action record; batch size one; no test data",
+  "timed_boundary": "validate input, Laya sequence build/tokenize, collate CPU tensors, inference-mode forward, raw and dev-temperature softmax, CPU dictionary output; no device transfer on CPU",
+  "cold_load_seconds": 11.393819949007593,
+  "warmups": 3,
+  "median_seconds": 0.3011939419666305,
+  "p95_seconds_nearest_rank": 0.30972962093073875,
+  "p95_definition": "nearest-rank ceil(0.95*n) with n=10",
+  "gpu_worker_seconds": 0
+}

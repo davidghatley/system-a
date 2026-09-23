@@ -1,0 +1,170 @@
+{
+  "scope": "seven existing dev records; CPU bundle inference versus saved seed42 dev predictions; no test access",
+  "bundle_weights_sha256": "9eaa15bbae116f2e18fd73942d6b76729fdbce4ca40fb5a54d4205e1d8ce8947",
+  "comparisons": [
+    {
+      "record_id": "t2d-i3-4bba28e1b18498c2d153a95a223fc411",
+      "max_absolute_probability_difference": 0.0,
+      "predicted_label": "search",
+      "saved_predicted_label": "search",
+      "calibrated_max_absolute_difference_from_saved_raw_scaling": 1.0338585132441125e-07,
+      "actual_probabilities": {
+        "read": 1.4154366567709076e-09,
+        "search": 1.0,
+        "edit": 9.562575176147448e-10,
+        "execute": 4.49229808907603e-09,
+        "other_tool": 2.655339836898918e-10,
+        "respond_or_finish": 2.399586085388705e-10
+      },
+      "saved_probabilities": {
+        "edit": 9.562575176147448e-10,
+        "execute": 4.49229808907603e-09,
+        "other_tool": 2.655339836898918e-10,
+        "read": 1.4154366567709076e-09,
+        "respond_or_finish": 2.399586085388705e-10,
+        "search": 1.0
+      }
+    },
+    {
+      "record_id": "t2d-i3-c7149b3a0ea3745c408b4b4b0f2e763d",
+      "max_absolute_probability_difference": 0.0,
+      "predicted_label": "read",
+      "saved_predicted_label": "read",
+      "calibrated_max_absolute_difference_from_saved_raw_scaling": 4.160244149176151e-08,
+      "actual_probabilities": {
+        "read": 1.0,
+        "search": 6.100142613263415e-10,
+        "edit": 1.1531586796564852e-09,
+        "execute": 3.8239444943855005e-10,
+        "other_tool": 2.8545182884087694e-10,
+        "respond_or_finish": 2.4271909482287413e-10
+      },
+      "saved_probabilities": {
+        "edit": 1.1531586796564852e-09,
+        "execute": 3.8239444943855005e-10,
+        "other_tool": 2.8545182884087694e-10,
+        "read": 1.0,
+        "respond_or_finish": 2.4271909482287413e-10,
+        "search": 6.100142613263415e-10
+      }
+    },
+    {
+      "record_id": "t2d-i3-1ea82a027c0f8bb26a6dadd308748d7a",
+      "max_absolute_probability_difference": 0.0,
+      "predicted_label": "read",
+      "saved_predicted_label": "read",
+      "calibrated_max_absolute_difference_from_saved_raw_scaling": 1.5424766158789183e-08,
+      "actual_probabilities": {
+        "read": 0.46308228373527527,
+        "search": 0.0023358881007879972,
+        "edit": 0.16969172656536102,
+        "execute": 0.36101865768432617,
+        "other_tool": 0.002104639308527112,
+        "respond_or_finish": 0.0017667959909886122
+      },
+      "saved_probabilities": {
+        "edit": 0.16969172656536102,
+        "execute": 0.36101865768432617,
+        "other_tool": 0.002104639308527112,
+        "read": 0.46308228373527527,
+        "respond_or_finish": 0.0017667959909886122,
+        "search": 0.0023358881007879972
+      }
+    },
+    {
+      "record_id": "t2d-i3-23900e0db0295335a7f2487b0acdcf96",
+      "max_absolute_probability_difference": 0.0,
+      "predicted_label": "execute",
+      "saved_predicted_label": "execute",
+      "calibrated_max_absolute_difference_from_saved_raw_scaling": 1.176670855196349e-07,
+      "actual_probabilities": {
+        "read": 9.870263495415088e-10,
+        "search": 7.638285004496481e-10,
+        "edit": 9.608473305888765e-08,
+        "execute": 0.9999998807907104,
+        "other_tool": 7.112579414325637e-10,
+        "respond_or_finish": 6.808160146754005e-10
+      },
+      "saved_probabilities": {
+        "edit": 9.608473305888765e-08,
+        "execute": 0.9999998807907104,
+        "other_tool": 7.112579414325637e-10,
+        "read": 9.870263495415088e-10,
+        "respond_or_finish": 6.808160146754005e-10,
+        "search": 7.638285004496481e-10
+      }
+    },
+    {
+      "record_id": "t2d-i3-1108ef2bf3cde3f6bc4c88c88fdbd694",
+      "max_absolute_probability_difference": 0.0,
+      "predicted_label": "edit",
+      "saved_predicted_label": "edit",
+      "calibrated_max_absolute_difference_from_saved_raw_scaling": 2.8415997999076126e-08,
+      "actual_probabilities": {
+        "read": 5.2810142925352466e-09,
+        "search": 3.102050394332423e-09,
+        "edit": 0.9999992847442627,
+        "execute": 7.660140113330272e-07,
+        "other_tool": 2.605172744196693e-09,
+        "respond_or_finish": 2.3227790801882975e-09
+      },
+      "saved_probabilities": {
+        "edit": 0.9999992847442627,
+        "execute": 7.660140113330272e-07,
+        "other_tool": 2.605172744196693e-09,
+        "read": 5.2810142925352466e-09,
+        "respond_or_finish": 2.3227790801882975e-09,
+        "search": 3.102050394332423e-09
+      }
+    },
+    {
+      "record_id": "t2d-i3-bcd240198d3a01eb9860dc0a1820370f",
+      "max_absolute_probability_difference": 0.0,
+      "predicted_label": "execute",
+      "saved_predicted_label": "execute",
+      "calibrated_max_absolute_difference_from_saved_raw_scaling": 2.094683848596901e-08,
+      "actual_probabilities": {
+        "read": 1.5480641213372337e-09,
+        "search": 1.662012416581149e-09,
+        "edit": 7.396467438525178e-09,
+        "execute": 1.0,
+        "other_tool": 7.642716459699272e-10,
+        "respond_or_finish": 7.161736759186965e-10
+      },
+      "saved_probabilities": {
+        "edit": 7.396467438525178e-09,
+        "execute": 1.0,
+        "other_tool": 7.642716459699272e-10,
+        "read": 1.5480641213372337e-09,
+        "respond_or_finish": 7.161736759186965e-10,
+        "search": 1.662012416581149e-09
+      }
+    },
+    {
+      "record_id": "t2d-i3-d0f392c33f0b28d864ce0b854d6abf9f",
+      "max_absolute_probability_difference": 0.0,
+      "predicted_label": "execute",
+      "saved_predicted_label": "execute",
+      "calibrated_max_absolute_difference_from_saved_raw_scaling": 2.3177363028814568e-08,
+      "actual_probabilities": {
+        "read": 2.121687270317807e-09,
+        "search": 1.9892327784987174e-09,
+        "edit": 1.0486349566463105e-07,
+        "execute": 0.9999998807907104,
+        "other_tool": 1.8655310629611677e-09,
+        "respond_or_finish": 1.7837727961378391e-09
+      },
+      "saved_probabilities": {
+        "edit": 1.0486349566463105e-07,
+        "execute": 0.9999998807907104,
+        "other_tool": 1.8655310629611677e-09,
+        "read": 2.121687270317807e-09,
+        "respond_or_finish": 1.7837727961378391e-09,
+        "search": 1.9892327784987174e-09
+      }
+    }
+  ],
+  "max_absolute_probability_difference": 0.0,
+  "calibrated_max_absolute_difference_from_saved_raw_scaling": 1.176670855196349e-07,
+  "argmax_matches": true
+}

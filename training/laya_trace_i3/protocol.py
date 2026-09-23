@@ -222,6 +222,16 @@ def select_dev_checkpoint(candidates: Sequence[Mapping[str, Any]], labels: Seque
     }
 
 
+def require_exact_seed_set(result_seeds: Sequence[int], selected_seeds: Sequence[int]) -> None:
+    """Require result artifacts for exactly the seeds selected by the pilot gate."""
+    actual = set(result_seeds)
+    expected = set(selected_seeds)
+    if actual != expected:
+        missing = sorted(expected - actual)
+        unexpected = sorted(actual - expected)
+        raise ProtocolError(f"dev result seeds do not match pilot selection (missing={missing}, unexpected={unexpected})")
+
+
 def consume_final_test_attempt(run_dir: Path, freeze_sha256: str) -> Path:
     """Atomically consume the sole test attempt before callers may open test."""
     resolved = run_dir.resolve()
@@ -387,6 +397,34 @@ def validate_checkpoint_reload(evidence: Mapping[str, Any], candidate: Mapping[s
     for key in ("strict_model_load", "optimizer_exact", "scheduler_exact", "scaler_exact", "stopping_state_exact"):
         if evidence[key] is not True:
             raise ProtocolError(f"checkpoint reload guard failed: {key}")
+
+
+def validate_recovery_stopping_state(state: Mapping[str, Any], *, expected_updates: int, expected_microforwards: int, expected_epochs: int) -> None:
+    """Require the serialized training state to describe the frozen stop point."""
+    if not isinstance(state, Mapping):
+        raise ProtocolError("training state is not a mapping")
+    if state.get("updates") != expected_updates or state.get("microforwards") != expected_microforwards or state.get("epochs") != expected_epochs:
+        raise ProtocolError("training state does not match the exact frozen stopping state")
+
+
+def validate_recovery_checkpoint(checkpoint: Path, *, weights_sha256: str, training_state_sha256: str, reload_sha256: str, model_state_sha256: str, expected_updates: int, expected_microforwards: int, expected_epochs: int, state: Mapping[str, Any], reload_evidence: Mapping[str, Any]) -> dict[str, str]:
+    """Validate recovery bytes and state without importing Torch or opening data."""
+    weights = checkpoint / "model.safetensors"
+    training_state = checkpoint / "training_state.pt"
+    reload_path = checkpoint / "reload.json"
+    if not checkpoint.is_dir() or not weights.is_file() or not training_state.is_file() or not reload_path.is_file():
+        raise ProtocolError("completed recovery checkpoint is incomplete")
+    actual = {"weights_file_sha256": sha256(weights), "training_state_file_sha256": sha256(training_state), "reload_evidence_sha256": sha256(reload_path)}
+    expected = {"weights_file_sha256": weights_sha256, "training_state_file_sha256": training_state_sha256, "reload_evidence_sha256": reload_sha256}
+    if actual != expected:
+        raise ProtocolError("completed recovery checkpoint bytes are hash-mismatched")
+    recorded = load_json(reload_path)
+    candidate = {"model_state_sha256": model_state_sha256, "training_state_file_sha256": training_state_sha256}
+    if recorded != dict(reload_evidence):
+        raise ProtocolError("recovery reload evidence does not match its recorded bytes")
+    validate_checkpoint_reload(recorded, candidate)
+    validate_recovery_stopping_state(state, expected_updates=expected_updates, expected_microforwards=expected_microforwards, expected_epochs=expected_epochs)
+    return actual
 
 
 def validate_latency_evidence(evidence: Mapping[str, Any], config: Mapping[str, Any]) -> dict[str, float]:

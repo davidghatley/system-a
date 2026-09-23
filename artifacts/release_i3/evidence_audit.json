@@ -1,0 +1,105 @@
+{
+  "audit": "i3_evidence_audit",
+  "baseline": {
+    "accuracy": 0.6071428571428571,
+    "brier": 0.5149799498866514,
+    "macro_f1": 0.2927361251829337,
+    "method": "tfidf_logistic",
+    "nll": 0.9518856046173839,
+    "nll_probability_floor": 1e-12,
+    "records": 140,
+    "reported_metrics_match": true,
+    "same_dev_id_gold_order": true,
+    "sha256": "fcdfc685e54aac245a2bd8555c1b3da8c62120292363f8a24b179694e1f1fa91",
+    "source": "artifacts/baseline_i3/preflight/corrected_v3/dev_predictions.jsonl"
+  },
+  "dev_split_path": "artifacts/trace2decision_i3/output/dev.jsonl",
+  "dev_split_sha256_verified": true,
+  "manifest_sha256": "158b6fa3a1a491312b377cf46b6da212e554f811a6431eece19232fcd50d5ed2",
+  "scope": "checkpoint bytes and dev records only; does not open test split or final-test result",
+  "seeds": [
+    {
+      "checkpoints": {
+        "reload_json_sha256": "b47b091270f3983f1d56ab7e92c8f2196d61298e884c02f3cf698f796ed1e084",
+        "training_state_sha256": "f32c1032708e191079ca5c56072d87a08e88a21e205e2229424432dff48706cb",
+        "weights_sha256": "9eaa15bbae116f2e18fd73942d6b76729fdbce4ca40fb5a54d4205e1d8ce8947"
+      },
+      "checks": {
+        "checkpoint_model_state_matches_reload": true,
+        "exact_dev_id_and_gold_order_matches_split": true,
+        "prediction_count_matches_dev_split": true,
+        "probability_vectors_valid": true,
+        "recomputed_metrics_match_reported": true,
+        "reload_before_after_equal": true,
+        "reload_digest_matches_result": true,
+        "reload_equals_result_model": true,
+        "reload_exact_flags_reported_true": true,
+        "state_digest_matches_reload": true,
+        "state_digest_matches_result": true,
+        "weights_digest_matches_result": true
+      },
+      "dev": {
+        "accuracy": 0.6785714285714286,
+        "brier": 0.5326921745457706,
+        "ids_sha256_sorted": "db2570c54b088cdc6d3da7b04dd965f7902e47e532e4cda664ed3774c55e4d0c",
+        "labels_sha256_ordered": "ed2e005155f2290c165ddaa210031c5463b875f50b729ec6f18b2894608bd58b",
+        "macro_f1": 0.4452647889891532,
+        "metric_tolerance": 1e-10,
+        "nll": 3.405565959151737,
+        "nll_probability_floor": 1e-12,
+        "records": 140
+      },
+      "seed": 42
+    },
+    {
+      "checkpoints": {
+        "reload_json_sha256": "f4ac4eb100b62467db7ac847d58b5d7024a4328a2166119d6832d34faac58e70",
+        "training_state_sha256": "3bfd2237ce2f1b17fdbb75913cbff03d7432c0cf53136a502499c0e89614d5b5",
+        "weights_sha256": "6bdf67f74a4e933d5f49afadd557661858abc792e5242a9827bbb385a18f0873"
+      },
+      "checks": {
+        "checkpoint_model_state_matches_reload": true,
+        "exact_dev_id_and_gold_order_matches_split": true,
+        "prediction_count_matches_dev_split": true,
+        "probability_vectors_valid": true,
+        "recomputed_metrics_match_reported": true,
+        "reload_before_after_equal": true,
+        "reload_digest_matches_result": true,
+        "reload_equals_result_model": true,
+        "reload_exact_flags_reported_true": true,
+        "state_digest_matches_reload": true,
+        "state_digest_matches_result": true,
+        "weights_digest_matches_result": true
+      },
+      "dev": {
+        "accuracy": 0.7142857142857143,
+        "brier": 0.5525369931903487,
+        "ids_sha256_sorted": "db2570c54b088cdc6d3da7b04dd965f7902e47e532e4cda664ed3774c55e4d0c",
+        "labels_sha256_ordered": "ed2e005155f2290c165ddaa210031c5463b875f50b729ec6f18b2894608bd58b",
+        "macro_f1": 0.4419447311088178,
+        "metric_tolerance": 1e-10,
+        "nll": 3.748088220668597,
+        "nll_probability_floor": 1e-12,
+        "records": 140
+      },
+      "seed": 314159
+    }
+  ],
+  "split_manifest": {
+    "dev": {
+      "rows": 140,
+      "sha256": "ade8262625a46eef78dcb2b11b42eaced444e1604bab1af5423412a67ae92783",
+      "trajectories": 20
+    },
+    "test": {
+      "rows": 122,
+      "sha256": "3a22cfaa044baaf5cc40343fdf983d45ee80a065a2397266afacb157035c6fc8",
+      "trajectories": 23
+    },
+    "train": {
+      "rows": 1051,
+      "sha256": "86442271b3ddb74ce517ee335f6d89fbc80f94441ff1198250da5bf9ab4dda3c",
+      "trajectories": 163
+    }
+  }
+}

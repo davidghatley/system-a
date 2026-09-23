@@ -12,6 +12,15 @@ artifacts/train_i1/run/checkpoint/
 artifacts/train_i1/resume_smoke/checkpoint/
 artifacts/train_i2/b2_run/checkpoint/model.safetensors
 artifacts/train_i2/b2_run/checkpoint/training_state.pt
+artifacts/experiment_i3/preflight/runs/seed_*/checkpoint/model.safetensors
+artifacts/experiment_i3/preflight/runs/seed_*/checkpoint/training_state.pt
+release/i3/bundle/
+artifacts/release_i3/isolated/
+artifacts/release_i3/isolated_final/
+artifacts/release_i3/isolated_rights_final/
+artifacts/release_i3/isolated_contract_final/
+artifacts/release_i3/integrity_fixtures/
+artifacts/release_i3/seed_failure_fixtures/
 
 # Keep one shareable derivative; local source data and duplicate verification runs stay local.
 artifacts/trace2decision_i1/rerun/

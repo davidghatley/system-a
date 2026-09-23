@@ -1,0 +1,6 @@
+# Versions verified by local CPU inference on Python 3.14.
+# The tested environment used torch 2.11.0+cu128 with CUDA hidden.
+torch==2.11.0
+transformers==5.17.0
+safetensors==0.8.0
+numpy==2.5.3

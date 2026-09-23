@@ -1,0 +1,14 @@
+[
+  {
+    "description": "Inspect a known source file before editing",
+    "state": "A parser test fails. The error identifies parser.py at line 42; inspect that file to understand the cause."
+  },
+  {
+    "description": "Find where a symbol is defined",
+    "state": "The change request names parse_config, but its defining file is not known. Locate the symbol in the repository."
+  },
+  {
+    "description": "Run a test after an edit",
+    "state": "The implementation has been changed and the next step is to run the parser unit tests to check it."
+  }
+]

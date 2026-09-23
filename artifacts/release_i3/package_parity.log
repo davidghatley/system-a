@@ -1,0 +1,7 @@
+{
+  "scope": "seven existing dev records; CPU bundle inference versus saved seed42 dev predictions; no test access",
+  "bundle_weights_sha256": "9eaa15bbae116f2e18fd73942d6b76729fdbce4ca40fb5a54d4205e1d8ce8947",
+  "max_absolute_probability_difference": 0.0,
+  "calibrated_max_absolute_difference_from_saved_raw_scaling": 1.176670855196349e-07,
+  "argmax_matches": true
+}

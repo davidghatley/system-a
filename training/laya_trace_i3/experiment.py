@@ -14,6 +14,7 @@ import os
 import random
 import subprocess
 import sys
+import tempfile
 import time
 from collections import defaultdict
 from pathlib import Path
@@ -27,6 +28,7 @@ from .protocol import (
     GpuLock,
     ProtocolError,
     consume_final_test_attempt,
+    expected_updates,
     load_json,
     repo_path,
     sha256,
@@ -35,6 +37,7 @@ from .protocol import (
     verify_split_files,
     validate_runtime_budget,
     select_dev_checkpoint,
+    validate_recovery_checkpoint,
     validate_checkpoint_reload,
     validate_latency_evidence,
 )
@@ -112,19 +115,26 @@ def accumulation_windows(order: list[int], accumulation: int) -> list[dict[str, 
 def _load_split_bytes(manifest: Mapping[str, Any], split: str, labels: list[str]) -> list[dict[str, Any]]:
     if split not in {"train", "dev", "test"}:
         raise ProtocolError("unknown split")
-    path = repo_path(manifest["splits"][split]["path"])
+    entry = manifest["splits"][split]
+    path = repo_path(entry["path"])
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != entry["sha256"]:
+        raise ProtocolError(f"{split} file is absent or hash-mismatched")
     rows: list[dict[str, Any]] = []
-    with path.open(encoding="utf-8") as handle:
-        for line_number, line in enumerate(handle, 1):
-            if not line.strip():
-                continue
-            try:
-                record = json.loads(line)
-            except json.JSONDecodeError as exc:
-                raise ProtocolError(f"{split} line {line_number} is not JSON") from exc
-            validate_record(record, labels)
-            rows.append(record)
-    expected = manifest["splits"][split]["rows"]
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ProtocolError(f"{split} bytes are not UTF-8") from exc
+    for line_number, line in enumerate(text.splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ProtocolError(f"{split} line {line_number} is not JSON") from exc
+        validate_record(record, labels)
+        rows.append(record)
+    expected = entry["rows"]
     if len(rows) != expected:
         raise ProtocolError(f"{split} row count differs from manifest")
     return rows
@@ -161,6 +171,25 @@ def _atomic_json(path: Path, value: Mapping[str, Any]) -> None:
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     os.replace(temporary, path)
+
+
+def _exclusive_json(path: Path, value: Mapping[str, Any]) -> None:
+    """Publish JSON atomically without ever replacing an existing result."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump(value, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        try:
+            os.link(temporary, path)
+        except FileExistsError as exc:
+            raise ProtocolError("seed recovery result already exists; overwrite is forbidden") from exc
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def run_final_test(config: Mapping[str, Any], manifest: Mapping[str, Any], freeze_sha256: str, *, review_accepted: bool = False) -> dict[str, Any]:
@@ -205,15 +234,19 @@ def run_final_test(config: Mapping[str, Any], manifest: Mapping[str, Any], freez
         def infer(item: Mapping[str, Any]) -> list[float]:
             batch = collate_items([[item]], tokenizer.pad_token_id)
             tensors = [batch[key].to(device) for key in ("input_ids", "attention_mask", "marker_pos", "marker_mask", "qtype")]
-            with torch.no_grad(), torch.autocast("cuda", dtype=torch.float16):
+            with torch.inference_mode(), torch.autocast("cuda", dtype=torch.float16):
                 logits, _ = model(*tensors)
             return torch.softmax(logits[0, :6].float(), -1).cpu().tolist()
+
+        def infer_record(record: Mapping[str, Any]) -> list[float]:
+            item = _record_items([dict(record)], tokenizer, build_sequence, QTYPES, render_options, config)[0]
+            return infer(item)
 
         torch.cuda.synchronize(device)
         latency_samples = []
         for index in range(config["latency"]["warmups"] + config["latency"]["measured_records"]):
             torch.cuda.synchronize(device); latency_start = time.perf_counter()
-            infer(test_items[0])
+            infer_record(test_records[0])
             torch.cuda.synchronize(device)
             if index >= config["latency"]["warmups"]:
                 latency_samples.append(time.perf_counter() - latency_start)
@@ -327,7 +360,13 @@ def _tree_cpu(torch: Any, value: Any) -> Any:
 
 def _nested_equal(torch: Any, left: Any, right: Any) -> bool:
     if torch.is_tensor(left) or torch.is_tensor(right):
-        return torch.is_tensor(left) and torch.is_tensor(right) and left.dtype == right.dtype and left.shape == right.shape and torch.equal(left.cpu(), right.cpu())
+        if not (torch.is_tensor(left) and torch.is_tensor(right) and left.dtype == right.dtype and left.shape == right.shape):
+            return False
+        # torch.equal treats signed zero as equal. Compare raw contiguous CPU
+        # storage bytes instead, so this is genuinely bit-exact state equality.
+        left_bytes = left.detach().cpu().contiguous().reshape(-1).view(torch.uint8).numpy().tobytes()
+        right_bytes = right.detach().cpu().contiguous().reshape(-1).view(torch.uint8).numpy().tobytes()
+        return left_bytes == right_bytes
     if isinstance(left, dict) or isinstance(right, dict):
         return isinstance(left, dict) and isinstance(right, dict) and left.keys() == right.keys() and all(_nested_equal(torch, left[key], right[key]) for key in left)
     if isinstance(left, (list, tuple)) or isinstance(right, (list, tuple)):
@@ -431,33 +470,49 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
         for index in range(config["latency"]["warmups"] + config["latency"]["measured_records"]):
             torch.cuda.synchronize(device); latency_start = time.perf_counter()
             measured_item = _record_items([dev_records[0]], tokenizer, build_sequence, QTYPES, render_options, config)[0]
-            forward_item(measured_item)
+            with torch.inference_mode():
+                measured_logits, _ = forward_item(measured_item)
+                torch.softmax(measured_logits[0, :6].float(), -1).cpu().tolist()
             torch.cuda.synchronize(device); duration = time.perf_counter() - latency_start
             if index >= config["latency"]["warmups"]: latency_samples.append(duration)
         latency = validate_latency_evidence({"batch_size": 1, "warmups_completed": config["latency"]["warmups"], "samples_seconds": latency_samples, "synchronize_before_each": True, "synchronize_after_each": True, "included_phases": ["tokenize_build", "collate", "host_to_device", "forward", "softmax", "cpu_probability_copy"], "measurement_source": "runtime_monotonic_with_cuda_synchronization", "synchronization_events": 2 * (config["latency"]["warmups"] + config["latency"]["measured_records"])}, config)
         if not train_enabled:
             return {"status": "base_eval_completed", "seed": seed, "base": base, "dev": base, "cold_load_seconds": cold_load_seconds, "dev_evaluation_seconds": base_seconds, "latency": latency, "peak_reserved_gib": torch.cuda.max_memory_reserved(device) / 1024 ** 3, "test_opened": False}
         if pilot_updates is not None:
-            optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=config["training"]["nonencoder_learning_rate"], weight_decay=config["training"]["weight_decay"])
+            pilot_named = list(model.named_parameters())
+            pilot_encoder = [p for name, p in pilot_named if name.startswith("encoder.")]
+            pilot_nonencoder = [p for name, p in pilot_named if not name.startswith("encoder.") and not name.startswith("act_head.")]
+            for name, parameter in pilot_named:
+                if name.startswith("act_head."):
+                    parameter.requires_grad_(False)
+            optimizer = torch.optim.AdamW([{"params": pilot_encoder, "lr": config["training"]["encoder_learning_rate"]}, {"params": pilot_nonencoder, "lr": config["training"]["nonencoder_learning_rate"]}], weight_decay=config["training"]["weight_decay"])
+            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=expected_updates(len(train_items), config), eta_min=config["training"]["scheduler_eta_min"])
             scaler = torch.amp.GradScaler("cuda", enabled=True, init_scale=config["training"]["fp16_init_scale"], growth_interval=config["training"]["fp16_growth_interval"])
-            model.train(); optimizer.zero_grad(set_to_none=True)
-            for index in range(pilot_updates):
-                terms, batch = forward_item(train_items[index], True)
-                if not bool(torch.isfinite(terms["loss"]).all()):
-                    raise ProtocolError("pilot produced a non-finite loss; no retry")
-                scaler.scale(terms["loss"]).backward(); scaler.unscale_(optimizer)
+            pilot_windows = accumulation_windows(list(range(len(train_items))), config["training"]["gradient_accumulation"])
+            if len(pilot_windows) < pilot_updates:
+                raise ProtocolError("pilot lacks enough records for the declared accumulated updates")
+            model.train(); optimizer.zero_grad(set_to_none=True); torch.cuda.synchronize(device)
+            pilot_started = time.perf_counter()
+            for window in pilot_windows[:pilot_updates]:
+                for item_index in window["record_indices"]:
+                    terms, _ = forward_item(train_items[item_index], True)
+                    if not bool(torch.isfinite(terms["loss"]).all()):
+                        raise ProtocolError("pilot produced a non-finite loss; no retry")
+                    scaler.scale(terms["loss"] / window["divisor"]).backward()
+                scaler.unscale_(optimizer)
                 gradients = [p.grad for p in model.parameters() if p.grad is not None]
                 if not gradients or not all(bool(torch.isfinite(g).all()) for g in gradients):
                     raise ProtocolError("pilot produced a non-finite gradient; no retry")
                 torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], config["training"]["max_grad_norm"])
-                checked_scaler_step(scaler, optimizer); optimizer.zero_grad(set_to_none=True)
+                checked_scaler_step(scaler, optimizer); scheduler.step(); optimizer.zero_grad(set_to_none=True)
             torch.cuda.synchronize(device)
+            training_seconds = time.perf_counter() - pilot_started
             elapsed = time.monotonic() - started
             peak = torch.cuda.max_memory_reserved(device) / 1024 ** 3
             validate_runtime_budget(elapsed, elapsed, config)
-            if peak > config["budget"]["max_peak_reserved_gib"] or elapsed > config["budget"]["smoke_max_gpu_seconds"]:
+            if peak > config["budget"]["max_peak_reserved_gib"] or training_seconds > config["budget"]["smoke_max_gpu_seconds"]:
                 raise ProtocolError("actual-model pilot exceeded its bounded resource contract; no retry")
-            return {"status": "actual_model_pilot_measured", "seed": seed, "updates": pilot_updates, "cold_load_seconds": cold_load_seconds, "training_seconds": elapsed, "dev_evaluation_seconds": base_seconds, "peak_reserved_gib": peak, "finite": True, "test_opened": False}
+            return {"status": "actual_model_pilot_measured", "seed": seed, "updates": pilot_updates, "cold_load_seconds": cold_load_seconds, "training_seconds": training_seconds, "dev_evaluation_seconds": base_seconds, "peak_reserved_gib": peak, "finite": True, "test_opened": False}
 
         named = list(model.named_parameters())
         encoder = [p for name, p in named if name.startswith("encoder.")]
@@ -487,6 +542,8 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
                     if not bool(torch.isfinite(norm)): raise ProtocolError("non-finite gradient norm; no retry")
                     checked_scaler_step(scaler, optimizer); scheduler.step(); optimizer.zero_grad(set_to_none=True); update += 1
                     loss_curve.append({"update": update, "epoch": epoch + 1, "sigma": sigma, "loss": window_loss / divisor, "pre_clip_grad_norm": float(norm), "fp16_scale": float(scaler.get_scale())}); window_loss = 0.0
+                    if time.perf_counter() - train_start > config["budget"]["main_max_aggregate_gpu_seconds"]:
+                        raise ProtocolError("training exceeded the running GPU-second budget; no retry")
                 if torch.cuda.max_memory_reserved(device) > max_reserved: raise ProtocolError("peak CUDA reserved memory exceeded; no retry")
         torch.cuda.synchronize(device); training_seconds = time.perf_counter() - train_start
         if update != total_updates or microforwards != len(train_items) * config["training"]["epochs"]: raise ProtocolError("training stopping state does not match the frozen schedule")
@@ -506,7 +563,18 @@ def _runtime(config: Mapping[str, Any], manifest: Mapping[str, Any], *, command:
         reload_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(reload_optimizer, T_max=total_updates, eta_min=config["training"]["scheduler_eta_min"]); reload_scaler = torch.amp.GradScaler("cuda", enabled=True, init_scale=config["training"]["fp16_init_scale"], growth_interval=config["training"]["fp16_growth_interval"])
         loaded = torch.load(checkpoint / "training_state.pt", map_location="cpu", weights_only=True)
         reload_optimizer.load_state_dict(loaded["optimizer"]); reload_scheduler.load_state_dict(loaded["scheduler"]); reload_scaler.load_state_dict(loaded["scaler"])
-        exact = _nested_equal(torch, training_state, loaded) and model_digest == after_digest and loaded["updates"] == update and loaded["microforwards"] == microforwards
+        # Compare the *restored live objects* with the pre-save CPU snapshot.
+        # Merely round-tripping the serialized dict would not prove that each
+        # component's load_state_dict restored the intended state.
+        exact = (
+            _nested_equal(torch, training_state, loaded)
+            and _nested_equal(torch, training_state["optimizer"], reload_optimizer.state_dict())
+            and _nested_equal(torch, training_state["scheduler"], reload_scheduler.state_dict())
+            and _nested_equal(torch, training_state["scaler"], reload_scaler.state_dict())
+            and model_digest == after_digest
+            and loaded["updates"] == update
+            and loaded["microforwards"] == microforwards
+        )
         if not exact: raise ProtocolError("checkpoint strict reload or training-state equality failed")
         if torch.cuda.max_memory_reserved(device) > max_reserved:
             raise ProtocolError("peak CUDA reserved memory exceeded after reload; no retry")
@@ -526,6 +594,87 @@ def run_base_eval(config: Mapping[str, Any], manifest: Mapping[str, Any], *, rev
 
 def run_training_seed(config: Mapping[str, Any], manifest: Mapping[str, Any], seed: int, *, review_accepted: bool = False) -> dict[str, Any]:
     return _runtime(config, manifest, command="train", seed=seed, review_accepted=review_accepted, pilot_updates=None)
+
+
+def run_recover_seed(config: Mapping[str, Any], manifest: Mapping[str, Any], seed: int, *, review_accepted: bool = False) -> dict[str, Any]:
+    """Recover the completed seed-42 checkpoint on CPU, without retraining or test access."""
+    if not review_accepted:
+        raise ProtocolError("recover-seed requires explicit independent review authorization")
+    if seed != config["training"]["single_seed_fallback"]:
+        raise ProtocolError("recover-seed is authorized only for the completed seed-42 checkpoint")
+    validate_manifest(manifest, allow_pending=False)
+    verify_split_files(manifest, include_test=False)
+    train_records = load_split(manifest, "train", list(config["labels"]))
+    dev_records = load_split(manifest, "dev", list(config["labels"]))
+    run_dir = repo_path(config["output_root"], artifact_output=True) / f"seed_{seed}"
+    result_path = run_dir / "result.json"
+    checkpoint = run_dir / "checkpoint"
+    reload_evidence = load_json(checkpoint / "reload.json") if (checkpoint / "reload.json").is_file() else {}
+    expected_updates = config["training"]["epochs"] * math.ceil(len(train_records) / config["training"]["gradient_accumulation"])
+    expected_microforwards = len(train_records) * config["training"]["epochs"]
+    config_hash = sha256(ROOT / "training/laya_trace_i3/config.json")
+    manifest_hash = sha256(repo_path(config["data_manifest"]))
+    owner = {"command": "recover-seed", "config_sha256": config_hash, "manifest_sha256": manifest_hash, "seed": seed}
+    # The lock is acquired before model-stack imports. Recovery itself remains CPU-only.
+    with GpuLock(repo_path(config["gpu_lock"], artifact_output=True), owner):
+        if result_path.exists():
+            raise ProtocolError("seed recovery result already exists; overwrite is forbidden")
+        import torch
+        state = torch.load(checkpoint / "training_state.pt", map_location="cpu", weights_only=True)
+        checkpoint_hashes = validate_recovery_checkpoint(
+            checkpoint,
+            weights_sha256="9eaa15bbae116f2e18fd73942d6b76729fdbce4ca40fb5a54d4205e1d8ce8947",
+            training_state_sha256="f32c1032708e191079ca5c56072d87a08e88a21e205e2229424432dff48706cb",
+            reload_sha256="b47b091270f3983f1d56ab7e92c8f2196d61298e884c02f3cf698f796ed1e084",
+            model_state_sha256=reload_evidence.get("model_state_before_sha256", ""),
+            expected_updates=expected_updates,
+            expected_microforwards=expected_microforwards,
+            expected_epochs=config["training"]["epochs"],
+            state=state,
+            reload_evidence=reload_evidence,
+        )
+        snapshot, weights_path, source_dir = _model_paths(config)
+        from safetensors.torch import load_file
+        from transformers import AutoTokenizer
+        sys.path.insert(0, str(source_dir))
+        from laya.common import QTYPES, build_model, build_sequence, collate_items, render_options
+
+        model_config = json.loads((snapshot / "rl_agent_config.json").read_text(encoding="utf-8"))
+        model_config.update(max_len=config["model"]["max_len"], head_max_len=config["model"]["head_max_len"])
+        model = build_model(model_config, encoder_dir=str(snapshot / "encoder"))
+        model.load_state_dict(load_file(checkpoint / "model.safetensors", device="cpu"), strict=True)
+        model.eval()
+        tokenizer = AutoTokenizer.from_pretrained(snapshot / "tokenizer", local_files_only=True)
+        dev_items = _record_items(dev_records, tokenizer, build_sequence, QTYPES, render_options, config)
+        rows = []
+        with torch.no_grad():
+            for item in dev_items:
+                batch = collate_items([[item]], tokenizer.pad_token_id)
+                tensors = [batch[key] for key in ("input_ids", "attention_mask", "marker_pos", "marker_mask", "qtype")]
+                logits, _ = model(*tensors)
+                probs = torch.softmax(logits[0, :6].float(), -1).cpu().tolist()
+                by_label = {label: float(probs[index]) for index, label in enumerate(item["option_keys"])}
+                rows.append({"record_id": item["record_id"], "gold_label": item["gold_label"], "probabilities": {label: by_label[label] for label in config["labels"]}, "metadata": item["metadata"]})
+        dev = evaluate_records([{key: row[key] for key in ("record_id", "gold_label", "probabilities")} for row in rows], list(config["labels"]), nll_floor=config["evaluation"]["nll_probability_floor"])
+        dev["predictions"] = rows
+        dev["task_group_bootstrap"] = _group_bootstrap(rows, list(config["labels"]))
+        result = {
+            "status": "recovered",
+            "recovery": {"authorized": True, "source": "completed_seed_42_checkpoint", "retraining": False, "test_opened": False},
+            "seed": seed,
+            "dev": dev,
+            "checkpoint": {"checkpoint_path": str(checkpoint.relative_to(ROOT)), **checkpoint_hashes, "model_state_sha256": reload_evidence["model_state_before_sha256"], "reload_evidence": reload_evidence, "reload_evidence_path": str((checkpoint / "reload.json").relative_to(ROOT)), "reload_evidence_sha256": checkpoint_hashes["reload_evidence_sha256"]},
+            "cold_load_seconds": "unknown",
+            "training_seconds": "unknown",
+            "dev_evaluation_seconds": "unknown",
+            "latency": "unknown",
+            "loss_curve": "unknown",
+            "updates": expected_updates,
+            "microforwards": expected_microforwards,
+            "test_opened": False,
+        }
+        _exclusive_json(result_path, result)
+    return result
 
 
 def planned_run(config: Mapping[str, Any], manifest: Mapping[str, Any], command: str) -> dict[str, Any]:
@@ -566,4 +715,4 @@ def smoke_guard(smoke: Mapping[str, Any], config: Mapping[str, Any]) -> None:
         raise ProtocolError("smoke is not finite")
 
 
-__all__ = ["GpuLock", "accumulation_windows", "consume_final_test_attempt", "final_test_once", "finite", "load_split", "planned_run", "run_bounded_smoke", "run_final_test", "six_class_rlcd_reference", "smoke_guard", "write_plan"]
+__all__ = ["GpuLock", "accumulation_windows", "consume_final_test_attempt", "final_test_once", "finite", "load_split", "planned_run", "run_bounded_smoke", "run_final_test", "run_recover_seed", "six_class_rlcd_reference", "smoke_guard", "write_plan"]

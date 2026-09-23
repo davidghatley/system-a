@@ -1,0 +1,11 @@
+{
+  "schema_version": "system-a-i3-temperature-v1",
+  "method": "single_positive_scalar_temperature_on_six_choice_logits",
+  "temperature": 6.203483215500731,
+  "fit_split": "dev",
+  "fit_rows": 140,
+  "fit_groups": 20,
+  "selection_basis": "five-fold task-group out-of-fold seed-42 NLL and Brier both improved versus raw; checkpoint was already selected on dev",
+  "validation_status": "exploratory dev-only; no independently held-out calibrated evaluation",
+  "raw_output_also_required": true
+}
