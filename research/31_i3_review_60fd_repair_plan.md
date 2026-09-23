@@ -1,0 +1,18 @@
+# Iteration 3 review-60fd repair plan
+
+Date: 2026-09-23. Reviewed HEAD `60fd5b322adc37827ed9f418814abcf64597476e`; `main` matches `origin/main`. Existing unrelated modified/untracked files are preserved. Initial implementation and the first independent review used the verified OpenAI OAuth route and `openai/gpt-6-luna`. The owner subsequently required OpenCode Zen `opencode/space-bunny-free` (verified active with zero listed cost) for the parent and all remaining subagents; no OpenRouter, API-key billing, or fallback provider was used. All tasks are CPU/offline; the historical test split and model weights are off limits.
+
+| Owner | Exclusive edit paths | Acceptance |
+|---|---|---|
+| Luna A | `release/i3/inference.py`, package import-boundary tests under `release/i3/`, package manifest generator if needed | Bundle-specific source namespace, no global path pollution/foreign module replacement; synthetic foreign-module and two-bundle tests; integrity still rejects tampering |
+| Luna B | `training/laya_trace_i3/test_i3.py`, diagnostic scripts and a new `artifacts/review_60fd/CPU_EVIDENCE.md` | No test depends on historical marker/checkpoint; computed fixture hashes; twice-run isolated CPU suite with historical files absent; diagnostics inputs reproducible or clearly gated |
+| Luna C | `training/laya_trace_i3/{runner.py,experiment.py,protocol.py}` and separate orchestration tests/report | Immutable future-run pilot decision bound to pilot/config/manifest/code and shared by training/selection; durable cross-process aggregate worker budget with admission lock, conservative crash handling and synthetic composed CLI tests; consumed historical run remains blocked |
+| Sol | Integration, historical release-freeze amendment, staged commit | Inspect diffs and evidence; run composed isolated CPU tests twice; independent fresh Luna review; preserve historical artifacts and hashes; commit locally without push |
+
+Dependencies: Luna C alone owns pilot and budget integration, because admission and runner routes share state. Luna B must not change runner code. Luna A's package manifest will need a new review revision after its source change; Sol will explicitly record the new manifest and retain the historical `RELEASE_FREEZE.md` hash as history. A fresh reviewer gets the integrated tree after all edits. No real pilot, training, GPU inference, held-out test read, or historical marker mutation is authorized.
+
+Confirmed initial findings: `release/i3/inference.py` still prepends upstream to `sys.path`; the two historical-file-dependent tests remain; `runner.py` pins the old pilot hash and allows any default seed in train; `_runtime` compares each seed's training time to the full aggregate budget without shared accounting. Missing historical run files must be reported as unavailable integration evidence, not a unit-test failure or skipped pass.
+
+## First-review follow-up
+
+The fresh Luna review recorded in `artifacts/review_60fd/INDEPENDENT_REVIEW_1.md` found four P1 gaps and withheld acceptance. After the owner's model change, Space Bunny Free received two non-overlapping repair scopes: importer isolation in `release/i3/`, and immutable admission plus conservative aggregate accounting in `training/laya_trace_i3/`. Sol owns hermetic-test cleanup outside those scopes, the commit-derived isolated source tree, manifest regeneration, evidence reconciliation, staged diff inspection, and a fresh independent final review. Acceptance requires the review findings to be closed or explicitly bounded without overstating the guarantee, followed by a twice-run suite from an index-derived pre-commit tree snapshot with the historical test JSONL/run checkpoints/weights absent.
