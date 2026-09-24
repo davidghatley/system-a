@@ -1,12 +1,15 @@
 """Local, fixed-schema Laya next-action classifier and output contract."""
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import importlib
 import importlib.abc
 import importlib.util
 import json
 import math
+import os
+import stat
 import sys
 import threading
 import types
@@ -50,6 +53,97 @@ _PRIVATE_SOURCE_PATH_ATTR = "__system_a_i3_source_path__"
 _PRIVATE_SOURCE_REL_ATTR = "__system_a_i3_source_relative__"
 _PRIVATE_SOURCE_DIGEST_ATTR = "__system_a_i3_source_digest__"
 _PRIVATE_LOADER_TOKEN_ATTR = "__system_a_i3_private_loader_token__"
+
+
+def _path_is_within(path: Path, root: Path) -> bool:
+    try:
+        path.resolve(strict=False).relative_to(root)
+    except (OSError, RuntimeError, ValueError):
+        return False
+    return True
+
+
+def _module_origin_is_within(module: object, root: Path) -> bool:
+    origins: list[object] = []
+    module_dict = getattr(module, "__dict__", {})
+    file_name = module_dict.get("__file__")
+    if file_name is not None:
+        origins.append(file_name)
+    spec = module_dict.get("__spec__")
+    origin = getattr(spec, "origin", None)
+    if origin is not None:
+        origins.append(origin)
+    search_paths = module_dict.get("__path__", ()) or ()
+    if isinstance(search_paths, (str, bytes, os.PathLike)):
+        origins.append(search_paths)
+    else:
+        try:
+            origins.extend(search_paths)
+        except TypeError:
+            pass
+    for value in origins:
+        if not isinstance(value, (str, bytes, os.PathLike)):
+            continue
+        if isinstance(value, bytes):
+            value = os.fsdecode(value)
+        if isinstance(value, str) and value.startswith("<"):
+            continue
+        try:
+            if _path_is_within(Path(value), root):
+                return True
+        except (TypeError, ValueError):
+            continue
+    return False
+
+
+def _is_allowed_release_module(name: str, module: object) -> bool:
+    if module is sys.modules.get(__name__):
+        return True
+    if name in {"__main__", "release", "release.i3", "test_inference"}:
+        return True
+    if name.startswith("release.i3."):
+        return True
+    if name == "bundle_integrity" or name.endswith(".bundle_integrity"):
+        return True
+    return isinstance(name, str) and name.startswith("_system_a_i3_laya_")
+
+
+@contextlib.contextmanager
+def _trusted_dependency_imports(bundle_root: Path):
+    """Prevent release-root modules from satisfying third-party imports.
+
+    The release directory is commonly first on ``sys.path`` in quickstart and
+    verification scripts.  Temporarily remove that directory (and descendants)
+    while dependencies are imported, and reject any already-loaded module whose
+    origin is inside it.  The original path list is restored on exit; predictor
+    initialization and prediction both execute within this boundary.
+    """
+    root = Path(bundle_root).resolve()
+    original = list(sys.path)
+    for name, module in tuple(sys.modules.items()):
+        if _module_origin_is_within(module, root) and not _is_allowed_release_module(name, module):
+            raise ImportError(f"untrusted module was imported from the release bundle: {name}")
+
+    filtered = []
+    for entry in original:
+        try:
+            if not entry:
+                candidate = Path.cwd()
+            elif isinstance(entry, bytes):
+                candidate = Path(os.fsdecode(entry))
+            else:
+                candidate = Path(entry)
+        except (TypeError, ValueError):
+            filtered.append(entry)
+            continue
+        if _path_is_within(candidate, root):
+            continue
+        filtered.append(entry)
+    sys.path[:] = filtered
+    try:
+        yield
+    finally:
+        sys.path[:] = original
 
 
 def _read_manifest_snapshot(bundle: Path) -> tuple[bytes, dict[str, str], str]:
@@ -125,6 +219,92 @@ def _assert_manifest_unchanged(bundle: Path, snapshot: tuple[bytes, dict[str, st
         raise ValueError("bundle manifest changed during verification")
 
 
+def _expected_asset_digest(expected: Mapping[str, str], relative: str) -> str:
+    digest = expected.get(relative)
+    if digest is None:
+        raise ValueError(f"bundle asset is absent from captured manifest: {relative}")
+    return digest
+
+
+def _read_authenticated_asset(root: Path, relative: str, expected: str) -> bytes:
+    """Read one regular file below *root* and authenticate those exact bytes.
+
+    The descriptor is opened with ``O_NOFOLLOW`` while walking each directory
+    component from the already-resolved bundle root.  The bytes are read once
+    and hashed after the read; callers receive the same immutable ``bytes``
+    object that was authenticated, never a pathname to reopen later.
+    """
+    if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY"):
+        raise ValueError("authenticated release loading requires O_NOFOLLOW/O_DIRECTORY")
+    if (
+        not isinstance(relative, str)
+        or not relative
+        or relative.startswith("/")
+        or any(part in ("", ".", "..") for part in relative.split("/"))
+    ):
+        raise ValueError(f"malformed authenticated release asset path: {relative}")
+    if (
+        not isinstance(expected, str)
+        or len(expected) != 64
+        or expected != expected.lower()
+        or any(character not in "0123456789abcdef" for character in expected)
+    ):
+        raise ValueError(f"malformed authenticated release asset digest: {relative}")
+
+    root = Path(root).resolve()
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    file_flags = os.O_RDONLY | os.O_NOFOLLOW
+    if hasattr(os, "O_CLOEXEC"):
+        directory_flags |= os.O_CLOEXEC
+        file_flags |= os.O_CLOEXEC
+    parts = tuple(relative.split("/"))
+    root_parts = root.parts
+    if not root.is_absolute() or not root_parts or root_parts[0] != root.anchor:
+        raise ValueError("authenticated release root must be absolute")
+    try:
+        # Walk from the filesystem anchor rather than trusting any absolute
+        # path component supplied by the caller or replaced concurrently.
+        current_fd = os.open(root.anchor, directory_flags)
+        try:
+            for part in (*root_parts[1:], *parts[:-1]):
+                next_fd = os.open(part, directory_flags, dir_fd=current_fd)
+                os.close(current_fd)
+                current_fd = next_fd
+            fd = os.open(parts[-1], file_flags, dir_fd=current_fd)
+        finally:
+            os.close(current_fd)
+    except OSError as exc:
+        raise ValueError(f"unable to open authenticated release asset: {relative}") from exc
+
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise ValueError(f"authenticated release asset is not a regular file: {relative}")
+        data = bytearray()
+        while True:
+            try:
+                chunk = os.read(fd, 1024 * 1024)
+            except OSError as exc:
+                raise ValueError(f"unable to read authenticated release asset: {relative}") from exc
+            if not chunk:
+                break
+            data.extend(chunk)
+        immutable = bytes(data)
+    finally:
+        os.close(fd)
+
+    if hashlib.sha256(immutable).hexdigest() != expected:
+        raise ValueError(f"authenticated release asset hash mismatch: {relative}")
+    return immutable
+
+
+def _authenticated_json(root: Path, relative: str, expected: str):
+    data = _read_authenticated_asset(root, relative, expected)
+    try:
+        return json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"authenticated release asset is not valid UTF-8 JSON: {relative}") from exc
+
+
 class _PrivateBundleContext:
     """Filesystem and provenance policy for one generated private package."""
 
@@ -184,20 +364,15 @@ class _PrivateBundleContext:
         return source, relative, expected, is_package
 
     def read_verified_source(self, source: Path, relative: str, expected: str) -> bytes:
-        """Read a source exactly once, then authenticate those same bytes."""
+        """Read source exactly once, then authenticate and execute those bytes."""
         if source.is_symlink() or not source.is_file():
             raise ValueError(f"private bundle source is not a regular file: {relative}")
         try:
             resolved = source.resolve(strict=True)
             resolved.relative_to(self.laya_root)
-            with source.open("rb") as stream:
-                data = stream.read()
         except (OSError, ValueError) as exc:
-            raise ValueError(f"unable to read private bundle source: {relative}") from exc
-        actual = hashlib.sha256(data).hexdigest()
-        if actual != expected:
-            raise ValueError(f"private bundle source hash mismatch: {relative}")
-        return data
+            raise ValueError(f"unable to resolve private bundle source: {relative}") from exc
+        return _read_authenticated_asset(self.root, relative, expected)
 
     def _registry_key(self, name: str) -> tuple[str, str]:
         return self.namespace, name
@@ -457,6 +632,77 @@ def _load_bundled_laya(bundle: Path, *, manifest_snapshot: tuple[bytes, dict[str
                 context.cleanup_new_modules()
 
 
+def _load_authenticated_tokenizer(root: Path, expected: Mapping[str, str]) -> object:
+    """Build the pinned fast tokenizer from authenticated bytes only."""
+    from tokenizers import Tokenizer
+    from transformers import PreTrainedTokenizerFast
+
+    tokenizer_data = _read_authenticated_asset(
+        root,
+        "bundle/tokenizer/tokenizer.json",
+        _expected_asset_digest(expected, "bundle/tokenizer/tokenizer.json"),
+    )
+    tokenizer_config = _authenticated_json(
+        root,
+        "bundle/tokenizer/tokenizer_config.json",
+        _expected_asset_digest(expected, "bundle/tokenizer/tokenizer_config.json"),
+    )
+    if not isinstance(tokenizer_config, dict):
+        raise ValueError("tokenizer configuration must be a JSON object")
+    tokenizer_class = tokenizer_config.get("tokenizer_class")
+    if tokenizer_class not in (None, "PreTrainedTokenizerFast"):
+        raise ValueError(f"unsupported release tokenizer class: {tokenizer_class!r}")
+    path_fields = {
+        "vocab_file",
+        "merges_file",
+        "tokenizer_file",
+        "added_tokens_file",
+        "special_tokens_map_file",
+    }
+    if path_fields.intersection(tokenizer_config):
+        raise ValueError("tokenizer configuration may not redirect authenticated loading to paths")
+    tokenizer_config = dict(tokenizer_config)
+    tokenizer_config.pop("tokenizer_class", None)
+    try:
+        backend = Tokenizer.from_str(tokenizer_data.decode("utf-8"))
+    except UnicodeDecodeError as exc:
+        raise ValueError("release tokenizer JSON is not valid UTF-8") from exc
+    return PreTrainedTokenizerFast(tokenizer_object=backend, **tokenizer_config)
+
+
+def _build_authenticated_model(laya, cfg: dict, root: Path, expected: Mapping[str, str]):
+    """Construct the pinned Laya model without reopening encoder paths.
+
+    This mirrors the pinned ``common.build_model`` construction while replacing
+    its ``AutoConfig.from_pretrained(encoder_dir)`` read with the authenticated
+    config object below.
+    """
+    from transformers import AutoConfig, AutoModel
+
+    encoder_data = _authenticated_json(
+        root,
+        "bundle/encoder/config.json",
+        _expected_asset_digest(expected, "bundle/encoder/config.json"),
+    )
+    if not isinstance(encoder_data, dict) or not isinstance(encoder_data.get("model_type"), str):
+        raise ValueError("release encoder configuration is malformed")
+    encoder_config = dict(encoder_data)
+    model_type = encoder_config.pop("model_type")
+    encoder = AutoModel.from_config(
+        AutoConfig.for_model(model_type, **encoder_config),
+        attn_implementation="sdpa",
+    )
+    try:
+        model_class = laya.DecisionModel
+    except AttributeError as exc:
+        raise ValueError("bundled Laya model constructor is unavailable") from exc
+    return model_class(
+        encoder,
+        cfg.get("head_layers", 2),
+        len(cfg.get("act_costs", {})) + 1,
+    )
+
+
 def validate_input(record: object) -> dict:
     """Validate deployment input (state + one next_action choice question).
 
@@ -504,42 +750,65 @@ def predict(record: object, predictor, *, calibrator=None) -> dict[str, float]:
 class LocalLayaPredictor:
     """Load the bundled seed-42 checkpoint using only bundle-relative assets."""
     def __init__(self, bundle: Path | None = None, device: str = "cpu"):
-        import torch
-        from safetensors.torch import load_file
-        from transformers import AutoTokenizer
-
         self.bundle = (bundle or Path(__file__).parent / "bundle").resolve()
         if device != "cpu":
             raise ValueError("this release interface is CPU-only")
+        with _trusted_dependency_imports(self.bundle.parent):
+            self._initialize()
+
+    def _initialize(self) -> None:
+        import torch
+        from safetensors.torch import load as load_safetensors
+
         # Capture the manifest before verification, then use this same
-        # snapshot for source authentication.  A post-verify source edit is
-        # consequently a hash failure, not a new executable source.
+        # snapshot for all source and asset authentication.  Consumers receive
+        # the bytes read below, never a later pathname read from the bundle.
         manifest_snapshot = _read_manifest_snapshot(self.bundle)
         verify_tree(self.bundle.parent)
         _assert_manifest_unchanged(self.bundle, manifest_snapshot)
-        if not (self.bundle / "model/model.safetensors").is_file():
-            raise FileNotFoundError("bundle model weights are missing")
+        root = self.bundle.parent
+        expected = manifest_snapshot[1]
         laya = _load_bundled_laya(self.bundle, manifest_snapshot=manifest_snapshot)
-        QTYPES, build_model, build_sequence, render_options = (
-            laya.QTYPES, laya.build_model, laya.build_sequence, laya.render_options
+        QTYPES, build_sequence, render_options = (
+            laya.QTYPES, laya.build_sequence, laya.render_options
         )
 
         self.torch = torch
         self.build_sequence = build_sequence
         self.render_options = render_options
         self.qtypes = QTYPES
-        cfg = json.loads((self.bundle / "rl_agent_config.json").read_text())
-        exp = json.loads((self.bundle / "experiment_config.json").read_text())
+        cfg = _authenticated_json(
+            root,
+            "bundle/rl_agent_config.json",
+            _expected_asset_digest(expected, "bundle/rl_agent_config.json"),
+        )
+        exp = _authenticated_json(
+            root,
+            "bundle/experiment_config.json",
+            _expected_asset_digest(expected, "bundle/experiment_config.json"),
+        )
+        calibration = _authenticated_json(
+            root,
+            "bundle/calibration.json",
+            _expected_asset_digest(expected, "bundle/calibration.json"),
+        )
+        if not isinstance(cfg, dict) or not isinstance(exp, dict) or not isinstance(calibration, dict):
+            raise ValueError("release configuration assets must contain JSON objects")
         cfg.update(max_len=exp["model"]["max_len"], head_max_len=exp["model"]["head_max_len"])
-        self.model = build_model(cfg, encoder_dir=str(self.bundle / "encoder"))
-        self.model.load_state_dict(load_file(self.bundle / "model/model.safetensors", device="cpu"), strict=True)
+        weights = _read_authenticated_asset(
+            root,
+            "bundle/model/model.safetensors",
+            _expected_asset_digest(expected, "bundle/model/model.safetensors"),
+        )
+        self.model = _build_authenticated_model(laya, cfg, root, expected)
+        self.model.load_state_dict(load_safetensors(weights), strict=True)
+        del weights
         self.model.encoder.config.reference_compile = False
         self.model.eval()
-        self.tokenizer = AutoTokenizer.from_pretrained(self.bundle / "tokenizer", local_files_only=True)
+        self.tokenizer = _load_authenticated_tokenizer(root, expected)
         self.max_len = exp["model"]["max_len"]
         self.head_max_len = exp["model"]["head_max_len"]
         self.truncate_left = exp["model"]["truncate_left"]
-        calibration = json.loads((self.bundle / "calibration.json").read_text())
         self.temperature = calibration["temperature"]
         if not isinstance(self.temperature, (int, float)) or isinstance(self.temperature, bool) or not math.isfinite(self.temperature) or self.temperature <= 0:
             raise ValueError("calibration temperature must be positive and finite")
@@ -549,6 +818,10 @@ class LocalLayaPredictor:
         return [raw[label] for label in LABELS]
 
     def predict_pair(self, record: Mapping) -> tuple[dict[str, float], dict[str, float]]:
+        with _trusted_dependency_imports(self.bundle.parent):
+            return self._predict_pair(record)
+
+    def _predict_pair(self, record: Mapping) -> tuple[dict[str, float], dict[str, float]]:
         """One forward pass; raw and dev-temperature-scaled six-class outputs."""
         item = validate_input(record)
         q = item["questions"]["next_action"]

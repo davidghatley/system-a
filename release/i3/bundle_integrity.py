@@ -17,9 +17,11 @@ def verify_tree(root: Path) -> None:
     for path in root.rglob("*"):
         if path.is_symlink():
             raise ValueError(f"bundle symlink forbidden: {path.relative_to(root)}")
+        relative = path.relative_to(root).as_posix()
+        if path.is_file() and len(Path(relative).parts) == 1 and path.suffix in (".pyc", ".pyo"):
+            raise ValueError(f"top-level bundle bytecode forbidden: {relative}")
         if path.is_dir():
             continue
-        relative = path.relative_to(root).as_posix()
         if relative == "MANIFEST.sha256.json" or "__pycache__" in path.parts or path.suffix in (".pyc", ".pyo"):
             continue
         digest = hashlib.sha256()

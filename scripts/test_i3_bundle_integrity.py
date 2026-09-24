@@ -28,6 +28,19 @@ class BundleIntegrityTest(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, "bundle (hash|file set) mismatch"):
                 verify_tree(FIXTURES / name)
 
+    def test_rejects_top_level_bytecode(self):
+        directory = FIXTURES / "bytecode"
+        directory.mkdir(parents=True, exist_ok=True)
+        manifest = {
+            "schema_version": "system-a-i3-bundle-sha256-v1",
+            "files": {"config.json": hashlib.sha256(b"verified").hexdigest()},
+        }
+        (directory / "MANIFEST.sha256.json").write_text(json.dumps(manifest) + "\n")
+        (directory / "config.json").write_bytes(b"verified")
+        (directory / "shadow.pyc").write_bytes(b"untrusted top-level bytecode")
+        with self.assertRaisesRegex(ValueError, "top-level bundle bytecode forbidden"):
+            verify_tree(directory)
+
 
 if __name__ == "__main__":
     unittest.main()

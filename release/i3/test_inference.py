@@ -1,6 +1,9 @@
 import contextlib
 import hashlib
 import json
+import os
+import py_compile
+import subprocess
 import sys
 import types
 import unittest
@@ -36,6 +39,8 @@ from . import helper as _helper
 from .helper import marker
 builtins._i3_test_exec.append({label!r} + ':' + marker)
 QTYPES={{'choice': {qtype}}}
+class DecisionModel:
+    def __new__(cls, *args, **kwargs): return builtins._i3_test_model()
 def build_model(*a, **k): return builtins._i3_test_model()
 def build_sequence(*a, **k): pass
 def render_options(*a, **k): return []
@@ -228,6 +233,233 @@ class BundleImportIsolationTests(unittest.TestCase):
             self.assertEqual((self.bundles[0] / "MANIFEST.sha256.json").read_bytes(), original_manifest)
             self._assert_public_modules_unchanged(public_modules)
 
+    def _assert_post_verify_mutation_rejected(self, relative: str):
+        bundle = self.bundles[0] / "bundle"
+        asset = self.bundles[0] / relative
+        original = asset.read_bytes()
+        replacements = {
+            "bundle/rl_agent_config.json": b'{"head_layers": 99}',
+            "bundle/experiment_config.json": b'{"model":{"max_len":99,"head_max_len":4,"truncate_left":true}}',
+            "bundle/calibration.json": b'{"temperature":2.0}',
+            "bundle/encoder/config.json": b'{"model_type":"synthetic","hidden_size":99}',
+            "bundle/tokenizer/tokenizer.json": b'{"version":"1.0","model":{"type":"WordLevel","vocab":{"[UNK]":0}}}',
+            "bundle/tokenizer/tokenizer_config.json": b'{"tokenizer_class":"PreTrainedTokenizerFast","model_input_names":["other"]}',
+            "bundle/model/model.safetensors": b"post-verification replacement",
+        }
+        original_verify_tree = inference_module.verify_tree
+
+        def verify_then_mutate(root):
+            original_verify_tree(root)
+            asset.write_bytes(replacements[relative])
+
+        try:
+            with self._synthetic_runtime([]):
+                with patch.object(inference_module, "verify_tree", side_effect=verify_then_mutate):
+                    with self.assertRaisesRegex(ValueError, "hash mismatch"):
+                        inference_module.LocalLayaPredictor(bundle)
+        finally:
+            asset.write_bytes(original)
+
+    def test_post_verify_mutations_are_rejected_for_all_inference_assets(self):
+        for relative in (
+            "bundle/rl_agent_config.json",
+            "bundle/experiment_config.json",
+            "bundle/calibration.json",
+            "bundle/encoder/config.json",
+            "bundle/tokenizer/tokenizer.json",
+            "bundle/tokenizer/tokenizer_config.json",
+            "bundle/model/model.safetensors",
+        ):
+            with self.subTest(asset=relative):
+                self._assert_post_verify_mutation_rejected(relative)
+
+    def test_model_consumer_receives_authenticated_bytes_not_a_path(self):
+        bundle = self.bundles[0] / "bundle"
+        weights = bundle / "model/model.safetensors"
+        original = weights.read_bytes()
+        original_verify_tree = inference_module.verify_tree
+        seen = []
+
+        def verify_then_mutate(root):
+            original_verify_tree(root)
+
+        def consume(data):
+            seen.append(data)
+            weights.write_bytes(b"temporary replacement during load")
+            self.assertEqual(data, original)
+            weights.write_bytes(original)
+            return {}
+
+        try:
+            with self._synthetic_runtime([]):
+                safetensors_torch = sys.modules["safetensors.torch"]
+                with patch.object(inference_module, "verify_tree", side_effect=verify_then_mutate), \
+                     patch.object(safetensors_torch, "load", side_effect=consume) as byte_consumer, \
+                     patch.object(safetensors_torch, "load_file") as path_consumer:
+                    inference_module.LocalLayaPredictor(bundle)
+                self.assertEqual(seen, [original])
+                byte_consumer.assert_called_once_with(original)
+                path_consumer.assert_not_called()
+        finally:
+            weights.write_bytes(original)
+
+    def test_tokenizer_consumer_receives_authenticated_bytes_not_a_path(self):
+        bundle = self.bundles[0] / "bundle"
+        tokenizer_file = bundle / "tokenizer/tokenizer.json"
+        tokenizer_config_file = bundle / "tokenizer/tokenizer_config.json"
+        original_tokenizer = tokenizer_file.read_bytes()
+        original_config = tokenizer_config_file.read_bytes()
+        seen = []
+
+        def consume(serialized):
+            seen.append(serialized)
+            tokenizer_file.write_bytes(b"temporary replacement")
+            tokenizer_config_file.write_bytes(b"temporary replacement")
+            self.assertEqual(serialized, original_tokenizer.decode("utf-8"))
+            tokenizer_file.write_bytes(original_tokenizer)
+            tokenizer_config_file.write_bytes(original_config)
+            return object()
+
+        try:
+            with self._synthetic_runtime([]):
+                tokenizers_module = sys.modules["tokenizers"]
+                with patch.object(tokenizers_module.Tokenizer, "from_str", side_effect=consume):
+                    predictor = inference_module.LocalLayaPredictor(bundle)
+                self.assertEqual(seen, [original_tokenizer.decode("utf-8")])
+                self.assertEqual(
+                    predictor.tokenizer.init_kwargs["model_input_names"],
+                    ["input_ids"],
+                )
+        finally:
+            tokenizer_file.write_bytes(original_tokenizer)
+            tokenizer_config_file.write_bytes(original_config)
+
+    def test_post_verify_symlink_substitution_is_rejected(self):
+        bundle = self.bundles[0] / "bundle"
+        weights = bundle / "model/model.safetensors"
+        target = FIXTURE_ROOT / "post_verify_symlink_target.bin"
+        original = weights.read_bytes()
+        target.write_bytes(b"unauthenticated symlink target")
+        original_verify_tree = inference_module.verify_tree
+
+        def verify_then_substitute(root):
+            original_verify_tree(root)
+            weights.unlink()
+            weights.symlink_to(target)
+
+        try:
+            with self._synthetic_runtime([]):
+                with patch.object(inference_module, "verify_tree", side_effect=verify_then_substitute):
+                    with self.assertRaisesRegex(ValueError, "unable to open authenticated release asset"):
+                        inference_module.LocalLayaPredictor(bundle)
+        finally:
+            if weights.is_symlink() or not weights.exists():
+                weights.unlink(missing_ok=True)
+            weights.write_bytes(original)
+            target.unlink(missing_ok=True)
+
+    def test_manifest_mismatch_stops_before_inference_consumers(self):
+        bundle = self.bundles[0] / "bundle"
+        weights = bundle / "model/model.safetensors"
+        original = weights.read_bytes()
+        try:
+            weights.write_bytes(b"manifest-mismatched replacement")
+            with self._synthetic_runtime([]):
+                safetensors_torch = sys.modules["safetensors.torch"]
+                with patch.object(safetensors_torch, "load") as byte_consumer, \
+                     patch.object(safetensors_torch, "load_file") as path_consumer:
+                    with self.assertRaisesRegex(ValueError, "bundle hash mismatch"):
+                        inference_module.LocalLayaPredictor(bundle)
+                byte_consumer.assert_not_called()
+                path_consumer.assert_not_called()
+        finally:
+            weights.write_bytes(original)
+
+    def test_fresh_process_does_not_import_release_root_shadow(self):
+        probe = FIXTURE_ROOT / "dependency_shadow_probe"
+        trusted = FIXTURE_ROOT / "dependency_shadow_trusted"
+        probe.mkdir(parents=True, exist_ok=True)
+        trusted.mkdir(parents=True, exist_ok=True)
+        source = probe / "shadow_source.py"
+        source.write_text(
+            "raise RuntimeError('unauthenticated release-root bytecode executed')\n",
+            encoding="utf-8",
+        )
+        py_compile.compile(
+            str(source),
+            cfile=str(probe / "transformers.pyc"),
+            doraise=True,
+        )
+        source.unlink()
+        (probe / "tokenizers.py").write_text(
+            "LOADED = 'malicious'\n",
+            encoding="utf-8",
+        )
+        (trusted / "transformers.py").write_text("LOADED = True\n", encoding="utf-8")
+        (trusted / "tokenizers.py").write_text("LOADED = True\n", encoding="utf-8")
+        script = """
+import sys
+from pathlib import Path
+release, probe, trusted = [Path(value) for value in sys.argv[1:]]
+sys.path.insert(0, str(release))
+import inference
+assert 'transformers' not in sys.modules
+assert 'tokenizers' not in sys.modules
+sys.path.insert(0, str(probe))
+sys.path.insert(1, str(trusted))
+with inference._trusted_dependency_imports(probe):
+    import transformers
+    import tokenizers
+    assert Path(transformers.__file__).resolve().is_relative_to(trusted.resolve())
+    assert Path(tokenizers.__file__).resolve().is_relative_to(trusted.resolve())
+    assert transformers.LOADED is True and tokenizers.LOADED is True
+assert Path(sys.path[0]).resolve() == probe.resolve()
+for name in ('transformers', 'tokenizers'):
+    sys.modules.pop(name, None)
+import tokenizers as shadow_tokenizers
+assert shadow_tokenizers.LOADED == 'malicious'
+try:
+    with inference._trusted_dependency_imports(probe):
+        pass
+except ImportError:
+    pass
+else:
+    raise AssertionError('preloaded release-root module was accepted')
+print('dependency shadow probe passed')
+"""
+        env = os.environ.copy()
+        env.update({
+            "CUDA_VISIBLE_DEVICES": "",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "HF_HUB_OFFLINE": "1",
+            "TRANSFORMERS_OFFLINE": "1",
+        })
+        try:
+            result = subprocess.run(
+                [sys.executable, "-B", "-c", script, str(Path(__file__).parents[2] / "release/i3"), str(probe), str(trusted)],
+                cwd=Path(__file__).parents[2],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("dependency shadow probe passed", result.stdout)
+        finally:
+            for path in (
+                probe / "transformers.pyc",
+                probe / "tokenizers.py",
+                trusted / "transformers.py",
+                trusted / "tokenizers.py",
+            ):
+                path.unlink(missing_ok=True)
+            for directory in (trusted, probe):
+                try:
+                    directory.rmdir()
+                except OSError:
+                    pass
+
     def test_two_bundles_repeat_and_regenerated_source_changes_load_separately(self):
         executions = []
         with self._synthetic_runtime(executions) as public_modules:
@@ -291,10 +523,44 @@ class BundleImportIsolationTests(unittest.TestCase):
         torch_stub = types.ModuleType("torch")
         safetensors_stub = types.ModuleType("safetensors")
         safetensors_torch_stub = types.ModuleType("safetensors.torch")
-        safetensors_torch_stub.load_file = lambda *a, **k: {}
+        safetensors_torch_stub.load = lambda *a, **k: {}
+        safetensors_torch_stub.load_file = Mock(
+            side_effect=AssertionError("path-based safetensors loading was used")
+        )
+        tokenizers_stub = types.ModuleType("tokenizers")
+        tokenizers_stub.Tokenizer = SimpleNamespace(
+            from_str=lambda value: object(),
+            from_file=Mock(side_effect=AssertionError("path-based tokenizer loading was used")),
+        )
         transformers_stub = types.ModuleType("transformers")
+
+        class FakeAutoConfig:
+            @classmethod
+            def for_model(cls, model_type, **kwargs):
+                return SimpleNamespace(model_type=model_type, **kwargs)
+
+            @classmethod
+            def from_pretrained(cls, *args, **kwargs):
+                raise AssertionError("path-based encoder config loading was used")
+
+        class FakeAutoModel:
+            @classmethod
+            def from_config(cls, config, **kwargs):
+                return model.encoder
+
+            @classmethod
+            def from_pretrained(cls, *args, **kwargs):
+                raise AssertionError("path-based encoder loading was used")
+
+        class FakeFastTokenizer:
+            def __init__(self, **kwargs):
+                self.init_kwargs = kwargs
+
+        transformers_stub.AutoConfig = FakeAutoConfig
+        transformers_stub.AutoModel = FakeAutoModel
+        transformers_stub.PreTrainedTokenizerFast = FakeFastTokenizer
         transformers_stub.AutoTokenizer = SimpleNamespace(
-            from_pretrained=lambda *a, **k: object()
+            from_pretrained=lambda *a, **k: self.fail("path-based tokenizer loading was used")
         )
 
         foreign_common = types.ModuleType("laya.common")
@@ -314,6 +580,7 @@ class BundleImportIsolationTests(unittest.TestCase):
             "torch": torch_stub,
             "safetensors": safetensors_stub,
             "safetensors.torch": safetensors_torch_stub,
+            "tokenizers": tokenizers_stub,
             "transformers": transformers_stub,
         }
         private_modules = {
@@ -360,6 +627,18 @@ class BundleImportIsolationTests(unittest.TestCase):
             f"marker = {marker!r}\n", encoding="utf-8"
         )
         (bundle / "model/model.safetensors").write_bytes(b"synthetic weights")
+        (bundle / "encoder/config.json").write_text(
+            json.dumps({"model_type": "synthetic", "hidden_size": 4}),
+            encoding="utf-8",
+        )
+        (bundle / "tokenizer/tokenizer.json").write_text(
+            json.dumps({"version": "1.0", "model": {"type": "WordLevel"}}),
+            encoding="utf-8",
+        )
+        (bundle / "tokenizer/tokenizer_config.json").write_text(
+            json.dumps({"tokenizer_class": "PreTrainedTokenizerFast", "model_input_names": ["input_ids"]}),
+            encoding="utf-8",
+        )
         (bundle / "rl_agent_config.json").write_text("{}", encoding="utf-8")
         (bundle / "experiment_config.json").write_text(
             json.dumps({"model": {"max_len": 8, "head_max_len": 4, "truncate_left": True}}),
